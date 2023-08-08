@@ -4,8 +4,7 @@
 
 # TO DO -------------------------------------------------------------------
 
-# OK Preencher leading 0
-# Não precisou - Pegar base que preenchi na mão de novo colocando já outras caracteristicas dos prefeitos
+## Add candidates from 2016 and estimate
 
 # Libs --------------------------------------------------------------------
 
@@ -19,10 +18,10 @@ library(fastDummies)
 library(tidyverse)
 library(janitor)
 
-## Directories
-work_dir                  = "C:/Users/GabrielCaserDosPasso/Documents/RAIS/3_create_education_data"
-output_dir                = "C:/Users/GabrielCaserDosPasso/Documents/RAIS/3_create_education_data/output"
-create_electoral_data_dir = "C:/Users/GabrielCaserDosPasso/Documents/RAIS/1_create_electoral_data/output/data"
+## DirectoriesC:\Users\gabri\OneDrive\Gabriel\Insper\Tese\Engenheiros\replication_code\rdd_when_science_strikes_back\3_create_education_data
+work_dir                  = "C:/Users/gabri/OneDrive/Gabriel/Insper/Tese/Engenheiros/replication_code/rdd_when_science_strikes_back/3_create_education_data"
+output_dir                = "C:/Users/gabri/OneDrive/Gabriel/Insper/Tese/Engenheiros/replication_code/rdd_when_science_strikes_back/3_create_education_data/output"
+create_electoral_data_dir = "C:/Users/gabri/OneDrive/Gabriel/Insper/Tese/Engenheiros/replication_code/rdd_when_science_strikes_back/1_create_electoral_data/output/data"
 
 set.seed(1234) # making it reproducible
 
@@ -30,13 +29,33 @@ set.seed(1234) # making it reproducible
 
 df <- readRDS(paste0(output_dir, "/data/masked_ml_dataset.Rds"))
 
+# Removing cbo_agregado_ dummies
+
+## Create a vector of variable names to remove
+variables_to_remove <- grep("cbo_agregado_", names(df), value = TRUE)
+
+## Remove the selected variables from the data frame
+df <- df[, !(names(df) %in% variables_to_remove)]
+
+## Creating aggregated data
+
+df <- df %>% 
+  mutate(cbo_2_digits = as.factor(substring(cbo_2002, 0,2)))
+
+## Creating dummy columns for categorical variables (useful for running the algorithms)
+df <- dummy_cols(df, select_columns = c("raca"))
+
+
 ## Removing candidates with missing educational background and creating copy with all candidates
 
 df_all_candidates <- df
 
 df <- df %>% 
-  filter(!is.na(graduacao_stem))
+ filter(!is.na(graduacao_stem))
 
+## Fixing datatype
+
+df$id_municipio <- as.factor(df$id_municipio)
 
 # Creating Train / Test datasets ------------------------------------------------------
 
@@ -45,14 +64,14 @@ training <- df[idx, ] # used to train the classifier
 test <- df[-idx, ] # used to apply the classifier
 
 # Logistic Regression -----------------------------------------------------
-logreg <- glm(as.numeric(graduacao_stem) ~ . , data = training[,!(names(training)) %in% c("id_masked", "nome", "resultado", "ano", "cbo_2002")],  na.action = na.exclude) # It excludes the mentioned columns 
+logreg <- glm(as.numeric(graduacao_stem) ~ . , data = training[,!(names(training)) %in% c("id_masked", "nome", "resultado", "ano", "id_municipio", "instrucao","ocupacao","sigla_partido","state", "cbo_agregado", "cbo_2002", "graduacao", "raca", "cbo_2_digits")],  na.action = na.exclude) # It excludes the mentioned columns 
 
-#logreg <- glm(as.numeric(graduacao_stem) ~ . , data = training[,-c(4,5,6,7,10,11,12,15)],  na.action = na.exclude)
 summary(logreg)
 
-prob_logreg <- predict(logreg, newdata = test[,!(names(test)) %in% c("id_masked", "nome", "resultado", "ano", "cbo_2002")], type = "response") # it now uses the trained model 'logreg' to estimate the values in the test dataset
+prob_logreg <- predict(logreg, newdata = test[,!(names(test)) %in% c("id_masked", "nome", "resultado", "ano", "id_municipio", "instrucao","ocupacao","sigla_partido","state", "cbo_agregado", "cbo_2002", "graduacao", "raca", "cbo_2_digits")], type = "response") # it now uses the trained model 'logreg' to estimate the values in the test dataset
 
-## threshold ?timo
+## optimal threshold
+
 plot.roc(test$graduacao_stem, prob_logreg,
          print.thres = "best")
 
@@ -64,11 +83,7 @@ acc_logreg <- mean(as.numeric(y_hat_logreg) == as.numeric(test$graduacao_stem), 
 auc_logreg <- auc(test$graduacao_stem, prob_logreg)[1]
 
 
-
-
-
-
-## tabela de confus?o ?tima
+## optimal confusion table
 
 table(Predicted = y_hat_logreg, Observed = test$graduacao_stem)
 
@@ -76,14 +91,13 @@ table(Predicted = y_hat_logreg, Observed = test$graduacao_stem)
 # Classification Tree -----------------------------------------------------
 
 
-
-ctree <- tree(graduacao_stem ~ ., data = training[,-c(4,5,6,7,10,11,12,15)], na.action = na.exclude)
+ctree <- tree(graduacao_stem ~ ., data = training[, !(names(training)) %in% c("id_masked", "nome", "resultado", "ano", "cbo_2002", "id_municipio", 'graduacao', 'ocupacao', 'cbo_agregado')], na.action = na.exclude)
 plot(ctree)
 text(ctree)
 prob_ctree <- predict(ctree, newdata = test, type = "vector")[, 2]
 
 
-## threshold ?timo
+## best threshold 
 plot.roc(test$graduacao_stem, prob_ctree,
          print.thres = "best")
 
@@ -96,55 +110,50 @@ auc_ctree <- auc(test$graduacao_stem, prob_ctree, na.rm = TRUE )[1]
 
 
 
-## tabela de confus?o ?tima
+## best confusion table
 
 table(Predicted = y_hat_ctree, Observed = test$graduacao_stem)
 
 # Random Forest -----------------------------------------------------------
 
-rf <- randomForest(graduacao_stem ~ ., data = training[,-c(4,5,6,7,10,11,12,15)],  na.action = na.exclude)
-prob_rf <- predict(rf, newdata = test[,-c(4,5,6,7,10,11,12,15)], type = "prob")[, 2]
 
-## threshold ótimo
+
+rf <- randomForest(graduacao_stem ~ ., data = training[, !(names(training)) %in% c("id_masked", "nome", "resultado", "ano", "cbo_2002", "id_municipio", "instrucao","ocupacao","sigla_partido","state", "cbo_agregado", "cbo_2002")],  na.action = na.exclude)
+prob_rf <- predict(rf, newdata = test[, !(names(test)) %in% c("id_masked", "nome", "resultado", "ano", "cbo_2002", "id_municipio", "instrucao","ocupacao","sigla_partido","state", "cbo_agregado", "cbo_2002")], type = "prob")[, 2] # [. 2] is getting only the probability of being treated
+
+## optimal threshold
 plot.roc(test$graduacao_stem, prob_rf,
          print.thres = "best")
 
 my_roc <- roc(test$graduacao_stem, prob_rf)
-best_threshold <- as.numeric(coords(my_roc,"best", ret = "threshold" ))
+best_threshold_rf <- as.numeric(coords(my_roc,"best", ret = "threshold" ))
 
-y_hat_rf <- factor(ifelse(prob_rf >= best_threshold, "Yes", "No"))
+y_hat_rf <- factor(ifelse(prob_rf >= best_threshold_rf, "Yes", "No"))
 acc_rf <- mean(as.numeric(y_hat_rf) == (as.numeric(test$graduacao_stem)), na.rm = TRUE)
 auc_rf <- auc(test$graduacao_stem, prob_rf)[1]
 
-
-
-
-## tabela de confus?o ?tima
+## optimal confusion table
 
 table(Predicted = y_hat_rf, Observed = test$graduacao_stem)
 
 # Boosting ----------------------------------------------------------------
 
-boosting <- adaboost(graduacao_stem ~ tenure + state + instrucao + sigla_partido + ocupacao + cbo_agregado + cbo_2002 + idade + genero , data = training, nIter = 200,  na.action = na.exclude)
-prob_boosting <- predict(boosting, newdata = test)$prob[, 2]
-
-
+boosting <- adaboost(graduacao_stem ~ ., data = training[, !(names(training)) %in% c("id_masked", "nome", "resultado", "ano", "cbo_2002", "id_municipio", "instrucao","ocupacao","sigla_partido","state", "cbo_agregado", "cbo_2002", "raca", "cbo_2_digits")], nIter = 200,  na.action = na.exclude)
+prob_boosting <- predict(boosting, newdata = test[, !(names(test)) %in% c("id_masked", "nome", "resultado", "ano", "cbo_2002", "id_municipio", "instrucao","ocupacao","sigla_partido","state", "cbo_agregado", "cbo_2002", "raca", "cbo_2_digits")])$prob[, 2]
 
 ## threshold ótimo
 plot.roc(test$graduacao_stem, prob_boosting,
                   print.thres = "best")
 
 my_roc <- roc(test$graduacao_stem, prob_boosting)
-best_threshold <- as.numeric(coords(my_roc,"best", ret = "threshold" ))
+best_threshold_boosting <- as.numeric(coords(my_roc,"best", ret = "threshold" ))
 
 
-y_hat_boosting <- factor(ifelse(prob_boosting >= best_threshold, "Yes", "No"))
+y_hat_boosting <- factor(ifelse(prob_boosting >= best_threshold_boosting, "Yes", "No"))
 acc_boosting <- mean(as.numeric(y_hat_boosting) == as.numeric(test$graduacao_stem), na.rm = TRUE)
 auc_boosting <- auc(test$graduacao_stem, prob_boosting)[1]
 
-
-
-## tabela de confus?o ?tima
+## optimal confusion table
 
 table(Predicted = y_hat_boosting, Observed = test$graduacao_stem)
 
@@ -164,27 +173,20 @@ legend("bottomright",
        col = c(1, 2, 3, 4), lwd = 2, cex = 0.6, pch = 10)
 
 
-# Usando melhor método no DF ----------------------------------------------
+# Using best model to predict education of candidates that we didn't find educational data ----------------------------------------------
+
+## add candidates from 2016
 
 
-prob_boosting <- predict(boosting, newdata = df)$prob[, 2]
+prob_final <- predict(rf, newdata = df_all_candidates[, !(names(df_all_candidates)) %in% c("id_masked", "nome", "resultado", "ano", "cbo_2002", "id_municipio", "instrucao","ocupacao","sigla_partido","state", "cbo_agregado", "cbo_2002")], type = "prob")[, 2] # [. 2] is getting only the probability of being treated
 
-plot.roc(df$graduacao_stem, prob_boosting,
-         print.thres = "best")
+y_hat_final <- factor(ifelse(prob_final >= best_threshold_rf, "Yes", "No"))
 
-my_roc <- roc(test$graduacao_stem, prob_boosting)
-best_threshold <- as.numeric(coords(my_roc,"best", ret = "threshold" ))
+df_all_candidates$previsao <- factor(ifelse(prob_final >= best_threshold_rf, "Yes", "No"))
 
+table(Predicted = y_hat_final, Observed = df_all_candidates$graduacao_stem)
 
-y_hat_boosting <- factor(ifelse(prob_boosting >= best_threshold, "Yes", "No"))
-acc_boosting <- mean(as.numeric(y_hat_boosting) == df$graduacao_stem, na.rm = TRUE)
-auc_boosting <- auc(df$graduacao_stem, prob_boosting)[1]
-
-predict(boosting, newdata = df)$prob[, 2]
-df$previsao <- factor(ifelse(prob_boosting >= best_threshold, "Yes", "No"))
-
-table(Predicted = y_hat_boosting, Observed = df$graduacao_stem)
-
+df <- df_all_candidates
 
 df %>% 
   summarise(ocupacao,graduacao_stem, previsao, state) %>% 
