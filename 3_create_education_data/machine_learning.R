@@ -18,7 +18,8 @@ library(fastDummies)
 library(tidyverse)
 library(janitor)
 
-## DirectoriesC:\Users\gabri\OneDrive\Gabriel\Insper\Tese\Engenheiros\replication_code\rdd_when_science_strikes_back\3_create_education_data
+## Directories
+
 work_dir                  = "C:/Users/gabri/OneDrive/Gabriel/Insper/Tese/Engenheiros/replication_code/rdd_when_science_strikes_back/3_create_education_data"
 output_dir                = "C:/Users/gabri/OneDrive/Gabriel/Insper/Tese/Engenheiros/replication_code/rdd_when_science_strikes_back/3_create_education_data/output"
 create_electoral_data_dir = "C:/Users/gabri/OneDrive/Gabriel/Insper/Tese/Engenheiros/replication_code/rdd_when_science_strikes_back/1_create_electoral_data/output/data"
