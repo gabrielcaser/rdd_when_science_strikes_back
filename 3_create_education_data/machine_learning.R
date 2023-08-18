@@ -119,8 +119,8 @@ table(Predicted = y_hat_ctree, Observed = test$graduacao_stem)
 
 
 
-rf <- randomForest(graduacao_stem ~ ., data = training[, !(names(training)) %in% c("id_masked", "nome", "resultado", "ano", "cbo_2002", "id_municipio", "instrucao","ocupacao","sigla_partido","state", "cbo_agregado", "cbo_2002")],  na.action = na.exclude)
-prob_rf <- predict(rf, newdata = test[, !(names(test)) %in% c("id_masked", "nome", "resultado", "ano", "cbo_2002", "id_municipio", "instrucao","ocupacao","sigla_partido","state", "cbo_agregado", "cbo_2002")], type = "prob")[, 2] # [. 2] is getting only the probability of being treated
+rf <- randomForest(graduacao_stem ~ ., data = training[, !(names(training)) %in% c("id_masked", "nome", "resultado", "ano", "cbo_2002", "id_municipio", "instrucao","ocupacao","sigla_partido","state", "cbo_agregado", "cbo_2_digits")],  na.action = na.exclude)
+prob_rf <- predict(rf, newdata = test[, !(names(test)) %in% c("id_masked", "nome", "resultado", "ano", "cbo_2002", "id_municipio", "instrucao","ocupacao","sigla_partido","state", "cbo_agregado", "cbo_2_digits")], type = "prob")[, 2] # [. 2] is getting only the probability of being treated
 
 ## optimal threshold
 plot.roc(test$graduacao_stem, prob_rf,
@@ -179,7 +179,7 @@ legend("bottomright",
 ## add candidates from 2016
 
 
-prob_final <- predict(rf, newdata = df_all_candidates[, !(names(df_all_candidates)) %in% c("id_masked", "nome", "resultado", "ano", "cbo_2002", "id_municipio", "instrucao","ocupacao","sigla_partido","state", "cbo_agregado", "cbo_2002")], type = "prob")[, 2] # [. 2] is getting only the probability of being treated
+prob_final <- predict(rf, newdata = df_all_candidates[, !(names(df_all_candidates)) %in% c("id_masked", "nome", "resultado", "ano", "cbo_2002", "id_municipio", "instrucao","ocupacao","sigla_partido","state", "cbo_agregado", "cbo_2_digits")], type = "prob")[, 2] # [. 2] is getting only the probability of being treated
 
 y_hat_final <- factor(ifelse(prob_final >= best_threshold_rf, "Yes", "No"))
 
