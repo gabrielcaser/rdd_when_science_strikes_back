@@ -92,7 +92,7 @@ table(Predicted = y_hat_logreg, Observed = test$graduacao_stem)
 # Classification Tree -----------------------------------------------------
 
 
-ctree <- tree(graduacao_stem ~ ., data = training[, !(names(training)) %in% c("id_masked", "nome", "resultado", "ano", "cbo_2002", "id_municipio", 'graduacao', 'ocupacao', 'cbo_agregado')], na.action = na.exclude)
+ctree <- tree(graduacao_stem ~ ., data = training[, !(names(training)) %in% c("id_masked", "nome", "resultado", "ano", "cbo_2002", "id_municipio", 'graduacao', 'ocupacao', 'cbo_agregado', 'graduacao', 'cbo_2_digits')], na.action = na.exclude)
 plot(ctree)
 text(ctree)
 prob_ctree <- predict(ctree, newdata = test, type = "vector")[, 2]
@@ -119,8 +119,8 @@ table(Predicted = y_hat_ctree, Observed = test$graduacao_stem)
 
 
 
-rf <- randomForest(graduacao_stem ~ ., data = training[, !(names(training)) %in% c("id_masked", "nome", "resultado", "ano", "cbo_2002", "id_municipio", "instrucao","ocupacao","sigla_partido","state", "cbo_agregado", "cbo_2_digits")],  na.action = na.exclude)
-prob_rf <- predict(rf, newdata = test[, !(names(test)) %in% c("id_masked", "nome", "resultado", "ano", "cbo_2002", "id_municipio", "instrucao","ocupacao","sigla_partido","state", "cbo_agregado", "cbo_2_digits")], type = "prob")[, 2] # [. 2] is getting only the probability of being treated
+rf <- randomForest(graduacao_stem ~ ., data = training[, !(names(training)) %in% c("id_masked", "nome", "resultado", "ano", "cbo_2002", "id_municipio", "instrucao","ocupacao","sigla_partido","state", "cbo_agregado", "graduacao")],  na.action = na.exclude)
+prob_rf <- predict(rf, newdata = test[, !(names(test)) %in% c("id_masked", "nome", "resultado", "ano", "cbo_2002", "id_municipio", "instrucao","ocupacao","sigla_partido","state", "cbo_agregado", "graduacao")], type = "prob")[, 2] # [. 2] is getting only the probability of being treated
 
 ## optimal threshold
 plot.roc(test$graduacao_stem, prob_rf,
@@ -139,10 +139,10 @@ table(Predicted = y_hat_rf, Observed = test$graduacao_stem)
 
 # Boosting ----------------------------------------------------------------
 
-boosting <- adaboost(graduacao_stem ~ ., data = training[, !(names(training)) %in% c("id_masked", "nome", "resultado", "ano", "cbo_2002", "id_municipio", "instrucao","ocupacao","sigla_partido","state", "cbo_agregado", "cbo_2002", "raca", "cbo_2_digits")], nIter = 200,  na.action = na.exclude)
-prob_boosting <- predict(boosting, newdata = test[, !(names(test)) %in% c("id_masked", "nome", "resultado", "ano", "cbo_2002", "id_municipio", "instrucao","ocupacao","sigla_partido","state", "cbo_agregado", "cbo_2002", "raca", "cbo_2_digits")])$prob[, 2]
+boosting <- adaboost(graduacao_stem ~ ., data = training[, !(names(training)) %in% c("id_masked", "nome", "resultado", "ano", "cbo_2002", "id_municipio", "instrucao","ocupacao","sigla_partido","state", "cbo_agregado", "cbo_2002", "raca", "cbo_2_digits", "graduacao")], nIter = 200,  na.action = na.exclude)
+prob_boosting <- predict(boosting, newdata = test[, !(names(test)) %in% c("id_masked", "nome", "resultado", "ano", "cbo_2002", "id_municipio", "instrucao","ocupacao","sigla_partido","state", "cbo_agregado", "cbo_2002", "raca", "cbo_2_digits", "graduacao")])$prob[, 2]
 
-## threshold ótimo
+## optimal threshold 
 plot.roc(test$graduacao_stem, prob_boosting,
                   print.thres = "best")
 
@@ -179,94 +179,60 @@ legend("bottomright",
 ## add candidates from 2016
 
 
-prob_final <- predict(rf, newdata = df_all_candidates[, !(names(df_all_candidates)) %in% c("id_masked", "nome", "resultado", "ano", "cbo_2002", "id_municipio", "instrucao","ocupacao","sigla_partido","state", "cbo_agregado", "cbo_2_digits")], type = "prob")[, 2] # [. 2] is getting only the probability of being treated
+#prob_final <- predict(rf, newdata = df_all_candidates[, !(names(df_all_candidates)) %in% c("id_masked", "nome", "resultado", "ano", "cbo_2002", "id_municipio", "instrucao","ocupacao","sigla_partido","state", "cbo_agregado", "graduacao")], type = "prob")[, 2] # [. 2] is getting only the probability of being treated
+prob_final <- predict(boosting, newdata = df_all_candidates[, !(names(test)) %in% c("id_masked", "nome", "resultado", "ano", "cbo_2002", "id_municipio", "instrucao","ocupacao","sigla_partido","state", "cbo_agregado", "cbo_2002", "raca", "cbo_2_digits", "graduacao")])$prob[, 2]
 
-y_hat_final <- factor(ifelse(prob_final >= best_threshold_rf, "Yes", "No"))
+y_hat_final <- factor(ifelse(prob_final >= best_threshold_boosting, "Yes", "No"))
 
-df_all_candidates$previsao <- factor(ifelse(prob_final >= best_threshold_rf, "Yes", "No"))
+df_all_candidates$previsao <- factor(ifelse(prob_final >= best_threshold_boosting, "Yes", "No"))
 
 table(Predicted = y_hat_final, Observed = df_all_candidates$graduacao_stem)
 
 df <- df_all_candidates
 
-df %>% 
-  summarise(ocupacao,graduacao_stem, previsao, state) %>% 
+
+# Sums stats
+df %>%
+  filter(ocupacao == "engenheiro") %>% 
+  summarise(id_masked, ocupacao,graduacao_stem, previsao, state) %>% 
   arrange(ocupacao,graduacao_stem, previsao)
+  
 
-df %>% 
-  group_by(state, coorte) %>% 
-  count(previsao) %>% 
-  arrange(desc(previsao), desc(n)) %>% 
-  print(n = 60)
+## crating final educational variable
 
+df$curso_stem <- ifelse(is.na(df$graduacao_stem), as.numeric(df$previsao) - 1, as.numeric(df$graduacao_stem) - 1) # maintaining the values that I classified by hand, and complementing the missing values of education with model prediction
 
-df %>% 
-  filter(city == "Rio de Contas")
+# Dropping variables
 
-
-
-# exportando planilha
-
-## criando variável final
-
-
-df$curso_stem <- ifelse(is.na(df$graduacao_stem), as.numeric(df$previsao) - 1, as.numeric(df$graduacao_stem) - 1)
-
+rm(boosting, ctree, df_all_candidates, logreg, my_roc, rf, test, training)
 
 df <- df %>% 
-  summarise(id_municipio, coorte, id_masked, graduacao_stem, curso_stem)
+  summarise(coorte = ano,
+            id_masked,
+            state,
+            id_municipio,
+            tenure,
+            tenure_rais,
+            hours,
+            cbo_2002,
+            cbo_agregado,
+            curso_stem_hand = graduacao_stem,
+            curso_stem_ml = curso_stem,
+            resultado,
+            sigla_partido,
+            instrucao,
+            ocupacao,
+            genero,
+            raca,
+            idade)
 
-
-df %>% 
-  filter(id_municipio == 220213)
-
-# tenho que dropar os duplicados dando prioridade para curso_stem == 1
-
-
-df2 <- reshape(df, idvar = c("id_masked"), timevar = "coorte", direction = "wide" )
-
-
-df2 <- df2 %>% 
-  summarise(id_masked, graduacao_stem.2016, graduacao_stem.2020, curso_stem.2016, curso_stem.2020)
-
-#df2$curso_stem = ifelse(!is.na(df2$curso_stem.2016))
+# Cases where a candidate had different predicted STEM educational in different cohorts
 
 df <- df %>% 
   group_by(id_masked) %>% 
-  mutate(curso_stem_2 = max(curso_stem))
+  mutate(curso_stem_ml = max(curso_stem_ml)) # attributing 1 for Stem-education if a candidate at least received 1 in one cohort
 
-df %>% 
-  filter(curso_stem != curso_stem_2)
+# Saving ------------------------------------------------------------------
 
-df <- df %>% 
-  transmute(id_masked, curso_stem = curso_stem_2) %>% 
-  distinct()
-
-
-
-#
-#df <- df %>% 
-#  group_by(id_masked) %>% 
-#  mutate(dobro = curso_stem - lag(curso_stem, n = 1, default = NA)) %>% 
-#  mutate(dobro = (dobro == 1 | dobro == -1)) %>% 
-#  arrange(desc(dobro)) %>%
-#  print(n = 100)
-#
-#
-#df %>% 
-#  filter(id_municipio == 220213)
-#
-#df$curso_stem_2 <- ifelse(df$dobro == 1, 1, df$curso_stem)
-#
-#df$curso_stem_2 <- ifelse(is.na(df$curso_stem_2),df$curso_stem,df$curso_stem_2)
-#
-#df$curso_stem <- df$curso_stem_2
-#
-#
-#df <- df %>%
-#  distinct()
-#
-
-
-#write.table(df, "C:\\Users\\GabrielCaserDosPasso\\Documents\\RAIS\\Dados\\Output\\220924_curso_stem.csv", sep = ',', row.names = FALSE, fileEncoding = "latin1")
+saveRDS(df, file = paste(output_dir,"/data/candidates_dataset.Rds", sep = ""))
 
