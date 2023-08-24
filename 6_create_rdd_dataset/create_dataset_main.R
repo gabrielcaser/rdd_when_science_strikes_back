@@ -1,41 +1,80 @@
+# Program - This program merges all data to create the rdd dataset 
 
 
-# Libraries ***************************************************** ---------------------------------------------------------------
+# TO DO -------------------------------------------------------------------
 
-#library("basedosdados")
-library("readstata13")
-library("stargazer")
-library("gt")
-library("modelsummary")
-library("rdrobust")
-library("rddtools")
-library("plyr")
-library("sf")
-library("rio")
-library("readr")
-library("stringr")
-library("tidyverse")
-library("readxl")
-library("patchwork")
-library("dplyr")
-library(data.table)
+## Ver por que não tenho mais a variável STEMJOB e só STEMJOB_ML
 
 
-theme_set(theme_minimal(base_size = 16))
+# Initial commands
 
-# Setting -----------------------------------------------------------------
+rm(list = ls(all.names = TRUE)) # clear objects
+gc() # free up memory
 
-work_dir = "C:/Users/GabrielCaserDosPasso/Documents/RAIS/create_dataset_for_regressions"
-setwd("C:/Users/GabrielCaserDosPasso/Documents/RAIS")
-input_dir = "C:/Users/GabrielCaserDosPasso/Documents/RAIS/Dados/input"
+# Libs --------------------------------------------------------------------
+
+library(tidyverse)
+library(skimr)
+library(readxl)
+
+# Directories
+
+work_dir                   = "C:/Users/gabri/OneDrive/Gabriel/Insper/Tese/Engenheiros/replication_code/rdd_when_science_strikes_back/6_create_rdd_dataset"
+output_dir                 = "C:/Users/gabri/OneDrive/Gabriel/Insper/Tese/Engenheiros/replication_code/rdd_when_science_strikes_back/6_create_rdd_dataset/output"
+baseline_data_dir          = "C:/Users/gabri/OneDrive/Gabriel/Insper/Tese/Engenheiros/replication_code/rdd_when_science_strikes_back/5_create_baseline_data/output/data"
+covid_data_dir             = "C:/Users/gabri/OneDrive/Gabriel/Insper/Tese/Engenheiros/replication_code/rdd_when_science_strikes_back/4_create_covid_data/output/data"
+mayors_data_dir            = "C:/Users/gabri/OneDrive/Gabriel/Insper/Tese/Engenheiros/replication_code/rdd_when_science_strikes_back/3_create_education_data/output/data"
+
+set.seed(1234) # making it reproducible
+
+# Mayors Data ----------------------------------------------------
+
+df_mayors <- readRDS(paste0(mayors_data_dir, "/candidates_dataset.Rds"))
+
+df_mayors$id_municipio <- as.character(df_mayors$id_municipio) # changing data type
+df_mayors$id_municipio <- substr(df_mayors$id_municipio,1,6) # keeping only 6 first digits
+
+df_mayors <- df_mayors %>% 
+  ungroup()
+
+# Baseline and NPI Data -----------------------------------------------------------
+
+df_health <- readRDS(paste0(baseline_data_dir, "/health_data.Rds"))
+
+df_ideology <- readRDS(paste0(baseline_data_dir, "/ideology_data.Rds"))
+
+df_ideology <- df_ideology %>% 
+  filter(coorte == 2016 | coorte == 2020) # keeping election coorte years
+
+df_density <- readRDS(paste0(baseline_data_dir, "/density_data.Rds"))
+
+df_political <- readRDS(paste0(baseline_data_dir, "/political_data.Rds"))
+
+df_npi <- readRDS(paste0(baseline_data_dir, "/npi_data.Rds"))
 
 
-# Oppening Covid and RDD Data ----------------------------------------------------
+# Covid Data --------------------------------------------------------------
 
-##df <- readRDS("Dados/output/221130_base_rdd_covid_stem.rds")
+df_covid <- readRDS(paste0(covid_data_dir, "/covid_data.Rds"))
 
-df <- readRDS("Dados/Output/230218_base_rdd_covid_stem.rds")
+df_covid <- df_covid %>% 
+  ungroup()
 
+# Merging datasets --------------------------------------------------------
+
+df <- left_join(df_mayors, df_npi, by = c("id_municipio")) # 29% of municipalities with missing data. That is expected since not everyone responded the survey
+
+df <- left_join(df, df_covid, by = c("id_municipio", "coorte")) # 4 municipalities with missing data
+
+df <- left_join(df, df_health, by = c("id_municipio"))
+
+df <- left_join(df, df_density, by = c("id_municipio")) # 2 municipalities with missing data
+
+df <- left_join(df, df_ideology, by = c("id_municipio", "coorte"))
+
+df <- left_join(df, df_political, by = c("sigla_partido", "coorte"))
+
+df$coorte <- as.factor(df$coorte)
 
 # Choosing the definition of STEM -----------------------------------------
 
@@ -43,7 +82,7 @@ df <- df %>%
   mutate(stem_job_2 = stem_job == 1 | ocupacao == "medico" | ocupacao == "engenheiro" | ocupacao == "biomedico"| ocupacao == "quimico" | ocupacao == "biologo" | ocupacao == "estatistico" | ocupacao == "tecnico em informatica") %>% 
   mutate(stem_job_3 = stem_job_2 == 1 & ocupacao != "medico") %>% 
   mutate(medico = ocupacao == "medico") %>% 
-  mutate(stem_job_4 = (stem_job == 1  & tenure > 0 & graduacao_stem == 1))
+  mutate(stem_job_4 = (stem_job == 1  & tenure > 0 & curso_stem_ml == 1))
 
 
 
