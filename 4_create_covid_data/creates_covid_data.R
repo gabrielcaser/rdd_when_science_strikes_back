@@ -1,5 +1,9 @@
 # Program - This program creates a dataset with SRAG(Covid) outcomes
 
+# Initial commands
+
+rm(list = ls(all.names = TRUE)) # clear objects
+gc() # free up memory
 
 # Libs --------------------------------------------------------------------
 
@@ -8,8 +12,8 @@ library(skimr)
 
 # Directories
 
-work_dir                   = "C:/Users/GabrielCaserDosPasso/Documents/RAIS/4_create_covid_data"
-output_dir                 = "C:/Users/GabrielCaserDosPasso/Documents/RAIS/4_create_covid_data/output"
+work_dir                   = "C:/Users/gabri/OneDrive/Gabriel/Insper/Tese/Engenheiros/replication_code/rdd_when_science_strikes_back/4_create_covid_data"
+output_dir                 = "C:/Users/gabri/OneDrive/Gabriel/Insper/Tese/Engenheiros/replication_code/rdd_when_science_strikes_back/4_create_covid_data/output"
 
 set.seed(1234) # making it reproducible
 
@@ -185,7 +189,7 @@ head(sivep_2020)
 ### 2021 --------------------------------------------------------------------
 ### source: https://opendatasus.saude.gov.br/dataset/srag-2021-e-2022
 
-sivep_2021 <- read_csv2(paste0(work_dir, '/input/220613_srag_base_oficial_2021.csv'), col_types = cols(
+sivep_2021 <- read_csv2(paste0(work_dir, '/input/230831_srag_base_oficial_2021.csv'), col_types = cols(
   DT_NOTIFIC = col_date(format = formato_data),
   SEM_NOT = col_double(),
   DT_SIN_PRI = col_date(format = formato_data),
@@ -713,6 +717,30 @@ sivep <- sivep %>% # creating delta outcomes
   mutate(delta_deaths_sivep = deaths_sivep - lag(deaths_sivep, n = 1, default = NA),
          delta_hosp_sivep = hosp_sivep - lag(hosp_sivep, n = 1, default = NA)) %>% 
   arrange(desc(coorte))
+
+# Merging with population data
+
+df_population <- read.csv2(paste0(work_dir, "/input/populacao.csv"), sep = ",") # source: https://iepsdata.org.br/data-downloads
+
+## merging year of population with coorte
+df_population <- df_population %>%
+  mutate(coorte = recode(ano, '2020' = '2016', '2021' = '2020')) %>% 
+  summarise(coorte = as.double(coorte), populacao, id_municipio = as.character(id_municipio))
+
+sivep <- sivep %>% 
+  ungroup()
+
+sivep <- left_join(sivep, df_population, by = c("id_municipio", "coorte"))
+
+
+# Creating outcome variables
+
+sivep <- sivep %>% 
+  dplyr::group_by(id_municipio, coorte) %>%
+  dplyr::mutate(hosp_per_100k_inhabitants = (hosp_sivep / populacao) * 100000,
+                deaths_sivep_per_100k_inhabitants = (deaths_sivep / populacao) * 100000) %>% 
+  ungroup()
+
 
 
 # Saving

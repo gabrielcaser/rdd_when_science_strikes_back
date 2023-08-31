@@ -1,10 +1,7 @@
 # Program - This program uses machine learning to classify mayors educational background as STEM or Non-STEM
 
-
-
 # TO DO -------------------------------------------------------------------
 
-## Add candidates from 2016 and estimate
 
 # Libs --------------------------------------------------------------------
 
@@ -28,7 +25,8 @@ set.seed(1234) # making it reproducible
 
 # Data --------------------------------------------------------------------
 
-df <- readRDS(paste0(output_dir, "/data/masked_ml_dataset.Rds"))
+df <- readRDS(paste0(output_dir, "/data/230829_masked_ml_dataset_stem.Rds"))
+df_nonstem <- readRDS(paste0(output_dir, "/data/230829_masked_ml_dataset_non_stem.Rds"))
 
 # Removing cbo_agregado_ dummies
 
@@ -64,12 +62,37 @@ idx <- sample(1:nrow(df), size = round(0.7 * nrow(df)))
 training <- df[idx, ] # used to train the classifier
 test <- df[-idx, ] # used to apply the classifier
 
+# Variables to not use
+
+excluded_variables <- c("id_masked",
+                        "nome",
+                        "resultado",
+                        "ano",
+                        "cbo_2002",
+                        "id_municipio",
+                        "instrucao",
+                        "ocupacao",
+                        "sigla_partido",
+                        "state",
+                        "cbo_agregado",
+                        "cbo_2002",
+                        "raca",
+                        "cbo_2_digits",
+                        "graduacao",
+                        'X2_lugar',
+                        'X3_lugar',
+                        'n_stem_candidates',
+                        'stem_job',
+                        'dif_votos_3_lugar',
+                        'tenure')
+
 # Logistic Regression -----------------------------------------------------
-logreg <- glm(as.numeric(graduacao_stem) ~ . , data = training[,!(names(training)) %in% c("id_masked", "nome", "resultado", "ano", "id_municipio", "instrucao","ocupacao","sigla_partido","state", "cbo_agregado", "cbo_2002", "graduacao", "raca", "cbo_2_digits")],  na.action = na.exclude) # It excludes the mentioned columns 
+
+logreg <- glm(as.numeric(graduacao_stem) ~ . , data = training[,!(names(training)) %in% excluded_variables],  na.action = na.exclude) # It excludes the mentioned columns 
 
 summary(logreg)
 
-prob_logreg <- predict(logreg, newdata = test[,!(names(test)) %in% c("id_masked", "nome", "resultado", "ano", "id_municipio", "instrucao","ocupacao","sigla_partido","state", "cbo_agregado", "cbo_2002", "graduacao", "raca", "cbo_2_digits")], type = "response") # it now uses the trained model 'logreg' to estimate the values in the test dataset
+prob_logreg <- predict(logreg, newdata = test[,!(names(test)) %in% excluded_variables], type = "response") # it now uses the trained model 'logreg' to estimate the values in the test dataset
 
 ## optimal threshold
 
@@ -92,7 +115,7 @@ table(Predicted = y_hat_logreg, Observed = test$graduacao_stem)
 # Classification Tree -----------------------------------------------------
 
 
-ctree <- tree(graduacao_stem ~ ., data = training[, !(names(training)) %in% c("id_masked", "nome", "resultado", "ano", "cbo_2002", "id_municipio", 'graduacao', 'ocupacao', 'cbo_agregado', 'graduacao', 'cbo_2_digits')], na.action = na.exclude)
+ctree <- tree(graduacao_stem ~ ., data = training[, !(names(training)) %in% excluded_variables], na.action = na.exclude)
 plot(ctree)
 text(ctree)
 prob_ctree <- predict(ctree, newdata = test, type = "vector")[, 2]
@@ -119,8 +142,8 @@ table(Predicted = y_hat_ctree, Observed = test$graduacao_stem)
 
 
 
-rf <- randomForest(graduacao_stem ~ ., data = training[, !(names(training)) %in% c("id_masked", "nome", "resultado", "ano", "cbo_2002", "id_municipio", "instrucao","ocupacao","sigla_partido","state", "cbo_agregado", "graduacao")],  na.action = na.exclude)
-prob_rf <- predict(rf, newdata = test[, !(names(test)) %in% c("id_masked", "nome", "resultado", "ano", "cbo_2002", "id_municipio", "instrucao","ocupacao","sigla_partido","state", "cbo_agregado", "graduacao")], type = "prob")[, 2] # [. 2] is getting only the probability of being treated
+rf <- randomForest(graduacao_stem ~ ., data = training[, !(names(training)) %in% excluded_variables],  na.action = na.exclude)
+prob_rf <- predict(rf, newdata = test[, !(names(test)) %in% excluded_variables], type = "prob")[, 2] # [. 2] is getting only the probability of being treated
 
 ## optimal threshold
 plot.roc(test$graduacao_stem, prob_rf,
@@ -139,8 +162,8 @@ table(Predicted = y_hat_rf, Observed = test$graduacao_stem)
 
 # Boosting ----------------------------------------------------------------
 
-boosting <- adaboost(graduacao_stem ~ ., data = training[, !(names(training)) %in% c("id_masked", "nome", "resultado", "ano", "cbo_2002", "id_municipio", "instrucao","ocupacao","sigla_partido","state", "cbo_agregado", "cbo_2002", "raca", "cbo_2_digits", "graduacao")], nIter = 200,  na.action = na.exclude)
-prob_boosting <- predict(boosting, newdata = test[, !(names(test)) %in% c("id_masked", "nome", "resultado", "ano", "cbo_2002", "id_municipio", "instrucao","ocupacao","sigla_partido","state", "cbo_agregado", "cbo_2002", "raca", "cbo_2_digits", "graduacao")])$prob[, 2]
+boosting <- adaboost(graduacao_stem ~ ., data = training[, !(names(training)) %in% excluded_variables], nIter = 200,  na.action = na.exclude)
+prob_boosting <- predict(boosting, newdata = test[, !(names(test)) %in% excluded_variables])$prob[, 2]
 
 ## optimal threshold 
 plot.roc(test$graduacao_stem, prob_boosting,
@@ -178,9 +201,7 @@ legend("bottomright",
 
 ## add candidates from 2016
 
-
-#prob_final <- predict(rf, newdata = df_all_candidates[, !(names(df_all_candidates)) %in% c("id_masked", "nome", "resultado", "ano", "cbo_2002", "id_municipio", "instrucao","ocupacao","sigla_partido","state", "cbo_agregado", "graduacao")], type = "prob")[, 2] # [. 2] is getting only the probability of being treated
-prob_final <- predict(boosting, newdata = df_all_candidates[, !(names(test)) %in% c("id_masked", "nome", "resultado", "ano", "cbo_2002", "id_municipio", "instrucao","ocupacao","sigla_partido","state", "cbo_agregado", "cbo_2002", "raca", "cbo_2_digits", "graduacao")])$prob[, 2]
+prob_final <- predict(boosting, newdata = df_all_candidates[, !(names(df_all_candidates)) %in% excluded_variables])$prob[, 2]
 
 y_hat_final <- factor(ifelse(prob_final >= best_threshold_boosting, "Yes", "No"))
 
@@ -214,23 +235,56 @@ df <- df %>%
             tenure,
             tenure_rais,
             hours,
+            stem_job,
             cbo_2002,
             cbo_agregado,
-            curso_stem_hand = graduacao_stem,
-            curso_stem_ml = curso_stem,
+            curso_stem,
             resultado,
             sigla_partido,
             instrucao,
             ocupacao,
             genero,
             raca,
-            idade)
+            idade,
+            dif_votos_2_lugar,
+            dif_votos_3_lugar,
+            x2_lugar,
+            x3_lugar)
 
 # Cases where a candidate had different predicted STEM educational in different cohorts
 
 df <- df %>% 
   group_by(id_masked) %>% 
-  mutate(curso_stem_ml = max(curso_stem_ml)) # attributing 1 for Stem-education if a candidate at least received 1 in one cohort
+  mutate(curso_stem = max(curso_stem)) %>% # attributing 1 for Stem-education if a candidate at least received 1 in one cohort
+  ungroup()
+
+# Merging with non-stem dataset
+
+df_nonstem <- df_nonstem %>% 
+  summarise(coorte = ano,
+            id_masked,
+            state,
+            id_municipio,
+            tenure,
+            tenure_rais,
+            hours,
+            stem_job,
+            cbo_2002,
+            cbo_agregado,
+            curso_stem = NA,
+            resultado,
+            sigla_partido,
+            instrucao,
+            ocupacao,
+            genero,
+            raca,
+            idade,
+            dif_votos_2_lugar,
+            dif_votos_3_lugar,
+            x2_lugar,
+            x3_lugar)
+
+df <- rbind(df, df_nonstem)
 
 # Saving ------------------------------------------------------------------
 
