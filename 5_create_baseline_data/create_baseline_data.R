@@ -13,8 +13,8 @@ library(readxl)
 
 # Directories
 
-work_dir                   = "C:/Users/GabrielCaserDosPasso/Documents/RAIS/5_create_baseline_data"
-output_dir                 = "C:/Users/GabrielCaserDosPasso/Documents/RAIS/5_create_baseline_data/output"
+work_dir                   = "C:/Users/gabri/OneDrive/Gabriel/Insper/Tese/Engenheiros/replication_code/rdd_when_science_strikes_back/5_create_baseline_data"
+output_dir                 = "C:/Users/gabri/OneDrive/Gabriel/Insper/Tese/Engenheiros/replication_code/rdd_when_science_strikes_back/5_create_baseline_data/output"
 
 set.seed(1234) # making it reproducible
 
@@ -30,7 +30,7 @@ df_health <- df_health %>%
          coorte = ano)
 
 df_health <- df_health %>% 
-  summarise(id_municipio, tx_med, tx_med_ch, tx_enf, tx_enf_ch, pct_desp_recp_saude_mun, cob_esf, tx_leito_sus) # keeping only a few 
+  summarise(id_municipio, tx_med, tx_med_ch, tx_enf, tx_enf_ch, pct_desp_recp_saude_mun, cob_esf, tx_leito_sus, idhm, renda_pc = pib_cte_pc, per_populacao_urbana = 1 - pct_rural, per_populacao_homens = pct_pop_masc) # keeping only a few 
 
 df_health$id_municipio <- as.character(df_health$id_municipio)
 
@@ -72,7 +72,7 @@ saveRDS(df_political, paste0(output_dir, "/data/political_data.rds"))
 # Adding municipality ideology
 ## source: https://dataverse.harvard.edu/file.xhtml?persistentId=doi:10.7910/DVN/8USPML/20URAD&version=2.0
 
-df_mun_ideo <- read.csv("Dados/input/221011_municipal_ideology.csv", sep = ",")
+df_mun_ideo <- read.csv(paste0(work_dir, "/input/221011_municipal_ideology.csv"), sep = ",")
 
 ## cleaning
 
@@ -105,10 +105,10 @@ df_nfi <- df_nfi %>%
 
 df_nfi <- df_nfi %>%
   group_by(id_municipio) %>% 
-  mutate(total_nfi = sum(barreiras_sanitarias, mascaras, restricao_atv_nao_essenciais, restricao_circulacao, restricao_transporte_publico, na.rm = TRUE)) %>% 
+  mutate(total_nfi = sum(barreiras_sanitarias, mascaras, restricao_atv_nao_essenciais, restricao_circulacao, restricao_transporte_publico, na.rm = FALSE)) %>% 
   ungroup()
 #
-summary(df_nfi)
+skim(df_nfi)
 
 #df <- left_join(df, df_nfi, by = c("id_municipio"))
 

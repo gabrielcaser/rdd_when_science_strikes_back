@@ -3,9 +3,6 @@
 
 # TO DO -------------------------------------------------------------------
 
-## VOLTAR NA RUNNING  VARIABLE
-
-
 # Initial commands
 
 rm(list = ls(all.names = TRUE)) # clear objects
@@ -183,7 +180,7 @@ rm(df_covid, df_density, df_health, df_ideology, df_mayors, df_npi, df_political
 df$he_non_stem_cdt = ifelse(df$stem_background_eleito == 1 & str_detect(df$instrucao_naoeleito, "ensino superior completo"), 1, 0)
 df$he_non_stem_cdt = ifelse(df$stem_background_naoeleito == 1 & str_detect(df$instrucao_eleito, "ensino superior completo"), 1, df$he_non_stem_cdt)
 
-df$sch_non_stem_cdt <= as.factor(df$he_non_stem_cdt)
+df$sch_non_stem_cdt <- as.logical(df$he_non_stem_cdt)
 
 ### Dropping non-elected variables
 
@@ -209,12 +206,9 @@ df <- df %>%
   filter(!is.na(hosp_per_100k_inhabitants) | !is.na(deaths_sivep_per_100k_inhabitants))
 
 
-
-### VOLTAR
-
 # Creating running variable
 
-df$dif_votos = ifelse(df$stem_job_4 == 1, df$dif_votos, -df$dif_votos)
+df$dif_votos = ifelse(df$stem_background == 1, df$dif_votos, -df$dif_votos)
 
 # Creating candidate level variables
 
@@ -224,13 +218,7 @@ df <- df %>%
   mutate(mulher = genero == "feminino")
 
 
-df$ens_sup = ifelse(str_detect(df$instrucao, "ensino superior completo"),1,0)
-
-
-#### crating confirmed cases previous year
-
-df <- df %>%
-  mutate(confirmed_per_100k_inhabitants_previous_year = confirmed_per_100k_inhabitants_total - confirmed_per_100k_inhabitants)
+df$ens_sup = as.logical(ifelse(str_detect(df$instrucao, "ensino superior completo"),1,0))
 
 
 #### creating agregated occupation code 'cbo'
@@ -250,8 +238,6 @@ df <- df %>%
                                            .default = "Others"))
 
 
-
-
 ## Creating variables X e Y E T
 
 df$X = df$dif_votos
@@ -265,12 +251,6 @@ df$Y_cases = df$confirmed_per_100k_inhabitants
 df$Y_hosp = df$hosp_per_100k_inhabitants
 
 
-## Creating dummy = 1 if STEM candidate won
-
-df$T = ifelse(df$X >= 0, 1, 0)
-
-df$T_X = df$X * df$T
-
 # Cleaning the data -------------------------------------------------------
 
 #df<- df %>% 
@@ -279,36 +259,27 @@ df$T_X = df$X * df$T
 df <- df %>% 
   summarise(coorte,
             sigla_uf,
-            city,
             id_municipio,
-            resultado,
-            situacao,
-            nome,
-            nome_urna,
-            cpf,
             instrucao,
             ocupacao,
-            graduacao_stem,
+            curso_stem,
             cbo_2002,
             cbo_agregado,
             cbo_agregado_nome,
-            stem_job_4,
-            medico,
+            stem_background,
+            #medico,
             tenure,
             sigla_partido,
             idade,
             genero,
-            estimated_population,
-            populacao_2010,
+            populacao,
             densidade,
-            taxa_analfabetismo_18_mais,
-            indice_gini,
+            #taxa_analfabetismo_18_mais,
+            #indice_gini,
             idhm,
             renda_pc,
             per_populacao_urbana,
             per_populacao_homens,
-            total_vacinados,
-            per_vacinados,
             tx_med_ch,
             tx_med,
             tx_enf_ch,
@@ -324,7 +295,6 @@ df <- df %>%
             sch_non_stem_cdt,
             X,
             Y_deaths_sivep,
-            Y_cases,
             Y_hosp,
             barreiras_sanitarias,
             mascaras,
@@ -333,17 +303,6 @@ df <- df %>%
             restricao_transporte_publico,
             total_nfi)
 
-df <- df %>% 
-  dplyr::filter(situacao != "cassado com recurso" & situacao != "indeferido")
-
-#df %>% 
-#dplyr::group_by(id_municipio, coorte) %>% 
-# count() %>% 
-# arrange(desc(n))
-
-df$pop_maior_200k = ifelse(df$populacao_2010 >= 200000, 1, 0)
-
-unique(df$instrucao)
 
 df <- df %>%
   mutate(instrucao = dplyr::recode(instrucao,
@@ -355,55 +314,17 @@ df <- df %>%
                                    "ensino fundamental incompleto" = 2,
                                    "le e escreve" = 1))
 
-library(vtable)
-st(df)
+# Defining the sample --------------------------------------------------------------
 
-# Treating null values ----------------------------------------------------
-
-
-
-##df <- df %>%
-##  group_by(coorte, stem_job_4) %>% 
-##  mutate(mascaras = replace_na(mascaras, mean(mascaras, na.rm = TRUE)),
-##         restricao_atv_nao_essenciais = replace_na(restricao_atv_nao_essenciais, mean(restricao_atv_nao_essenciais, na.rm = TRUE)),
-##         restricao_circulacao = replace_na(restricao_circulacao, mean(restricao_circulacao, na.rm = TRUE)),
-##         restricao_transporte_publico = replace_na(restricao_transporte_publico, mean(restricao_transporte_publico, na.rm = TRUE)),
-##         barreiras_sanitarias = replace_na(barreiras_sanitarias, mean(barreiras_sanitarias, na.rm = TRUE)),
-##         Y_deaths_sivep = replace_na(Y_deaths_sivep, mean(Y_deaths_sivep, na.rm = TRUE)),
-##         Y_hosp = replace_na(Y_hosp, mean(Y_hosp, na.rm = TRUE))) %>% 
-##    ungroup()
-##
-##
-##df <- df %>%
-##  group_by(id_municipio, coorte) %>% 
-##  mutate(total_nfi = sum(barreiras_sanitarias, mascaras, restricao_atv_nao_essenciais, restricao_circulacao, restricao_transporte_publico)) %>% 
-##  ungroup()
-##
-##df <- df %>% 
-## filter(!is.na(Y_hosp))
-
-
-df <- df %>%
-  dplyr::group_by(id_municipio, coorte) %>% 
-  dplyr::mutate(total_nfi = sum(barreiras_sanitarias, mascaras, restricao_atv_nao_essenciais, restricao_circulacao, restricao_transporte_publico, na.rm = FALSE)) %>% 
-  dplyr::ungroup()
-
-
-# Resampling --------------------------------------------------------------
-
-
+## For now I'm onlu comparing municipalities whose
+### STEM and Non-STEM candidates had a college degree
 
 df <- df %>% 
-  filter(coorte == 2016 & sch_non_stem_cdt == 1 & ens_sup == 1)
-amostra <- cbind(df$coorte == 2016, df$sch_non_stem_cdt == 1, df$ens_sup == 1)
-poli = 1
-covsZ = cbind(state.d)
+ filter(coorte == 2016 & sch_non_stem_cdt == 1 & ens_sup == 1)
 
 
 
 # Saving ------------------------------------------------------------------
-
-
 
 saveRDS(df, file = paste(work_dir, "/output/data/rdd_data_main.rds", sep = ""))
 

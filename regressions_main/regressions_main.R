@@ -1,61 +1,50 @@
+# Program - This program run main RDD regressions, including robustness, tables and pictures 
+
+
+# TO DO -------------------------------------------------------------------
+
+# - Baixar outras variaveis demograficas do IEPS DATA
+# - Tentar melhorar resultados de hospitalizações, talvez no ML
+
+# Initial commands
+
+rm(list = ls(all.names = TRUE)) # clear objects
+gc() # free up memory
 
 
 # Libraries ***************************************************** ---------------------------------------------------------------
 
-#library("basedosdados")
-library("readstata13")
 library("stargazer")
 library("gt")
 library("modelsummary")
 library("rdrobust")
 library("rddtools")
-library("plyr")
-library("sf")
-library("rio")
 library("readr")
 library("stringr")
 library("tidyverse")
-library("readxl")
-library("patchwork")
-#library("dplyr")
-#library(data.table)
+
+library("plyr")
+library("sf")
+library("rio")
+library('patchwork')
 
 
 theme_set(theme_minimal(base_size = 16))
 
 # Setting -----------------------------------------------------------------
 
-setwd("C:/Users/GabrielCaserDosPasso/Documents/RAIS")
-input_dir                      = "C:/Users/GabrielCaserDosPasso/Documents/RAIS/Dados/input"
-create_dataset_for_regressions = "C:/Users/GabrielCaserDosPasso/Documents/RAIS/create_dataset_for_regressions/output/data"
-output_dir                     = "C:/Users/GabrielCaserDosPasso/Documents/RAIS/regressions_main/output/tables"
+work_dir                       = "C:/Users/gabri/OneDrive/Gabriel/Insper/Tese/Engenheiros/replication_code/rdd_when_science_strikes_back/regressions_main"
+output_dir                     = "C:/Users/gabri/OneDrive/Gabriel/Insper/Tese/Engenheiros/replication_code/rdd_when_science_strikes_back/regressions_main/output"
+create_dataset_for_regressions = "C:/Users/gabri/OneDrive/Gabriel/Insper/Tese/Engenheiros/replication_code/rdd_when_science_strikes_back/6_create_rdd_dataset/output"
 
 # Oppening Covid and RDD Data ----------------------------------------------------
 
-df <- readRDS(paste(create_dataset_for_regressions, "/rdd_data_main.rds", sep = ""))
+df <- readRDS(paste(create_dataset_for_regressions, "/data/rdd_data_main.rds", sep = ""))
 
 
-# Creating vector of baseline controls ------------------------------------
+# Creating functions -----------------------------------
 
-Z_variables = cbind(df$taxa_analfabetismo_18_mais,
-                    df$indice_gini,
-                    df$renda_pc,
-                    df$populacao_2010,
-                    df$per_populacao_homens,
-                    df$per_populacao_urbana,
-                    df$pct_desp_recp_saude_mun,
-                    df$tx_med,
-                    df$cob_esf,
-                    df$tx_leito_sus,
-                    df$ideology_municipality,
-                    df$idhm)
-
-
-
-
-# Criando funções -----------------------------------
-
-## Criando função tabela de resultados
+## table of results
 
 tidy.rdrobust <- function(model, ...) {
   ret <- data.frame(
@@ -81,7 +70,7 @@ glance.rdrobust <- function(model, ...) {
   ret
 }
 
-## Criando função tabela de robustez
+## table of robustness
 
 
 robust_check <- function(outcome, poli, covsZ, k) {
@@ -118,6 +107,9 @@ state.d = model.matrix(~state.f+0)
 
 #year.d = model.matrix(~year.f+0)
 
+# Defining regressions' parameters
+
+#amostra <- cbind(df$coorte == 2016, df$sch_non_stem_cdt == 1, df$ens_sup == 1)
 
 
 
@@ -132,17 +124,17 @@ poli = 1
 janela = cbind()
 k = "triangular"
 
-rdrobust(df$taxa_analfabetismo_18_mais, df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
+#rdrobust(df$taxa_analfabetismo_18_mais, df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
 
-taxa_analfabetismo_18_mais <- rdrobust(df$taxa_analfabetismo_18_mais, df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
-indice_gini <- rdrobust(df$indice_gini,  df$X, p = poli, kernel = k, h = janela, subset = amostra, covs = covsZ)
+#taxa_analfabetismo_18_mais <- rdrobust(df$taxa_analfabetismo_18_mais, df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
+#indice_gini <- rdrobust(df$indice_gini,  df$X, p = poli, kernel = k, h = janela, subset = amostra, covs = covsZ)
 renda_pc <- rdrobust(df$renda_pc,  df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
-densidade <- rdrobust(df$populacao_2010,  df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
+populacao <- rdrobust(df$populacao,  df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
 idhm <- rdrobust(df$idhm,  df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
-densidade <- rdrobust(log(df$densidade),  df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
+densidade <- rdrobust(df$densidade,  df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
 per_populacao_homens <- rdrobust(df$per_populacao_homens,  df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
 pct_desp_recp_saude_mun <- rdrobust(df$pct_desp_recp_saude_mun,  df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
-tx_med_ch <- rdrobust(df$tx_med, df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
+tx_med_ch <- rdrobust(df$tx_med_ch, df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
 cob_esf <- rdrobust(df$cob_esf,  df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
 tx_leito_sus <- rdrobust(df$tx_leito_sus, df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
 ideology_municipality <- rdrobust(df$ideology_municipality, df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
@@ -150,10 +142,10 @@ ideology_municipality <- rdrobust(df$ideology_municipality, df$X, p = poli, kern
 
 
 models <- list(
-               "Gini" = indice_gini,
+              # "Gini" = indice_gini,
                "PC income" = renda_pc,
                "Density" = densidade,
-               "Illiteracy" = taxa_analfabetismo_18_mais,
+               #"Illiteracy" = taxa_analfabetismo_18_mais,
                "HDI" = idhm,
                "Ln Density" = densidade,
                "% Masc. Pop" = per_populacao_homens,
@@ -174,9 +166,9 @@ baseline_table <- modelsummary(models,
                        output = "gt",
                        title = "Baseline Characteristis - RD estimates",
                        coef_omit = "Corrected|Conventional")%>%
-  tab_spanner(label = "Demography", columns = 2:8) %>% 
-  tab_spanner(label = "Health", columns = 9:12) %>%
-  tab_spanner(label = "Ideology", columns = 13)
+  tab_spanner(label = "Demography", columns = 2:6) %>% 
+  tab_spanner(label = "Health", columns = 7:10) %>%
+  tab_spanner(label = "Ideology", columns = 11)
 
 
 
@@ -195,8 +187,9 @@ r2 = rdrobust(df$Y_hosp,  df$X, p = poli, kernel = k, h = janela,   bwselect = "
 r3 = rdrobust(df$Y_deaths_sivep, df$X, p = poli, kernel = k,  h = janela,  bwselect = "mserd",  subset = amostra, covs = covsZ)
 
 
-covsZ = cbind(state.d, df$idade)
+covsZ = cbind(df$idade, state.d)
 poli = 1
+
 janela = cbind()
 
 
@@ -213,8 +206,6 @@ r7 = rdrobust(df$Y_deaths_sivep,  df$X, p = poli, kernel = k, h = janela,   bwse
 
 
 covsZ = cbind(state.d, df$idade)
-
-
 
 r8 = rdrobust(df$Y_hosp ,  df$X, p = poli, kernel = k, h = janela,   bwselect = "mserd", subset = amostra, covs = covsZ)
 r9 = rdrobust(df$Y_deaths_sivep,  df$X, kernel = k, h = janela,   bwselect = "mserd", p = poli,  subset = amostra, covs = covsZ)
@@ -259,7 +250,7 @@ teste
 
 covsZ = cbind(state.d)
 
-poli = 1
+poli = 2
 
 mulher <- rdrobust(df$mulher, h = janela, df$X, p = poli, kernel = k,  subset = amostra, covs = covsZ)
 reeleito <- rdrobust(df$reeleito, h = janela, df$X, p = poli, kernel = k,  subset = amostra, covs = covsZ)
@@ -301,9 +292,9 @@ gt::gtsave(teste_chr, filename =  "Dados/output/221201_personal_char.tex")
 # vendo médias
 
 df %>%
-  filter(X>= -0.073 & X <= 0.073) %>% 
-  group_by(stem_job_4) %>% 
-  summarise(mean(total_nfi, na.rm = TRUE), n())
+  filter(X>= -0.11 & X <= 0.11) %>% 
+  group_by(stem_background) %>% 
+  summarise(mean(Y_deaths_sivep, na.rm = TRUE), n())
 
 2.19 / 3.92
 
@@ -314,399 +305,11 @@ df %>%
 # Mechanism  -----------------------
 
 
-
-## Fixed bandwidth ---------------------------------------------------------
-
-# baseline
-
-
-covsZ = cbind(state.d)
-janela = 0.12
-poli = 1
-k = "triangular"
-
-taxa_analfabetismo_18_mais <- rdrobust(df$taxa_analfabetismo_18_mais, df$X, p = poli, h = janela, kernel = k, subset = amostra, covs = covsZ)
-indice_gini <- rdrobust(df$indice_gini, df$X, p = poli, h = janela, kernel = k, subset = amostra, covs = covsZ)
-renda_pc <- rdrobust(df$renda_pc, df$X, p = poli, h = janela, kernel = k, subset = amostra, covs = covsZ)
-density <- rdrobust(df$densidade, df$X, p = poli, h = janela, kernel = k, subset = amostra, covs = covsZ)
-idhm <- rdrobust(df$idhm, df$X, p = poli, h = janela, kernel = k, subset = amostra, covs = covsZ)
-per_populacao_urbana <- rdrobust(df$per_populacao_urbana, df$X, p = poli, h = janela, kernel = k, subset = amostra, covs = covsZ)
-per_populacao_homens <- rdrobust(df$per_populacao_homens, df$X, p = poli, h = janela, kernel = k, subset = amostra, covs = covsZ)
-pct_desp_recp_saude_mun <- rdrobust(df$pct_desp_recp_saude_mun, df$X, p = poli, h = janela, kernel = k, subset = amostra, covs = covsZ)
-tx_med_ch <- rdrobust(df$tx_med, df$X, p = poli, h = janela, kernel = k, subset = amostra, covs = covsZ)
-cob_esf <- rdrobust(df$cob_esf, df$X, p = poli, h = janela, kernel = k, subset = amostra, covs = covsZ)
-tx_leito_sus <- rdrobust(df$tx_leito_sus, df$X, p = poli, h = janela, kernel = k, subset = amostra, covs = covsZ)
-ideology_municipality <- rdrobust(df$ideology_municipality, df$X, p = poli, h = janela, kernel = k, subset = amostra, covs = covsZ)
-
-
-models <- list("Illiteracy" = taxa_analfabetismo_18_mais,
-               "Gini" = indice_gini,
-               "PC income" = renda_pc,
-               "Density" = density,
-               "HDI" = idhm,
-               "% Urb. Pop" = per_populacao_urbana,
-               "% Masc. Pop" = per_populacao_homens,
-               "% Health municipal spending" = pct_desp_recp_saude_mun,
-               "Doctors per 1k pop." = tx_med_ch,
-               "Community health agents program " = cob_esf,
-               "Hosp. beds per 100k pop." = tx_leito_sus,
-               "Mun. ideology index" = ideology_municipality)
-
-baseline_table <- modelsummary(models,
-                               estimate = "{estimate}",
-                               statistic = c("[{std.error}]","{p.value}{stars}"
-                               ),
-                               coef_rename = c("Robust" = "RD estimator"),
-                               stars = c('*'=.1, '**'=.05, '***'=.01),
-                               fmt = 2, # decimal places
-                               #output = "Dados/output/bigsample_baseline.tex",
-                               output = "gt",
-                               title = "Baseline Characteristis - RD estimates",
-                               coef_omit = "Corrected|Conventional")%>%
-  tab_spanner(label = "Demography", columns = 2:8) %>% 
-  tab_spanner(label = "Health", columns = 9:12) %>%
-  tab_spanner(label = "Ideology", columns = 13)
-
-baseline_table
-
-
-#gt::gtsave(baseline_table, filename =  "Dados/output/221201_mechanism_baseline.tex")
-
-
-
-## estimates
-
-covsZ = cbind(state.d)
-poli = 1
-
-r1 = rdrobust(df$Y_hosp, df$X, h = janela, p = poli, kernel = k, subset = amostra, covs = covsZ)
-r2 = rdrobust(df$Y_deaths_sivep, df$X, h = janela, p = poli, kernel = k, subset = amostra, covs = covsZ)
-
-
-covsZ = cbind(state.d)
-poli = 1
-
-r3 = rdrobust(df$Y_hosp, df$X, h = janela, p = poli, kernel = k, subset = amostra, covs = covsZ)
-r4 = rdrobust(df$Y_deaths_sivep, df$X, h = janela, p = poli, kernel = k, subset = amostra, covs = covsZ)
-
-
-models <- list(
-  "Hospitalizations" = r1,
-  "Deaths" = r2,
-  "Hospitalizations" = r3,
-  "Deaths" = r4)
-
-
-teste <- modelsummary(models,
-                      estimate = "{estimate}",
-                      statistic = c("[{std.error}]","{p.value}{stars}"
-                      ),
-                      coef_rename = c("Robust" = "RD estimator"),
-                      stars = c('*'=.1, '**'=.05, '***'=.01),
-                      fmt = 2, # decimal places
-                      output = "gt",
-                      title = "Impact of STEM Leadership on Epidemiological Outcomes — RD estimates",
-                      coef_omit = "Corrected|Conventional") %>%
-  tab_spanner(label = "(1)", columns = 2:3) %>% 
-  tab_spanner(label = "(2)", columns = 4:5)
-
-
-teste
-#gt::gtsave(teste, filename =  "Dados/output/221201_mechanism_estimates.tex")
-
-
-
-# Personal charact
-
-
-covsZ = cbind(state.d, log(df$tenure + 1))
-poli = 1
-
-mulher <- rdrobust(as.numeric(df$mulher), h = janela, df$X, p = poli, kernel = k,  subset = amostra, covs = covsZ)
-summary(mulher)
-
-reeleito <- rdrobust(df$reeleito, h = janela, df$X, p = poli, kernel = k,  subset = amostra, covs = covsZ)
-summary(reeleito)
-
-idade <- rdrobust(df$idade, h = janela, df$X, p = poli, kernel = k, subset = amostra, covs = covsZ)
-summary(idade)
-
-#education <- rdrobust(df$instrucao, h = janela, df$X, p = poli, kernel = k, subset = amostra, covs = covsZ)
-#summary(education)
-
-ideology <- rdrobust(df$ideology_party, h = janela, df$X, p = poli, kernel = k, subset = amostra, covs = covsZ)
-summary(ideology)
-
-
-
-models <- list(
-  "Women" = mulher,
-  "Incumbent" = reeleito,
-  "Age" = idade,
-#"Years of education" = education,
-  "Mayors' party ideology" = ideology)
-
-
-teste_chr <- modelsummary(models,
-                          estimate = "{estimate}",
-                          statistic = c("[{std.error}]","{p.value}{stars}"
-                          ),
-                          coef_rename = c("Robust" = "RD estimator"),
-                          stars = c('*'=.1, '**'=.05, '***'=.01),
-                          fmt = 2, # decimal places
-                          #output = "Dados/output/221103_bigsample_personal_charac.tex",
-                          output = "gt",
-                          title = "STEM candidates' personal characteristics — RD estimates",
-                          coef_omit = "Corrected|Conventional")
-
-
-
-
-teste_chr
-#gt::gtsave(teste_chr, filename =  "Dados/output/221201_mechanism_personal_char.tex")
-
-
-#mecanismo
-
-janela = 0.09
-covsZ = cbind()
-
-
-r1 = rdrobust(df$total_nfi, h = janela, df$X, p = poli, kernel = k,  subset = amostra, covs = covsZ)
-r2 = rdrobust(df$mascaras, df$X, h = janela,  p = poli, kernel = k,  subset = amostra, covs = covsZ)
-r3 = rdrobust(df$restricao_atv_nao_essenciais, df$X, h = janela,  p = poli, kernel = k,  subset = amostra, covs = covsZ)
-r4 = rdrobust(df$restricao_circulacao, df$X, h = janela,  p = poli, kernel = k,  subset = amostra, covs = covsZ)
-r5 = rdrobust(df$restricao_transporte_publico, df$X, h = janela,  p = poli, kernel = k,  subset = amostra, covs = covsZ)
-r6 = rdrobust(df$barreiras_sanitarias, df$X, h = janela,  p = poli, kernel = k,  subset = amostra, covs = covsZ)
-
-covsZ = cbind(df$ideology_party) 
-
-r12 = rdrobust(df$total_nfi, h = janela, df$X, p = poli, kernel = k,  subset = amostra, covs = covsZ)
-r22 = rdrobust(df$mascaras, df$X, h = janela,  p = poli, kernel = k,  subset = amostra, covs = covsZ)
-r32 = rdrobust(df$restricao_atv_nao_essenciais, df$X, h = janela,  p = poli, kernel = k,  subset = amostra, covs = covsZ)
-r42 = rdrobust(df$restricao_circulacao, df$X, h = janela,  p = poli, kernel = k,  subset = amostra, covs = covsZ)
-r52 = rdrobust(df$restricao_transporte_publico, df$X, h = janela,  p = poli, kernel = k,  subset = amostra, covs = covsZ)
-r62 = rdrobust(df$barreiras_sanitarias, df$X, h = janela,  p = poli, kernel = k,  subset = amostra, covs = covsZ)
-
-
-models <- list("Total NFI" = r1,
-               "Masks" = r2,
-               "Restrictions atv." = r3,
-               "Restrictions circu." = r4,
-               "Restrictions transp." = r5,
-               "Sani barriers" = r6,
-               "Total NFI" = r12,
-               "Masks" = r22,
-               "Restrictions atv." = r32,
-               "Restrictions circu." = r42,
-               "Restrictions transp." = r52,
-               "Sani barriers" = r62)
-
-mr3 <- modelsummary(models,
-                    estimate = "{estimate}",
-                    statistic = c("{p.value}{stars}","[{conf.low}, {conf.high}]"),
-                    stars = c('*'=.1, '**'=.05, '***'=.01),
-                    fmt = 2, # decimal places,
-                    output = "gt",
-                    title = "Impact of STEM Candidate Elected in 2016 on COVID-19 Epidemiological Outcomes per 100k inhabitants in 2021 — RD estimates without controls",
-                    coef_omit = "Bias-Corrected|Conventional")
-
-
-mr3 %>%
-  tab_spanner(label = "(1)", columns = 2:7) %>% 
-  tab_spanner(label = "(2)", columns = 8:13)
-
-#gt::gtsave(mr3, filename =  "Dados/output/221201_mechanism_estimates.tex")
-
-## controlando mecanismo
-
-
-covsZ = cbind(state.d, df$total_nfi, df$restricao_circulacao, df$restricao_transporte_publico)
-
-poli = 1
-
-r1 = rdrobust(df$Y_hosp, df$X, h = janela, p = poli, kernel = k, subset = amostra, covs = covsZ)
-r2 = rdrobust(df$Y_deaths_sivep, df$X, h = janela, p = poli, kernel = k, subset = amostra, covs = covsZ)
-
-poli = 1
-
-covsZ = cbind(state.d, df$ideology_party, df$total_nfi, df$restricao_circulacao, df$restricao_transporte_publico)
-
-r3 = rdrobust(df$Y_hosp, df$X, h = janela, p = poli, kernel = k, subset = amostra, covs = covsZ)
-r4 = rdrobust(df$Y_deaths_sivep, df$X, h = janela, p = poli, kernel = k, subset = amostra, covs = covsZ)
-
-models <- list("Hospitalizations" = r1,
-               "Deaths" = r2,
-               "Hospitalizations" = r3,
-               "Deaths" = r4)
-
-
-mr4 <- modelsummary(models,
-                    estimate = "{estimate}",
-                    statistic = c("{p.value}{stars}","[{conf.low}, {conf.high}]"),
-                    coef_rename = c("Robust" = "RD estimator"),
-                    stars = c('*'=.1, '**'=.05, '***'=.01),
-                    fmt = 2, # decimal places
-                    output = "gt",
-                    title = "Impact of STEM Candidate controlling for Non-Farmaceutical Intervations (NFIs) — RD estimates with fixed effects (optimal bandwidth)",
-                    coef_omit = "Bias-Corrected|Conventional")
-
-mr4# %>%
- # tab_spanner(label = "Linear", columns = 2:3) %>% 
- # tab_spanner(label = "Quadratic", columns = 4:5)
-
-#gt::gtsave(mr4, filename =  "Dados/output/221201_mechanism_outcomes_controlling.tex")
-
-
-## Optimal bandwidth -------------------------------------------------------
-
-
 covsZ = cbind(state.d)
 poli = 1
 k = "triangular"
 janela = cbind()
 
-taxa_analfabetismo_18_mais <- rdrobust(df$taxa_analfabetismo_18_mais, df$X, p = poli,  kernel = k, subset = amostra, covs = covsZ)
-indice_gini <- rdrobust(df$indice_gini, df$X, p = poli,  kernel = k, subset = amostra, covs = covsZ)
-renda_pc <- rdrobust(df$renda_pc, df$X, p = poli,  kernel = k, subset = amostra, covs = covsZ)
-populacao_2010 <- rdrobust(log(df$populacao_2010), df$X, p = poli,  kernel = k, subset = amostra, covs = covsZ)
-idhm <- rdrobust(df$idhm, df$X, p = poli,  kernel = k, subset = amostra, covs = covsZ)
-densidade <- rdrobust(log(df$densidade), df$X, p = poli,  kernel = k, subset = amostra, covs = covsZ)
-per_populacao_homens <- rdrobust(log(df$per_populacao_homens + 1), df$X, p = poli,  kernel = k, subset = amostra, covs = covsZ)
-pct_desp_recp_saude_mun <- rdrobust(df$pct_desp_recp_saude_mun, df$X, p = poli,  kernel = k, subset = amostra, covs = covsZ)
-tx_med_ch <- rdrobust(df$tx_med, df$X, p = poli,  kernel = k, subset = amostra, covs = covsZ)
-cob_esf <- rdrobust(df$cob_esf, df$X, p = poli,  kernel = k, subset = amostra, covs = covsZ)
-tx_leito_sus <- rdrobust(df$tx_leito_sus, df$X, p = poli,  kernel = k, subset = amostra, covs = covsZ)
-ideology_municipality <- rdrobust(df$ideology_municipality, df$X, p = poli,  kernel = k, subset = amostra, covs = covsZ)
-
-
-
-models <- list("Analfabetismo" = taxa_analfabetismo_18_mais,
-               "Gini" = indice_gini,
-               "Renda PC" = renda_pc,
-               "Ln Population" = populacao_2010,
-               "Idhm" = idhm,
-               "Ln Density" = densidade,
-               "% Pop. Hom." = per_populacao_homens,
-               "% de Saúde na Despesa Total" = pct_desp_recp_saude_mun,
-               "Médicos por 1k habitantes" = tx_med_ch,
-               "Cobertura Est. Saúde da Família" = cob_esf,
-               "Leitos SUS por 100k habitantes" = tx_leito_sus,
-               "Ideologia" = ideology_municipality)
-
-
-baseline_table <- modelsummary(models,
-                               estimate = "{estimate}",
-                               statistic = c("[{std.error}]","{p.value}{stars}"
-                               ),
-                               coef_rename = c("Robust" = "RD estimator"),
-                               stars = c('*'=.1, '**'=.05, '***'=.01),
-                               fmt = 2, # decimal places
-                               #output = "Dados/output/bigsample_baseline.tex",
-                               output = "gt",
-                               title = "Baseline Characteristis - RD estimates",
-                               coef_omit = "Corrected|Conventional")
-
-baseline_table
-
-## estimates
-
-covsZ = cbind(state.d)
-poli = 1
-
-
-r1 = rdrobust(df$Y_hosp, df$X,  p = poli, kernel = k, subset = amostra, covs = covsZ)
-r2 = rdrobust(df$Y_deaths_sivep, df$X,  p = poli, kernel = k, subset = amostra, covs = covsZ)
-
-
-covsZ = cbind(state.d, as.numeric(df$idade))
-poli = 1
-
-r3 = rdrobust(df$Y_hosp, df$X,  p = poli, kernel = k, subset = amostra, covs = covsZ)
-r4 = rdrobust(df$Y_deaths_sivep, df$X,  p = poli, kernel = k, subset = amostra, covs = covsZ)
-
-
-models <- list(
-  "Hospitalizations" = r1,
-  "Deaths" = r2,
-  "Hospitalizations" = r3,
-  "Deaths" = r4)
-
-
-teste <- modelsummary(models,
-                      estimate = c("{estimate}"),
-                      statistic = c("[{std.error}]","{p.value}{stars}"
-                      ),
-                      coef_rename = c("Robust" = "RD estimator"),
-                      stars = c('*'=.1, '**'=.05, '***'=.01),
-                      fmt = 2, # decimal places
-                      output = "gt",
-                      title = "Impact of STEM Leadership on Epidemiological Outcomes — RD estimates",
-                      coef_omit = "Corrected|Conventional") %>%
-  tab_spanner(label = "(1)", columns = 2:3) %>% 
-  tab_spanner(label = "(2)", columns = 4:5)
-
-
-teste
-#gt::gtsave(teste, filename =  "Dados/output/221104(2)_bigsample_estimates.tex")
-
-
-
-# Personal charact
-
-
-covsZ = cbind(state.d)
-poli = 1
-
-mulher <- rdrobust(as.numeric(df$mulher),  df$X, p = poli, kernel = k,  subset = amostra, covs = covsZ)
-summary(mulher)
-
-reeleito <- rdrobust(df$reeleito,  df$X, p = poli, kernel = k,  subset = amostra, covs = covsZ)
-summary(reeleito)
-
-idade <- rdrobust(df$idade,  df$X, p = poli, kernel = k, subset = amostra, covs = covsZ)
-summary(idade)
-
-#education <- rdrobust(df$instrucao,  df$X, p = poli, kernel = k, subset = amostra, covs = covsZ)
-#summary(education)
-
-ideology <- rdrobust(df$ideology_party,  df$X, p = poli, kernel = k, subset = amostra, covs = covsZ)
-summary(ideology)
-
-
-
-models <- list(
-  "Women" = mulher,
-  "Incumbent" = reeleito,
-  "Age" = idade,
-  #"Years of education" = education,
-  "Mayors' party ideology" = ideology)
-
-
-teste_chr <- modelsummary(models,
-                          estimate = "{estimate}",
-                          statistic = c("[{std.error}]","{p.value}{stars}"
-                          ),
-                          coef_rename = c("Robust" = "RD estimator"),
-                          stars = c('*'=.1, '**'=.05, '***'=.01),
-                          fmt = 2, # decimal places
-                          #output = "Dados/output/221103_bigsample_personal_charac.tex",
-                          output = "gt",
-                          title = "STEM candidates' personal characteristics — RD estimates",
-                          coef_omit = "Corrected|Conventional")
-
-
-
-
-teste_chr
-#gt::gtsave(teste_chr, filename =  "Dados/output/221103_personal_char.tex")
-
-
-#mecanismo
-
-
-covsZ = cbind(state.d)
-poli = 1
 
 
 r1 = rdrobust(df$total_nfi,  df$X, p = poli, kernel = k,  subset = amostra, covs = covsZ)
@@ -1176,15 +779,5 @@ plotSensi(reg_nonpara, from = 0.02, to = 0.15, by = 0.005, level = 0.90)
 plotPlacebo(reg_nonpara,  level = 0.90)
 
 dens_test(reg_nonpara)
-
-
-
-# Criando tabela para entrevistar -----------------------------------------
-
-df %>% 
-  filter(stem_job_4 == 1 & coorte == 2016 & resultado == "eleito") %>% 
-  summarise(sigla_uf, city, nome, nome_urna, ocupacao, tenure, Y_deaths_sivep,cbo_agregado_nome) %>% 
-  arrange(Y_deaths_sivep) %>% 
-  print(n = 100)
 
 

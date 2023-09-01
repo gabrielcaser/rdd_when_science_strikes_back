@@ -692,7 +692,7 @@ sivep_2020 <- sivep_full %>%
   arrange(desc(deaths)) 
 
 sivep_2021 <- sivep_full %>%
-  filter((CLASSI_FIN == "SRAG COVID-19") & DT_SIN_PRI >= "2021-02-01" & DT_SIN_PRI <= "2021-12-31") %>% 
+  filter((CLASSI_FIN == "SRAG COVID-19") & DT_SIN_PRI >= "2021-03-01" & DT_SIN_PRI <= "2021-12-31") %>% 
   group_by(CO_MUN_RES) %>%
   summarise(deaths = sum(EVOLUCAO == "Óbito", na.rm = TRUE),
             hosp = sum(HOSPITAL == "Sim", na.rm = TRUE),
@@ -725,7 +725,7 @@ df_population <- read.csv2(paste0(work_dir, "/input/populacao.csv"), sep = ",") 
 ## merging year of population with coorte
 df_population <- df_population %>%
   mutate(coorte = recode(ano, '2020' = '2016', '2021' = '2020')) %>% 
-  summarise(coorte = as.double(coorte), populacao, id_municipio = as.character(id_municipio))
+  summarise(coorte = as.double(coorte), populacao, id_municipio = as.character(id_municipio), sigla_uf)
 
 sivep <- sivep %>% 
   ungroup()
