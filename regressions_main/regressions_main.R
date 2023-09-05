@@ -121,8 +121,8 @@ state.d = model.matrix(~state.f+0)
 amostra = cbind()
 covsZ = cbind(state.d)
 poli = 1
-#janela = cbind()
-janela = 0.03
+#janela = 0.07
+janela = cbind()
 k = "triangular"
 
 #rdrobust(df$taxa_analfabetismo_18_mais, df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
@@ -190,7 +190,6 @@ r3 = rdrobust(df$Y_deaths_sivep, df$X, p = poli, kernel = k,  h = janela,  bwsel
 
 covsZ = cbind(state.d)
 poli = 2
-
 janela = cbind()
 
 
@@ -200,7 +199,7 @@ r5 = rdrobust(df$Y_deaths_sivep, df$X, kernel = k, h = janela,    p = poli,  sub
 
 covsZ = cbind(state.d) 
 poli = 1
-janela = 0.03
+janela = 0.05
 
 r6 = rdrobust(df$Y_hosp, df$X, p = poli, kernel = k,  h = janela,  bwselect = "mserd", subset = amostra, covs = covsZ)
 r7 = rdrobust(df$Y_deaths_sivep,  df$X, p = poli, kernel = k, h = janela,   bwselect = "mserd",  subset = amostra, covs = covsZ)
@@ -290,7 +289,7 @@ gt::gtsave(teste_chr, filename =  "Dados/output/221201_personal_char.tex")
 # vendo médias
 
 df %>%
-  dplyr::filter(X>= -0.11 & X <= 0.11) %>% 
+  dplyr::filter(X>= -0.08 & X <= 0.08) %>% 
   dplyr::group_by(stem_background) %>% 
   dplyr::summarise(mean(Y_deaths_sivep, na.rm = TRUE), n())
 
@@ -317,7 +316,8 @@ r4 = rdrobust(df$restricao_circulacao, df$X,   p = poli, kernel = k,  subset = a
 r5 = rdrobust(df$restricao_transporte_publico, df$X,   p = poli, kernel = k,  subset = amostra, covs = covsZ)
 r6 = rdrobust(df$barreiras_sanitarias, df$X,   p = poli, kernel = k,  subset = amostra, covs = covsZ)
 
-covsZ = cbind(state.d, df$idade)
+covsZ = cbind(state.d)
+poli = 2
 
 r12 = rdrobust(df$total_nfi, df$X, p = poli, kernel = k,  subset = amostra, covs = covsZ)
 r22 = rdrobust(df$mascaras, df$X,   p = poli, kernel = k,  subset = amostra, covs = covsZ)
@@ -366,14 +366,15 @@ r1 = rdrobust(df$Y_hosp, df$X,  p = poli, kernel = k, subset = amostra, covs = c
 r2 = rdrobust(df$Y_deaths_sivep, df$X,  p = poli, kernel = k, subset = amostra, covs = covsZ)
 
 poli = 2
+covsZ = cbind(state.d, df$total_nfi)
 
 r3 = rdrobust(df$Y_hosp, df$X,  p = poli, kernel = k, subset = amostra, covs = covsZ)
 r4 = rdrobust(df$Y_deaths_sivep, df$X,  p = poli, kernel = k, subset = amostra, covs = covsZ)
 
 models <- list("Hospitalizations" = r1,
-               "Deaths" = r2)
-#"Hospitalizations" = r3,
-# "Deaths" = r4)
+               "Deaths" = r2,
+               "Hospitalizations" = r3,
+               "Deaths" = r4)
 
 
 mr4 <- modelsummary(models,
@@ -383,12 +384,12 @@ mr4 <- modelsummary(models,
                     stars = c('*'=.1, '**'=.05, '***'=.01),
                     fmt = 2, # decimal places
                     output = "gt",
-                    title = "Impact of STEM Candidate controlling for Non-Farmaceutical Intervations (NFIs) — RD estimates with fixed effects (optimal bandwidth)",
+                    title = "Impact of STEM Candidate controlling for Non-Pharmaceutical Intervations (NPIs) — RD estimates with fixed effects (optimal bandwidth)",
                     coef_omit = "Bias-Corrected|Conventional")
 
-mr4# %>%
-# tab_spanner(label = "Linear", columns = 2:3) %>% 
-# tab_spanner(label = "Quadratic", columns = 4:5)
+mr4 %>%
+ tab_spanner(label = "Linear", columns = 2:3) %>% 
+ tab_spanner(label = "Quadratic", columns = 4:5)
 
 
 # Robustness --------------------------------------------------------------
@@ -396,7 +397,6 @@ mr4# %>%
 
 ## Different windows -----------------------------------------------------
 
-##CovsZ = cbind(year.d, state.d, df$mulher, df$restricao_transporte_publico) # main results
 CovsZ = cbind(state.d) # mechanisms
 
 k = 'triangular'
@@ -550,10 +550,10 @@ ggsave("Dados/output/221202_mechanism_npi_rob.png", graf,
 # quadratic
 
 amostra = cbind()
-covsZ = cbind(state.d, year.d)
+covsZ = cbind(state.d)
 poli = 1
 janela = cbind()
-k = "uniform"
+k = "triangular"
 
 taxa_analfabetismo_18_mais <- rdrobust(df$taxa_analfabetismo_18_mais, df$X, p = poli, kernel = k, bwselect = "mserd", subset = amostra, covs = covsZ)
 indice_gini <- rdrobust(df$indice_gini,  df$X, p = poli, kernel = k, subset = amostra, covs = covsZ)
