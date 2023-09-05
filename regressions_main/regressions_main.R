@@ -49,7 +49,7 @@ df <- readRDS(paste(create_dataset_for_regressions, "/data/rdd_data_main.rds", s
 tidy.rdrobust <- function(model, ...) {
   ret <- data.frame(
     term = row.names(model$coef),
-    estimate = model$coef[3, 1],
+    estimate = model$coef[1, 1],
     std.error = model$se[3, 1],
     p.value = model$pv[, 1],
     conf.low = model$ci[3,1],
@@ -121,7 +121,8 @@ state.d = model.matrix(~state.f+0)
 amostra = cbind()
 covsZ = cbind(state.d)
 poli = 1
-janela = cbind()
+#janela = cbind()
+janela = 0.03
 k = "triangular"
 
 #rdrobust(df$taxa_analfabetismo_18_mais, df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
@@ -129,9 +130,9 @@ k = "triangular"
 #taxa_analfabetismo_18_mais <- rdrobust(df$taxa_analfabetismo_18_mais, df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
 #indice_gini <- rdrobust(df$indice_gini,  df$X, p = poli, kernel = k, h = janela, subset = amostra, covs = covsZ)
 renda_pc <- rdrobust(df$renda_pc,  df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
-populacao <- rdrobust(df$populacao,  df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
+populacao <- rdrobust(log(df$populacao),  df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
 idhm <- rdrobust(df$idhm,  df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
-densidade <- rdrobust(df$densidade,  df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
+densidade <- rdrobust(log(df$densidade),  df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
 per_populacao_homens <- rdrobust(df$per_populacao_homens,  df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
 pct_desp_recp_saude_mun <- rdrobust(df$pct_desp_recp_saude_mun,  df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
 tx_med_ch <- rdrobust(df$tx_med_ch, df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
@@ -144,7 +145,7 @@ ideology_municipality <- rdrobust(df$ideology_municipality, df$X, p = poli, kern
 models <- list(
               # "Gini" = indice_gini,
                "PC income" = renda_pc,
-               "Density" = densidade,
+               "Ln Populacao" = populacao,
                #"Illiteracy" = taxa_analfabetismo_18_mais,
                "HDI" = idhm,
                "Ln Density" = densidade,
@@ -187,8 +188,8 @@ r2 = rdrobust(df$Y_hosp,  df$X, p = poli, kernel = k, h = janela,   bwselect = "
 r3 = rdrobust(df$Y_deaths_sivep, df$X, p = poli, kernel = k,  h = janela,  bwselect = "mserd",  subset = amostra, covs = covsZ)
 
 
-covsZ = cbind(df$idade, state.d)
-poli = 1
+covsZ = cbind(state.d)
+poli = 2
 
 janela = cbind()
 
@@ -199,13 +200,14 @@ r5 = rdrobust(df$Y_deaths_sivep, df$X, kernel = k, h = janela,    p = poli,  sub
 
 covsZ = cbind(state.d) 
 poli = 1
-janela = 0.10
+janela = 0.03
 
 r6 = rdrobust(df$Y_hosp, df$X, p = poli, kernel = k,  h = janela,  bwselect = "mserd", subset = amostra, covs = covsZ)
 r7 = rdrobust(df$Y_deaths_sivep,  df$X, p = poli, kernel = k, h = janela,   bwselect = "mserd",  subset = amostra, covs = covsZ)
 
 
-covsZ = cbind(state.d, df$idade)
+covsZ = cbind(state.d)
+poli = 2
 
 r8 = rdrobust(df$Y_hosp ,  df$X, p = poli, kernel = k, h = janela,   bwselect = "mserd", subset = amostra, covs = covsZ)
 r9 = rdrobust(df$Y_deaths_sivep,  df$X, kernel = k, h = janela,   bwselect = "mserd", p = poli,  subset = amostra, covs = covsZ)
@@ -222,10 +224,6 @@ models <- list("Panel A: Deaths" = list(r7,
                                                   r4)
                )
   
-
-
-
-
 teste <- modelsummary(models,
                       shape = "rbind",
                       estimate = "{estimate}",
@@ -249,8 +247,8 @@ teste
 
 
 covsZ = cbind(state.d)
-
-poli = 2
+janela = cbind()
+poli = 1
 
 mulher <- rdrobust(df$mulher, h = janela, df$X, p = poli, kernel = k,  subset = amostra, covs = covsZ)
 reeleito <- rdrobust(df$reeleito, h = janela, df$X, p = poli, kernel = k,  subset = amostra, covs = covsZ)
@@ -292,9 +290,9 @@ gt::gtsave(teste_chr, filename =  "Dados/output/221201_personal_char.tex")
 # vendo médias
 
 df %>%
-  filter(X>= -0.11 & X <= 0.11) %>% 
-  group_by(stem_background) %>% 
-  summarise(mean(Y_deaths_sivep, na.rm = TRUE), n())
+  dplyr::filter(X>= -0.11 & X <= 0.11) %>% 
+  dplyr::group_by(stem_background) %>% 
+  dplyr::summarise(mean(Y_deaths_sivep, na.rm = TRUE), n())
 
 2.19 / 3.92
 
@@ -360,17 +358,17 @@ mr3 %>%
 ## controlando mecanismo
 
 
-covsZ = cbind(as.numeric(df$mulher), as.numeric(df$reeleito), df$total_nfi)
+covsZ = cbind(state.d, df$total_nfi)
 
 poli = 1
 
-r1 = rdrobust(df$Y_hosp, df$X,  p = poli, kernel = 'uniform', subset = amostra, covs = covsZ)
-r2 = rdrobust(df$Y_deaths_sivep, df$X,  p = poli, kernel = 'uniform', subset = amostra, covs = covsZ)
+r1 = rdrobust(df$Y_hosp, df$X,  p = poli, kernel = k, subset = amostra, covs = covsZ)
+r2 = rdrobust(df$Y_deaths_sivep, df$X,  p = poli, kernel = k, subset = amostra, covs = covsZ)
 
 poli = 2
 
-r3 = rdrobust(df$Y_hosp, df$X,  p = poli, kernel = 'uniform', subset = amostra, covs = covsZ)
-r4 = rdrobust(df$Y_deaths_sivep, df$X,  p = poli, kernel = 'uniform', subset = amostra, covs = covsZ)
+r3 = rdrobust(df$Y_hosp, df$X,  p = poli, kernel = k, subset = amostra, covs = covsZ)
+r4 = rdrobust(df$Y_deaths_sivep, df$X,  p = poli, kernel = k, subset = amostra, covs = covsZ)
 
 models <- list("Hospitalizations" = r1,
                "Deaths" = r2)
@@ -399,7 +397,7 @@ mr4# %>%
 ## Different windows -----------------------------------------------------
 
 ##CovsZ = cbind(year.d, state.d, df$mulher, df$restricao_transporte_publico) # main results
-CovsZ = cbind(state.d, df$idade) # mechanisms
+CovsZ = cbind(state.d) # mechanisms
 
 k = 'triangular'
 

@@ -41,7 +41,7 @@ df_mayors[factor_columns] <- lapply(df_mayors[factor_columns], as.character)
 ## Choosing the definition of STEM background (treatment) -----------------------------------------
 
 df_mayors <- df_mayors %>%
-  mutate(stem_background = as.numeric((stem_job == 1 & curso_stem == 1)),
+  dplyr::mutate(stem_background = as.numeric((stem_job == 1 & curso_stem == 1)),
          dif_votos_segundo = dif_votos_2_lugar,
          dif_votos_terceiro = dif_votos_3_lugar) # 616 candidates with stem background
 
@@ -53,7 +53,7 @@ df_mayors$resultado <- ifelse(df_mayors$x3_lugar == 'True', 'terceiro', df_mayor
 ## removing municipalities with more than one 2 or 3 place (I need to investigate why this is happening. Probably they achieved the same number of votes)
 
 df_mayors <- df_mayors %>% 
-  filter(id_municipio != '311920' & id_municipio != '410380')
+  dplyr::filter(id_municipio != '311920' & id_municipio != '410380')
 
 
 df_mayors <- pivot_wider(df_mayors, id_cols = c('id_municipio', 'coorte', 'dif_votos_segundo', 'dif_votos_terceiro'), names_from =  'resultado', values_from = c('stem_background','tenure', 'hours', 'tenure_rais', 'cbo_2002', 'cbo_agregado', 'sigla_partido', 'instrucao', 'ocupacao', 'genero', 'raca', 'idade', 'stem_job', 'curso_stem') )
@@ -61,12 +61,12 @@ df_mayors <- pivot_wider(df_mayors, id_cols = c('id_municipio', 'coorte', 'dif_v
 ## Keeping only municipalities where at least 1 candidate has a STEM background
 
 df_mayors <- df_mayors %>%
-  group_by(id_municipio, coorte) %>% 
-  mutate(n_stem_background = sum(stem_background_eleito, stem_background_segundo, stem_background_terceiro, na.rm = TRUE)) %>% 
-  ungroup()
+  dplyr::group_by(id_municipio, coorte) %>% 
+  dplyr::mutate(n_stem_background = sum(stem_background_eleito, stem_background_segundo, stem_background_terceiro, na.rm = TRUE)) %>% 
+  dplyr::ungroup()
 
 df_mayors <- df_mayors %>% 
-  filter(n_stem_background >= 1)
+  dplyr::filter(n_stem_background >= 1)
 
 ## Defining cities to use third most voted candidate 
 df_mayors$use_third <- ifelse(df_mayors$stem_background_eleito != 1 & df_mayors$stem_background_segundo != 1 & df_mayors$stem_background_terceiro == 1, 1, 0)
@@ -91,22 +91,22 @@ for (col_name in segundo_columns) {
 # Iterate through the "_segundo" columns and replace their names
 for (col_name in segundo_columns) {
   new_col_name <- sub("_segundo", "_naoeleito", col_name)
-  df_mayors <- df_mayors %>%
-    rename(!!new_col_name := !!col_name)
+  colnames(df_mayors)[colnames(df_mayors) == col_name] <- new_col_name
 }
+
 
 # Drop variables ending with "_terceiro"
 df_mayors <- df_mayors %>%
-  select(-ends_with("_terceiro"))
+  dplyr::select(-ends_with("_terceiro"))
 
 # renaming variable
 df_mayors <- df_mayors %>%
-  rename(dif_votos = dif_votos_naoeleito)
+  dplyr::rename(dif_votos = dif_votos_naoeleito)
 
 # droping variables
 
 df_mayors <- df_mayors %>%
-  select(-use_third, -n_stem_background)
+  dplyr::select(-use_third, -n_stem_background)
 
 # changing data type
 
@@ -115,7 +115,7 @@ df_mayors$stem_background_eleito <- as.factor(df_mayors$stem_background_eleito)
 # droping municipalities where 1 and 2 were STEM and had no 3 candidate
 
 df_mayors <- df_mayors %>% 
-  filter(!is.na(dif_votos))
+  dplyr::filter(!is.na(dif_votos))
 
 # Baseline and NPI Data -----------------------------------------------------------
 
@@ -124,7 +124,7 @@ df_health <- readRDS(paste0(baseline_data_dir, "/health_data.Rds"))
 df_ideology <- readRDS(paste0(baseline_data_dir, "/ideology_data.Rds"))
 
 df_ideology <- df_ideology %>% 
-  filter(coorte == 2016 | coorte == 2020) # keeping election coorte years
+  dplyr::filter(coorte == 2016 | coorte == 2020) # keeping election coorte years
 
 df_density <- readRDS(paste0(baseline_data_dir, "/density_data.Rds"))
 
@@ -138,7 +138,7 @@ df_npi <- readRDS(paste0(baseline_data_dir, "/npi_data.Rds"))
 df_covid <- readRDS(paste0(covid_data_dir, "/covid_data.Rds"))
 
 df_covid <- df_covid %>% 
-  ungroup()
+  dplyr::ungroup()
 
 # Merging datasets --------------------------------------------------------
 
@@ -154,21 +154,21 @@ df <- left_join(df, df_ideology, by = c("id_municipio", "coorte"))
 
 
 df <- df %>%
-  rename(sigla_partido = sigla_partido_eleito)
+  dplyr::rename(sigla_partido = sigla_partido_eleito)
 
 df <- left_join(df, df_political, by = c("sigla_partido", "coorte"))
 
 df <- df %>%
-  rename(sigla_partido_eleito = sigla_partido,
+  dplyr::rename(sigla_partido_eleito = sigla_partido,
          ideology_party_eleito = ideology_party)
 
 df <- df %>%
-  rename(sigla_partido = sigla_partido_naoeleito)
+  dplyr::rename(sigla_partido = sigla_partido_naoeleito)
 
 df <- left_join(df, df_political, by = c("sigla_partido", "coorte"))
 
 df <- df %>%
-  rename(sigla_partido_naoeleito = sigla_partido,
+  dplyr::rename(sigla_partido_naoeleito = sigla_partido,
          ideology_party_naoeleito = ideology_party)
 
 df$coorte <- as.factor(df$coorte)
@@ -193,12 +193,12 @@ df <- df %>%
 # Get a list of variable names ending with "_eleito"
 eleito_columns <- colnames(df)[endsWith(colnames(df), "_eleito")]
 
-# Iterate through the "_eleito" columns and replace their names
+# Iterate through the "_eleito" columns and remove the suffix
 for (col_name in eleito_columns) {
   new_col_name <- sub("_eleito", "", col_name)
-  df <- df %>%
-    rename(!!new_col_name := !!col_name)
+  colnames(df)[colnames(df) == col_name] <- new_col_name
 }
+
 
 # Droping municipalties with null outcome variables
 
@@ -213,9 +213,9 @@ df$dif_votos = ifelse(df$stem_background == 1, df$dif_votos, -df$dif_votos)
 # Creating candidate level variables
 
 df <- df %>%
-  mutate(reeleito = ocupacao == "prefeito")
+  dplyr::mutate(reeleito = ocupacao == "prefeito")
 df <- df %>%
-  mutate(mulher = genero == "feminino")
+  dplyr::mutate(mulher = genero == "feminino")
 
 
 df$ens_sup = as.logical(ifelse(str_detect(df$instrucao, "ensino superior completo"),1,0))
@@ -224,7 +224,7 @@ df$ens_sup = as.logical(ifelse(str_detect(df$instrucao, "ensino superior complet
 #### creating agregated occupation code 'cbo'
 
 df <- df %>% 
-  mutate(cbo_agregado_nome = dplyr::recode(cbo_agregado,
+  dplyr::mutate(cbo_agregado_nome = dplyr::recode(cbo_agregado,
                                            "1223" = "Directors of works operations in construction",
                                            "1425" = "IT managers",
                                            "2124" = "IT analysts",
@@ -257,7 +257,7 @@ df$Y_hosp = df$hosp_per_100k_inhabitants
 #  filter(coorte == 2016 & sch_non_stem_cdt == 1)
 
 df <- df %>% 
-  summarise(coorte,
+  dplyr::summarise(coorte,
             sigla_uf,
             id_municipio,
             instrucao,
@@ -305,7 +305,7 @@ df <- df %>%
 
 
 df <- df %>%
-  mutate(instrucao = dplyr::recode(instrucao,
+  dplyr::mutate(instrucao = dplyr::recode(instrucao,
                                    "ensino superior completo" = 7,
                                    "ensino superior incompleto" = 6,
                                    "ensino medio completo" = 5,
@@ -320,7 +320,7 @@ df <- df %>%
 ### STEM and Non-STEM candidates had a college degree
 
 df <- df %>% 
- filter(coorte == 2016 & sch_non_stem_cdt == 1 & ens_sup == 1)
+  dplyr::filter(coorte == 2016 & sch_non_stem_cdt == 1)
 
 
 

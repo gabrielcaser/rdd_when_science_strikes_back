@@ -684,7 +684,7 @@ length(unique(sivep_full$CO_MUN_RES))
 
 
 sivep_2020 <- sivep_full %>%
-  filter((CLASSI_FIN == "SRAG COVID-19" | CLASSI_FIN == "SRAG não especificado") & DT_SIN_PRI >= "2020-02-01" & DT_SIN_PRI <= "2020-11-30") %>%
+  filter((CLASSI_FIN == "SRAG COVID-19" | CLASSI_FIN == "SRAG não especificado") & DT_SIN_PRI >= "2020-02-01" & DT_SIN_PRI <= "2020-12-30") %>%
   group_by(CO_MUN_RES) %>%
   summarise(deaths = sum(EVOLUCAO == "Óbito", na.rm = TRUE),
             hosp = sum(HOSPITAL == "Sim", na.rm = TRUE),
@@ -692,7 +692,7 @@ sivep_2020 <- sivep_full %>%
   arrange(desc(deaths)) 
 
 sivep_2021 <- sivep_full %>%
-  filter((CLASSI_FIN == "SRAG COVID-19") & DT_SIN_PRI >= "2021-03-01" & DT_SIN_PRI <= "2021-12-31") %>% 
+  filter((CLASSI_FIN == "SRAG COVID-19") & DT_SIN_PRI >= "2021-02-01" & DT_SIN_PRI <= "2021-12-31") %>% 
   group_by(CO_MUN_RES) %>%
   summarise(deaths = sum(EVOLUCAO == "Óbito", na.rm = TRUE),
             hosp = sum(HOSPITAL == "Sim", na.rm = TRUE),

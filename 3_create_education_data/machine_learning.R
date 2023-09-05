@@ -21,7 +21,7 @@ work_dir                  = "C:/Users/gabri/OneDrive/Gabriel/Insper/Tese/Engenhe
 output_dir                = "C:/Users/gabri/OneDrive/Gabriel/Insper/Tese/Engenheiros/replication_code/rdd_when_science_strikes_back/3_create_education_data/output"
 create_electoral_data_dir = "C:/Users/gabri/OneDrive/Gabriel/Insper/Tese/Engenheiros/replication_code/rdd_when_science_strikes_back/1_create_electoral_data/output/data"
 
-set.seed(1234) # making it reproducible
+set.seed(1235) # making it reproducible
 
 # Data --------------------------------------------------------------------
 
@@ -42,8 +42,11 @@ df <- df %>%
   mutate(cbo_2_digits = as.factor(substring(cbo_2002, 0,2)))
 
 ## Creating dummy columns for categorical variables (useful for running the algorithms)
-df <- dummy_cols(df, select_columns = c("raca"))
+df <- dummy_cols(df, select_columns = c("raca","id_municipio"))
 
+## Fixing datatype
+
+df$id_municipio <- as.factor(df$id_municipio)
 
 ## Removing candidates with missing educational background and creating copy with all candidates
 
@@ -51,10 +54,6 @@ df_all_candidates <- df
 
 df <- df %>% 
  filter(!is.na(graduacao_stem))
-
-## Fixing datatype
-
-df$id_municipio <- as.factor(df$id_municipio)
 
 # Creating Train / Test datasets ------------------------------------------------------
 
@@ -65,7 +64,6 @@ test <- df[-idx, ] # used to apply the classifier
 # Variables to not use
 
 excluded_variables <- c("id_masked",
-                        "nome",
                         "resultado",
                         "ano",
                         "cbo_2002",
@@ -84,7 +82,8 @@ excluded_variables <- c("id_masked",
                         'n_stem_candidates',
                         'stem_job',
                         'dif_votos_3_lugar',
-                        'tenure')
+                        'dif_votos_2_lugar'
+                        )
 
 # Logistic Regression -----------------------------------------------------
 
@@ -199,8 +198,6 @@ legend("bottomright",
 
 # Using best model to predict education of candidates that we didn't find educational data ----------------------------------------------
 
-## add candidates from 2016
-
 prob_final <- predict(boosting, newdata = df_all_candidates[, !(names(df_all_candidates)) %in% excluded_variables])$prob[, 2]
 
 y_hat_final <- factor(ifelse(prob_final >= best_threshold_boosting, "Yes", "No"))
@@ -218,6 +215,11 @@ df %>%
   summarise(id_masked, ocupacao,graduacao_stem, previsao, state) %>% 
   arrange(ocupacao,graduacao_stem, previsao)
   
+## wrong predictions
+df %>%
+  filter(as.numeric(graduacao_stem) != as.numeric(previsao)) %>% 
+  summarise(id_masked, ocupacao,graduacao_stem, previsao, state) %>% 
+  arrange(ocupacao,graduacao_stem, previsao)
 
 ## crating final educational variable
 
