@@ -250,6 +250,10 @@ df$Y_cases = df$confirmed_per_100k_inhabitants
 
 df$Y_hosp = df$hosp_per_100k_inhabitants
 
+df$T = ifelse(df$X >= 0, 1, 0)
+
+df$T_X = df$X * df$T
+
 
 # Cleaning the data -------------------------------------------------------
 
@@ -296,6 +300,8 @@ df <- df %>%
             X,
             Y_deaths_sivep,
             Y_hosp,
+            T,
+            T_X,
             barreiras_sanitarias,
             mascaras,
             restricao_atv_nao_essenciais,

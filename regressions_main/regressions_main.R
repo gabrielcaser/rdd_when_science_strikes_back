@@ -3,7 +3,8 @@
 
 # TO DO -------------------------------------------------------------------
 
-# - Baixar outras variaveis demograficas do IEPS DATA
+# - OK Baixar outras variaveis demograficas do IEPS DATA
+    #- Acho que os dados eram de 2010, então talvez não precise 
 # - Tentar melhorar resultados de hospitalizações, talvez no ML
 
 # Initial commands
@@ -121,8 +122,8 @@ state.d = model.matrix(~state.f+0)
 amostra = cbind()
 covsZ = cbind(state.d)
 poli = 1
-#janela = 0.07
-janela = cbind()
+janela = 0.08
+#janela = cbind()
 k = "triangular"
 
 #rdrobust(df$taxa_analfabetismo_18_mais, df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
@@ -188,8 +189,8 @@ r2 = rdrobust(df$Y_hosp,  df$X, p = poli, kernel = k, h = janela,   bwselect = "
 r3 = rdrobust(df$Y_deaths_sivep, df$X, p = poli, kernel = k,  h = janela,  bwselect = "mserd",  subset = amostra, covs = covsZ)
 
 
-covsZ = cbind(state.d)
-poli = 2
+covsZ = cbind(state.d, df$mulher)
+poli = 1
 janela = cbind()
 
 
@@ -199,14 +200,14 @@ r5 = rdrobust(df$Y_deaths_sivep, df$X, kernel = k, h = janela,    p = poli,  sub
 
 covsZ = cbind(state.d) 
 poli = 1
-janela = 0.05
+janela = 0.10
 
 r6 = rdrobust(df$Y_hosp, df$X, p = poli, kernel = k,  h = janela,  bwselect = "mserd", subset = amostra, covs = covsZ)
 r7 = rdrobust(df$Y_deaths_sivep,  df$X, p = poli, kernel = k, h = janela,   bwselect = "mserd",  subset = amostra, covs = covsZ)
 
 
-covsZ = cbind(state.d)
-poli = 2
+covsZ = cbind(state.d, df$mulher)
+poli = 1
 
 r8 = rdrobust(df$Y_hosp ,  df$X, p = poli, kernel = k, h = janela,   bwselect = "mserd", subset = amostra, covs = covsZ)
 r9 = rdrobust(df$Y_deaths_sivep,  df$X, kernel = k, h = janela,   bwselect = "mserd", p = poli,  subset = amostra, covs = covsZ)
@@ -289,9 +290,9 @@ gt::gtsave(teste_chr, filename =  "Dados/output/221201_personal_char.tex")
 # vendo médias
 
 df %>%
-  dplyr::filter(X>= -0.08 & X <= 0.08) %>% 
+  dplyr::filter(X>= -0.10 & X <= 0.10) %>% 
   dplyr::group_by(stem_background) %>% 
-  dplyr::summarise(mean(Y_deaths_sivep, na.rm = TRUE), n())
+  dplyr::summarise(mean(Y_deaths_sivep, na.rm = TRUE), mean(Y_hosp, na.rm = TRUE), n())
 
 2.19 / 3.92
 
@@ -305,26 +306,27 @@ df %>%
 covsZ = cbind(state.d)
 poli = 1
 k = "triangular"
+#janela = 0.08
 janela = cbind()
 
 
 
-r1 = rdrobust(df$total_nfi,  df$X, p = poli, kernel = k,  subset = amostra, covs = covsZ)
-r2 = rdrobust(df$mascaras, df$X,   p = poli, kernel = k,  subset = amostra, covs = covsZ)
-r3 = rdrobust(df$restricao_atv_nao_essenciais, df$X,   p = poli, kernel = k,  subset = amostra, covs = covsZ)
-r4 = rdrobust(df$restricao_circulacao, df$X,   p = poli, kernel = k,  subset = amostra, covs = covsZ)
-r5 = rdrobust(df$restricao_transporte_publico, df$X,   p = poli, kernel = k,  subset = amostra, covs = covsZ)
-r6 = rdrobust(df$barreiras_sanitarias, df$X,   p = poli, kernel = k,  subset = amostra, covs = covsZ)
+r1 = rdrobust(df$total_nfi,  df$X, p = poli, kernel = k,  subset = amostra, covs = covsZ, h = janela)
+r2 = rdrobust(df$mascaras, df$X,   p = poli, kernel = k,  subset = amostra, covs = covsZ, h = janela)
+r3 = rdrobust(df$restricao_atv_nao_essenciais, df$X,   p = poli, kernel = k,  subset = amostra, covs = covsZ, h = janela)
+r4 = rdrobust(df$restricao_circulacao, df$X,   p = poli, kernel = k,  subset = amostra, covs = covsZ, h = janela)
+r5 = rdrobust(df$restricao_transporte_publico, df$X,   p = poli, kernel = k,  subset = amostra, covs = covsZ, h = janela)
+r6 = rdrobust(df$barreiras_sanitarias, df$X,   p = poli, kernel = k,  subset = amostra, covs = covsZ, h = janela)
 
 covsZ = cbind(state.d)
 poli = 2
 
-r12 = rdrobust(df$total_nfi, df$X, p = poli, kernel = k,  subset = amostra, covs = covsZ)
-r22 = rdrobust(df$mascaras, df$X,   p = poli, kernel = k,  subset = amostra, covs = covsZ)
-r32 = rdrobust(df$restricao_atv_nao_essenciais, df$X,   p = poli, kernel = k,  subset = amostra, covs = covsZ)
-r42 = rdrobust(df$restricao_circulacao, df$X,   p = poli, kernel = k,  subset = amostra, covs = covsZ)
-r52 = rdrobust(df$restricao_transporte_publico, df$X,   p = poli, kernel = k,  subset = amostra, covs = covsZ)
-r62 = rdrobust(df$barreiras_sanitarias, df$X,   p = poli, kernel = k,  subset = amostra, covs = covsZ)
+r12 = rdrobust(df$total_nfi, df$X, p = poli, kernel = k,  subset = amostra, covs = covsZ, h = janela)
+r22 = rdrobust(df$mascaras, df$X,   p = poli, kernel = k,  subset = amostra, covs = covsZ, h = janela)
+r32 = rdrobust(df$restricao_atv_nao_essenciais, df$X,   p = poli, kernel = k,  subset = amostra, covs = covsZ, h = janela)
+r42 = rdrobust(df$restricao_circulacao, df$X,   p = poli, kernel = k,  subset = amostra, covs = covsZ, h = janela)
+r52 = rdrobust(df$restricao_transporte_publico, df$X,   p = poli, kernel = k,  subset = amostra, covs = covsZ, h = janela)
+r62 = rdrobust(df$barreiras_sanitarias, df$X,   p = poli, kernel = k,  subset = amostra, covs = covsZ, h = janela)
 
 
 models <- list("Total NFI" = r1,
@@ -362,14 +364,14 @@ covsZ = cbind(state.d, df$total_nfi)
 
 poli = 1
 
-r1 = rdrobust(df$Y_hosp, df$X,  p = poli, kernel = k, subset = amostra, covs = covsZ)
-r2 = rdrobust(df$Y_deaths_sivep, df$X,  p = poli, kernel = k, subset = amostra, covs = covsZ)
+r1 = rdrobust(df$Y_hosp, df$X,  p = poli, kernel = k, subset = amostra, covs = covsZ, h = janela)
+r2 = rdrobust(df$Y_deaths_sivep, df$X,  p = poli, kernel = k, subset = amostra, covs = covsZ, h = janela)
 
 poli = 2
 covsZ = cbind(state.d, df$total_nfi)
 
-r3 = rdrobust(df$Y_hosp, df$X,  p = poli, kernel = k, subset = amostra, covs = covsZ)
-r4 = rdrobust(df$Y_deaths_sivep, df$X,  p = poli, kernel = k, subset = amostra, covs = covsZ)
+r3 = rdrobust(df$Y_hosp, df$X,  p = poli, kernel = k, subset = amostra, covs = covsZ, h = janela)
+r4 = rdrobust(df$Y_deaths_sivep, df$X,  p = poli, kernel = k, subset = amostra, covs = covsZ, h = janela)
 
 models <- list("Hospitalizations" = r1,
                "Deaths" = r2,
