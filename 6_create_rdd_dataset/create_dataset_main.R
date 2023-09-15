@@ -273,6 +273,7 @@ df <- df %>%
             stem_background,
             #medico,
             tenure,
+            tenure_rais,
             sigla_partido,
             idade,
             genero,
@@ -325,6 +326,8 @@ df <- df %>%
 ## For now I'm onlu comparing municipalities whose
 ### STEM and Non-STEM candidates had a college degree
 
+df_moderation <- df
+
 df <- df %>% 
   dplyr::filter(coorte == 2016 & sch_non_stem_cdt == 1)
 
@@ -333,4 +336,5 @@ df <- df %>%
 # Saving ------------------------------------------------------------------
 
 saveRDS(df, file = paste(work_dir, "/output/data/rdd_data_main.rds", sep = ""))
+saveRDS(df_moderation, file = paste(work_dir, "/output/data/rdd_data_moderation.rds", sep = ""))
 

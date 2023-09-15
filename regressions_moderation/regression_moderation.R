@@ -1,7 +1,9 @@
 # This program run moderation analysis
 
 # TO-DO
- ## Acho que só tenho o tenure dos caras que ganharam. Seria importante ter o dos que perderam.Ou talvez não!
+
+## FUuu, agora tenure não está dando resultado nenhum na interação.
+## O que posso tentar fazer é testar com o tenure da base antiga e ver se ele é melhor.
 
 # Setting
 
@@ -13,15 +15,21 @@ library(plm)
 library(readxl)
 library(stargazer)
 
-## Directories
-work_dir = "C:/Users/GabrielCaserDosPasso/Documents/RAIS/regressions_moderation"
-output_dir  = "C:/Users/GabrielCaserDosPasso/Documents/RAIS/regressions_moderation/output"
-rdd_dir = "C:/Users/GabrielCaserDosPasso/Documents/RAIS"
-create_dataset_for_regressions = "C:/Users/GabrielCaserDosPasso/Documents/RAIS/create_dataset_for_regressions/output/data"
+# Initial commands
+
+rm(list = ls(all.names = TRUE)) # clear objects
+gc() # free up memory
+
+
+# Setting -----------------------------------------------------------------
+
+work_dir                       = "C:/Users/gabri/OneDrive/Gabriel/Insper/Tese/Engenheiros/replication_code/rdd_when_science_strikes_back/regressions_moderation"
+output_dir                     = "C:/Users/gabri/OneDrive/Gabriel/Insper/Tese/Engenheiros/replication_code/rdd_when_science_strikes_back/regressions_moderation/output"
+create_dataset_for_regressions = "C:/Users/gabri/OneDrive/Gabriel/Insper/Tese/Engenheiros/replication_code/rdd_when_science_strikes_back/6_create_rdd_dataset/output"
 
 # Oppening Covid and RDD Data ----------------------------------------------------
 
-df <- readRDS(paste(create_dataset_for_regressions, "/rdd_data_moderation.rds", sep = ""))
+df <- readRDS(paste(create_dataset_for_regressions, "/data/rdd_data_moderation.rds", sep = ""))
 
 # Merging with Revenue data
 
@@ -41,16 +49,15 @@ rm(data_revenue)
 
 df$tenure <- df$tenure / 12
 
-df_subset <- subset(df, X >= -0.05 & X <= 0.05 & coorte == 2016)
+df_subset <- subset(df, X >= -0.08 & X <= 0.08 & coorte == 2016)
 
-inter_receita_stem <- df_subset$receita_2015 * df_subset$stem_job_4
+df_subset$inter_receita_stem <- df_subset$receita_2015 * (as.double(df_subset$stem_background) - 1)
 
-inter_tenure_stem <- df_subset$tenure * df_subset$stem_job_4
+df_subset$inter_tenure_stem <- df_subset$tenure * (as.double(df_subset$stem_background) - 1)
 
-inter_ideo_stem <- df_subset$ideology_party * df_subset$stem_job_4
+df_subset$inter_ideo_stem <- df_subset$ideology_party * (as.double(df_subset$stem_background) - 1)
 
-inter_X_stem <- df_subset$X * df_subset$stem_job_4
-
+df_subset$inter_X_stem <- df_subset$X * (as.double(df_subset$stem_background) - 1)
 #reg_hosp <- lm(Y_hosp ~ Y_hosp + renda_pc + tenure + X + inter_renda_stem + inter_tenure_stem + inter_X_stem, data = df)
 #summary(reg_hosp)
 
@@ -115,11 +122,11 @@ summary(out)
 
 ## adding mayor characteristics
 out1 <- plm(Y_hosp ~ X + T + T_X + receita_2015 + inter_receita_stem + instrucao + mulher + ideology_party + idade + reeleito, data = pdata, index = c("sigla_uf"), model = "within")
-summary(out)
+summary(out1)
 out2 <- plm(Y_deaths_sivep ~ X + T + T_X + receita_2015 + inter_receita_stem + instrucao + mulher + ideology_party + idade + reeleito, data = pdata, index = c("sigla_uf"), model = "within")
-summary(out)
-out3 <- plm(total_nfi ~ X + T + T_X + receita_2015 + inter_receita_stem + instrucao + mulher + ideology_party + idade + reeleito, data = pdata, index = c("sigla_uf"), model = "within")
-summary(out)
+summary(out2)
+out3 <- plm(total_nfi ~ X + T + T_X + receita_2015 + inter_receita_stem  + mulher + ideology_party + idade + reeleito, data = subset(pdata, !is.na(pdata$total_nfi)), index = c("sigla_uf"), model = "within")
+summary(out3)
 
 stargazer(out1, out2, out3,
           type = "text",
@@ -128,11 +135,11 @@ stargazer(out1, out2, out3,
 
 ## adding tenure
 out1 <- plm(Y_hosp ~ X + T + T_X + receita_2015 + inter_receita_stem + ens_sup + mulher + ideology_party + idade + reeleito + tenure, data = pdata, index = c("sigla_uf"), model = "within")
-summary(out)
+summary(out1)
 out2 <- plm(Y_deaths_sivep ~ X + T + T_X + receita_2015 + inter_receita_stem + ens_sup + mulher + ideology_party + idade + reeleito + tenure, data = pdata, index = c("sigla_uf", "coorte"), model = "within")
-summary(out)
+summary(out2)
 out3 <- plm(total_nfi ~ X + T + T_X + receita_2015 + inter_receita_stem + ens_sup + mulher + ideology_party + idade + reeleito + tenure, data = pdata, index = c("sigla_uf", "coorte"), model = "within")
-summary(out)
+summary(out3)
 
 stargazer(out1, out2, out3,
            type = "text",
@@ -144,11 +151,11 @@ stargazer(out1, out2, out3,
 
 ## adding tenure interaction
 out1 <- plm(Y_hosp ~ X + T + T_X + receita_2015 + inter_receita_stem + instrucao + mulher + ideology_party + idade + reeleito + tenure  + inter_tenure_stem, data = pdata, index = c("sigla_uf"), model = "within")
-summary(out)
+summary(out1)
 out2 <- plm(Y_deaths_sivep ~ X + T + T_X + receita_2015  + inter_receita_stem + instrucao + mulher + ideology_party + idade + reeleito + tenure + inter_tenure_stem , data = pdata, index = c("sigla_uf"), model = "within")
-summary(out)
-out3 <- plm(total_nfi ~ X + T + T_X + receita_2015 + inter_receita_stem + instrucao + mulher + ideology_party + idade + reeleito + tenure + inter_tenure_stem , data = pdata, index = c("sigla_uf", "coorte"), model = "within")
-summary(out)
+summary(out2)
+out3 <- plm(total_nfi ~ X + T + T_X + receita_2015 + inter_receita_stem + instrucao + mulher + ideology_party + idade + reeleito + tenure + inter_tenure_stem, data = pdata, index = c("sigla_uf", "coorte"), model = "within")
+summary(out3)
 
 stargazer(out1, out2, out3,
           type = "text",
@@ -160,11 +167,11 @@ stargazer(out1, out2, out3,
 ## removing revenue 
 
 out1 <- plm(Y_hosp ~ X + T + T_X  + instrucao + mulher + ideology_party + idade + reeleito + tenure  + inter_tenure_stem, data = pdata, index = c("sigla_uf"), model = "within")
-summary(out)
+summary(out1)
 out2 <- plm(Y_deaths_sivep ~ X + T + T_X  + instrucao + mulher + ideology_party + idade + reeleito + tenure + inter_tenure_stem , data = pdata, index = c("sigla_uf"), model = "within")
-summary(out)
+summary(out2)
 out3 <- plm(total_nfi ~ X + T + T_X + instrucao + mulher + ideology_party + idade + reeleito + tenure + inter_tenure_stem , data = pdata, index = c("sigla_uf", "coorte"), model = "within")
-summary(out)
+summary(out3)
 
 table <- stargazer(out1, out2, out3,
                    type = "text",
@@ -174,11 +181,11 @@ table <- stargazer(out1, out2, out3,
 # Final table
 
 out1 <- plm(Y_hosp ~ X + T + T_X + tenure  + inter_tenure_stem + instrucao + mulher + ideology_party + idade + reeleito , data = pdata, index = c("sigla_uf"), model = "within")
-summary(out)
+summary(out1)
 out2 <- plm(Y_deaths_sivep ~ X + T + T_X + tenure + inter_tenure_stem + instrucao + mulher + ideology_party + idade + reeleito , data = pdata, index = c("sigla_uf"), model = "within")
-summary(out)
+summary(out2)
 out3 <- plm(total_nfi ~ X + T + T_X + tenure + inter_tenure_stem + instrucao + mulher + ideology_party + idade + reeleito , data = pdata, index = c("sigla_uf"), model = "within")
-summary(out)
+summary(out3)
 
 stargazer(out2, out1, out3,
           type = "text",
@@ -189,11 +196,11 @@ stargazer(out2, out1, out3,
 
 
 out4 <- plm(Y_hosp ~ X + T + T_X + receita_2015 + inter_receita_stem + instrucao + mulher + ideology_party + idade + reeleito , data = pdata, index = c("sigla_uf"), model = "within")
-summary(out)
+summary(out4)
 out5 <- plm(Y_deaths_sivep ~ X + T + T_X + receita_2015  + inter_receita_stem + instrucao + mulher + ideology_party + idade + reeleito , data = pdata, index = c("sigla_uf"), model = "within")
-summary(out)
+summary(out5)
 out6 <- plm(total_nfi ~ X + T + T_X + receita_2015 + inter_receita_stem + instrucao + mulher + ideology_party + idade + reeleito , data = pdata, index = c("sigla_uf"), model = "within")
-summary(out)
+summary(out6)
 
 stargazer(out2, out1, out3, out5, out4, out6,
           type = "text",
