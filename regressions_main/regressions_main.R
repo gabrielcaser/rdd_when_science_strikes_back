@@ -122,8 +122,8 @@ state.d = model.matrix(~state.f+0)
 amostra = cbind()
 covsZ = cbind(state.d)
 poli = 1
-janela = 0.08
-#janela = cbind()
+#janela = 0.05
+janela = cbind()
 k = "triangular"
 
 #rdrobust(df$taxa_analfabetismo_18_mais, df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
@@ -194,13 +194,13 @@ poli = 1
 janela = cbind()
 
 
-r4 = rdrobust(df$Y_hosp ,  df$X, p = poli, kernel = k,  h = janela,  subset = amostra, covs = covsZ)
+r4 = rdrobust(df$Y_hosp,  df$X, p = poli, kernel = k,  h = janela,  subset = amostra, covs = covsZ)
 r5 = rdrobust(df$Y_deaths_sivep, df$X, kernel = k, h = janela,    p = poli,  subset = amostra, covs = covsZ)
 
 
 covsZ = cbind(state.d) 
 poli = 1
-janela = 0.10
+janela = 0.05
 
 r6 = rdrobust(df$Y_hosp, df$X, p = poli, kernel = k,  h = janela,  bwselect = "mserd", subset = amostra, covs = covsZ)
 r7 = rdrobust(df$Y_deaths_sivep,  df$X, p = poli, kernel = k, h = janela,   bwselect = "mserd",  subset = amostra, covs = covsZ)
@@ -245,9 +245,9 @@ teste
 
 # Personal charact
 
-
 covsZ = cbind(state.d)
 janela = cbind()
+#janela = 0.05
 poli = 1
 
 mulher <- rdrobust(df$mulher, h = janela, df$X, p = poli, kernel = k,  subset = amostra, covs = covsZ)
@@ -318,8 +318,8 @@ r4 = rdrobust(df$restricao_circulacao, df$X,   p = poli, kernel = k,  subset = a
 r5 = rdrobust(df$restricao_transporte_publico, df$X,   p = poli, kernel = k,  subset = amostra, covs = covsZ, h = janela)
 r6 = rdrobust(df$barreiras_sanitarias, df$X,   p = poli, kernel = k,  subset = amostra, covs = covsZ, h = janela)
 
-covsZ = cbind(state.d)
-poli = 2
+covsZ = cbind(state.d, df$mulher)
+poli = 1
 
 r12 = rdrobust(df$total_nfi, df$X, p = poli, kernel = k,  subset = amostra, covs = covsZ, h = janela)
 r22 = rdrobust(df$mascaras, df$X,   p = poli, kernel = k,  subset = amostra, covs = covsZ, h = janela)

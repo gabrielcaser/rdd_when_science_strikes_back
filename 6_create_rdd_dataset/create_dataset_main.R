@@ -140,6 +140,11 @@ df_covid <- readRDS(paste0(covid_data_dir, "/covid_data.Rds"))
 df_covid <- df_covid %>% 
   dplyr::ungroup()
 
+
+# Tenure data -------------------------------------------------------------
+
+df_tenure <- readRDS(paste0(work_dir, "/input/tenure_data.Rds"))
+
 # Merging datasets --------------------------------------------------------
 
 df <- left_join(df_mayors, df_npi, by = c("id_municipio")) # 29% of municipalities with missing data. That is expected since not everyone responded the survey
@@ -152,6 +157,7 @@ df <- left_join(df, df_density, by = c("id_municipio")) # 2 municipalities with 
 
 df <- left_join(df, df_ideology, by = c("id_municipio", "coorte"))
 
+df <- left_join(df, df_tenure, by = c('id_municipio', 'coorte'))
 
 df <- df %>%
   dplyr::rename(sigla_partido = sigla_partido_eleito)
@@ -173,7 +179,8 @@ df <- df %>%
 
 df$coorte <- as.factor(df$coorte)
 
-rm(df_covid, df_density, df_health, df_ideology, df_mayors, df_npi, df_political) # removing dataset
+rm(df_covid, df_density, df_health, df_ideology, df_mayors, df_npi, df_political, df_tenure) # removing dataset
+
 
 ### Creating "variable" of non_stem_candidate
 
@@ -274,6 +281,8 @@ df <- df %>%
             #medico,
             tenure,
             tenure_rais,
+            tenure_old,
+            situacao,
             sigla_partido,
             idade,
             genero,
@@ -329,7 +338,7 @@ df <- df %>%
 df_moderation <- df
 
 df <- df %>% 
-  dplyr::filter(coorte == 2016 & sch_non_stem_cdt == 1)
+  dplyr::filter(sch_non_stem_cdt == 1 & coorte == 2016)
 
 
 

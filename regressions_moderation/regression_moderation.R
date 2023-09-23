@@ -48,12 +48,13 @@ rm(data_revenue)
 ## Creating interaction term
 
 df$tenure <- df$tenure / 12
-
-df_subset <- subset(df, X >= -0.08 & X <= 0.08 & coorte == 2016)
+0
+df_subset <- subset(df, X >= -0.10 & X <= 0.10 & df$sch_non_stem_cdt == 1
+                    )
 
 df_subset$inter_receita_stem <- df_subset$receita_2015 * (as.double(df_subset$stem_background) - 1)
 
-df_subset$inter_tenure_stem <- df_subset$tenure * (as.double(df_subset$stem_background) - 1)
+df_subset$inter_tenure_stem <- df_subset$tenure * (as.double(df_subset$stem_background))
 
 df_subset$inter_ideo_stem <- df_subset$ideology_party * (as.double(df_subset$stem_background) - 1)
 
@@ -101,8 +102,10 @@ summary(out)
 # FE
 pdata <- pdata.frame(df_subset, c("sigla_uf"))
 
+
 ## most simple regression without revenue but with state FE 
-out <- plm(Y_hosp ~ X + T + T_X, data = pdata, index = c("sigla_uf"), model = "within")
+
+out <- plm(Y_hosp ~ X + T + T_X, data = df_subset, index = c("sigla_uf"), model = "within")
 summary(out)
 out <- plm(Y_deaths_sivep ~ X + T + T_X, data = pdata, index = c("sigla_uf"), model = "within")
 summary(out)
@@ -178,13 +181,26 @@ table <- stargazer(out1, out2, out3,
                    #covariate.labels = c("Share of votes", "STEM Background", "Interaction Votes x STEM", "2015 Revenue", "Rev Moder. Eff.", "Incomplete H. education", "Complete H. education", "Complete College", "Incomplete College","Reads and writes","Female", "Party Ideology", "Age", "Incubent","Tenure Moder. Eff."),
                    dep.var.labels = c("Hospitalizations", "Deaths", "NFI"))
 
+
+# Final without plm
+out1 <- lm(log(Y_hosp) ~ X + T + T_X + instrucao + inter_tenure_stem + tenure  + mulher + ideology_party + idade + reeleito + factor(sigla_uf) + coorte , data = df_subset)
+summary(out1)
+
+out2 <- lm(log(Y_deaths_sivep + 1) ~ X + T + T_X + instrucao + inter_tenure_stem + tenure  + mulher + ideology_party + idade + reeleito + factor(sigla_uf) + coorte , data = df_subset)
+summary(out2)
+
+out3 <- lm(log(total_nfi) ~ X + T + T_X + instrucao + inter_tenure_stem + tenure  + mulher + ideology_party + idade + reeleito + factor(sigla_uf) + coorte , data = df_subset)
+summary(out3)
+
+
 # Final table
 
-out1 <- plm(Y_hosp ~ X + T + T_X + tenure  + inter_tenure_stem + instrucao + mulher + ideology_party + idade + reeleito , data = pdata, index = c("sigla_uf"), model = "within")
+
+out1 <- plm(log(Y_hosp + 1) ~ X + T + T_X + instrucao + inter_tenure_stem + tenure  + mulher + ideology_party + idade + reeleito , data = pdata, index = c("sigla_uf"), model = "within" , effect = "twoways")
 summary(out1)
-out2 <- plm(Y_deaths_sivep ~ X + T + T_X + tenure + inter_tenure_stem + instrucao + mulher + ideology_party + idade + reeleito , data = pdata, index = c("sigla_uf"), model = "within")
+out2 <- plm(log(Y_deaths_sivep + 1) ~ X + T + T_X + instrucao + inter_tenure_stem + tenure + mulher + ideology_party + idade + reeleito , data = pdata, index = c("sigla_uf"), model = "within"  , effect = "twoways")
 summary(out2)
-out3 <- plm(total_nfi ~ X + T + T_X + tenure + inter_tenure_stem + instrucao + mulher + ideology_party + idade + reeleito , data = pdata, index = c("sigla_uf"), model = "within")
+out3 <- plm(log(total_nfi) ~ X + T + T_X + inter_tenure_stem + tenure + instrucao + mulher + ideology_party + idade + reeleito , data = pdata, index = c("sigla_uf"), model = "within" , effect = "twoways")
 summary(out3)
 
 stargazer(out2, out1, out3,
@@ -195,11 +211,11 @@ stargazer(out2, out1, out3,
           omit = c("X", "T_X", "instrucao", "mulher", "idade", "ideology_party", "reeleito"))
 
 
-out4 <- plm(Y_hosp ~ X + T + T_X + receita_2015 + inter_receita_stem + instrucao + mulher + ideology_party + idade + reeleito , data = pdata, index = c("sigla_uf"), model = "within")
+out4 <- plm(log(Y_hosp) ~ X + T + T_X + receita_2015 + inter_receita_stem + instrucao + mulher + ideology_party + idade + reeleito , data = pdata, index = c("sigla_uf"), model = "within")
 summary(out4)
-out5 <- plm(Y_deaths_sivep ~ X + T + T_X + receita_2015  + inter_receita_stem + instrucao + mulher + ideology_party + idade + reeleito , data = pdata, index = c("sigla_uf"), model = "within")
+out5 <- plm(log(Y_deaths_sivep + 1) ~ X + T + T_X + receita_2015  + inter_receita_stem + instrucao + mulher + ideology_party + idade + reeleito , data = pdata, index = c("sigla_uf"), model = "within")
 summary(out5)
-out6 <- plm(total_nfi ~ X + T + T_X + receita_2015 + inter_receita_stem + instrucao + mulher + ideology_party + idade + reeleito , data = pdata, index = c("sigla_uf"), model = "within")
+out6 <- plm(log(total_nfi) ~ X + T + T_X + receita_2015 + inter_receita_stem + instrucao + mulher + ideology_party + idade + reeleito , data = pdata, index = c("sigla_uf"), model = "within")
 summary(out6)
 
 stargazer(out2, out1, out3, out5, out4, out6,
