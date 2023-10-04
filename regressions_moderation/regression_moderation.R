@@ -2,8 +2,7 @@
 
 # TO-DO
 
-## FUuu, agora tenure não está dando resultado nenhum na interação.
-## O que posso tentar fazer é testar com o tenure da base antiga e ver se ele é melhor.
+
 
 # Setting
 
