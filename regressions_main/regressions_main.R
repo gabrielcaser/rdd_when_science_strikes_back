@@ -3,10 +3,6 @@
 
 # TO DO -------------------------------------------------------------------
 
-# - OK Baixar outras variaveis demograficas do IEPS DATA
-    #- Acho que os dados eram de 2010, então talvez não precise 
-# - Tentar melhorar resultados de hospitalizações, talvez no ML
-
 # Initial commands
 
 rm(list = ls(all.names = TRUE)) # clear objects
@@ -287,7 +283,7 @@ gt::gtsave(teste_chr, filename =  "Dados/output/221201_personal_char.tex")
 
 
 
-# vendo médias
+### means
 
 df %>%
   dplyr::filter(X>= -0.10 & X <= 0.10) %>% 
@@ -357,7 +353,7 @@ mr3 %>%
   tab_spanner(label = "(2)", columns = 8:13)
 
 
-## controlando mecanismo
+## controlling (testing) mechanism
 
 
 covsZ = cbind(state.d, df$total_nfi)
@@ -606,7 +602,7 @@ baseline_table
 
 
 
-### metade
+### half
 
 covsZ = cbind(state.d,year.d)
 poli = 1
@@ -661,7 +657,7 @@ gt::gtsave(baseline_table, filename =  "Dados/output/221201_bigsample_robust_bas
 
 
 
-### dobro
+### double
 
 covsZ = cbind(state.d, year.d)
 poli = 1
@@ -749,7 +745,6 @@ dens_test(reg_nonpara)
 
 
 
-# testando
 #### deaths
 
 deaths_rdd <- rdd_data(y = Y_deaths_sivep, x = X, cutpoint = 0, data = subset(df, !is.na(Y_deaths_sivep) & coorte == 2016 & sch_non_stem_cdt == 1))
