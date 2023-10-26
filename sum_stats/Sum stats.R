@@ -3,7 +3,7 @@
 
 # To Do
 
-## Concertar DF2 
+## Continuar tentando resolver problema dos boxplot
 ## Incluir efeitos fixos
 ## Usar a base certa
 ## Criar gráfico de evolução da COVID no outro codigo
@@ -20,7 +20,7 @@ library("estimatr")
 library("tidyverse")
 library("modelsummary")
 library('geobr')
-
+library('skimr')
 
 # Setting -----------------------------------------------------------------
 
@@ -162,7 +162,13 @@ p <- ggplot(profi, aes(x = as.character(coorte), y = number, fill = as.character
 p <- p + scale_fill_discrete(name = "occuppation")
 p
 
-ggsave(paste0(output_dir, "/figures/barplot_stem_cbos.png", height = 5.0, width = 9.5))
+ggsave(
+  filename = paste0(output_dir, "/figures/barplot_stem_cbos.png"),
+  plot = p,  # Replace with the actual ggplot object
+  height = 5.0,
+  width = 5.5
+)
+
 
 ### tenure
 
@@ -174,15 +180,33 @@ box <- ggplot(subset(df, stem_background == 1)) +
 
 box 
 
-ggsave(paste0(output_dir, "/figures/boxplot_tenure.png", height = 5.0, width = 5.5))
+ggsave(
+  filename = paste0(output_dir, "/figures/boxplot_tenure.png"),
+  plot = box,  # Replace with the actual ggplot object
+  height = 5.0,
+  width = 5.5
+)
 
+## removing datasets
 
+rm(p, profi, profi2, q, dat, box)
 
 ## % of STEM candidates per state
 
-### concertar aqui. Na verdade estou pegando o percentual daqueles STEM que ganharam dentro os 2 mais votados
 
-states <- df %>%
+
+### getting all Brazilian municipalities
+
+df_cities <- read.csv(paste0(work_dir,"/input/cities_and_states.csv", sep = ""))
+df_cities$id_municipio <- as.character(df_cities$id_municipio)
+df_cities$coorte <- as.factor(2016) 
+
+df_boxplots <- merge(df_cities, df, by = c("id_municipio", "sigla_uf", "coorte"), all = TRUE) # creating a dataset with all municipalities
+
+
+### ploting
+
+states <- df_boxplots %>%
   filter(coorte == 2016) %>% 
   group_by(sigla_uf, coorte) %>% 
   dplyr::summarise(perc_stem = sum(stem_background == 1, na.rm = TRUE) / sum(stem_background == 1 | stem_background == 0, na.rm = TRUE)) %>% 
