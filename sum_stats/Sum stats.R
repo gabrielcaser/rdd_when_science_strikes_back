@@ -3,9 +3,7 @@
 
 # To Do
 
-## Continuar tentando resolver problema dos boxplot
-## Incluir efeitos fixos
-## Usar a base certa
+## Concertar hora de salvar (último código)
 ## Criar gráfico de evolução da COVID no outro codigo
 
 # Initial commands
@@ -20,7 +18,9 @@ library("estimatr")
 library("tidyverse")
 library("modelsummary")
 library('geobr')
-library('skimr')
+library('skimr') # to create sumstats
+library('rdrobust')
+library('patchwork') # to create figures with plots together
 
 # Setting -----------------------------------------------------------------
 
@@ -209,7 +209,7 @@ df_boxplots <- merge(df_cities, df, by = c("id_municipio", "sigla_uf", "coorte")
 states <- df_boxplots %>%
   filter(coorte == 2016) %>% 
   group_by(sigla_uf, coorte) %>% 
-  dplyr::summarise(perc_stem = sum(stem_background == 1, na.rm = TRUE) / sum(stem_background == 1 | stem_background == 0, na.rm = TRUE)) %>% 
+  dplyr::summarise(perc_stem = sum(stem_background == 1, na.rm = TRUE) / length(unique(id_municipio))) %>% 
   arrange(desc(perc_stem))
 
 box2 <- ggplot(states, aes(y = perc_stem * 100, group = coorte, x = as.character(coorte))) + 
@@ -220,11 +220,12 @@ box2 <- ggplot(states, aes(y = perc_stem * 100, group = coorte, x = as.character
 
 box2 
 
-ggsave(paste0(output_dir, "/figures/sumstats_boxplot.png", height = 5, width = 5.5))
-
-mean(states$perc_stem[states$coorte == 2016])
-mean(states$perc_stem[states$coorte == 2020])
-
+ggsave(
+  filename = paste0(output_dir, "/figures/sumstats_boxplot.png"),
+  plot = box2,  # Replace with the actual ggplot object
+  height = 5.0,
+  width = 5.5
+)
 
 
 
@@ -234,7 +235,7 @@ mean(states$perc_stem[states$coorte == 2020])
 #utils::remove.packages('geobr')
 #devtools::install_github("ipeaGIT/geobr", subdir = "r-package")
 
-dados_mapa <- read_state(year=2019, showProgress = FALSE, simplified = FALSE)
+dados_mapa <- read_state(year=2015, showProgress = FALSE, simplified = FALSE)
 
 #dados_mapa <- readRDS("Dados/input/220811_geo_dados_estados_2019.rds")
 
@@ -271,7 +272,13 @@ sf2 %>%
         axis.ticks = element_blank(),
         panel.grid = element_blank())
 
-ggsave(paste0(output_dir, "/figures/mapa_stem_estados_2016.png", height = 5.5, width = 10))
+ggsave(
+  filename = paste0(output_dir, "/figures/mapa_stem_estados_2016.png"),
+ # plot = box2,  # Replace with the actual ggplot object
+  height = 5.0,
+  width = 10
+)
+
 
 
 ## municipios
@@ -308,8 +315,13 @@ sf3 %>%
         axis.ticks = element_blank(),
         panel.grid = element_blank())
 
-ggsave(paste0(output_dir, "/figures/mapa_stem_municipios_2016.png", height = 5.5, width = 10))
 
+ggsave(
+  filename = paste0(output_dir, "/figures/mapa_stem_municipios_2016.png"),
+  # plot = box2,  # Replace with the actual ggplot object
+  height = 5.0,
+  width = 10
+)
 
 
 sf3 %>%
@@ -329,23 +341,42 @@ sf3 %>%
         axis.ticks = element_blank(),
         panel.grid = element_blank())
 
-ggsave(paste0(output_dir, "/figures/mapa_stem_SP.png", height = 5.5, width = 7.5))
-
-
+ggsave(
+  filename = paste0(output_dir, "/figures/mapa_stem_SP.png"),
+  # plot = box2,  # Replace with the actual ggplot object
+  height = 5.5,
+  width = 7.5
+)
 
 # Gráficos - Discontinuidade ----------------------------------------------
 
-
-
-
 ## outcomes
 
-### hosp 
+### running regressions 
 
 amostra <- cbind()
 
+state.f = factor(df$sigla_uf) 
+state.d = model.matrix(~state.f+0) # creating fixed effects
+
+
+
+covsZ = cbind(state.d)
 poli = 1
-covsZ = cbind(state.d, df$idade)
+janela = cbind()
+k = "triangular"
+
+r4 = rdrobust(df$Y_hosp,  df$X, p = poli, kernel = k,  h = janela,  subset = amostra, covs = covsZ)
+r5 = rdrobust(df$Y_deaths_sivep, df$X, kernel = k, h = janela,    p = poli,  subset = amostra, covs = covsZ)
+
+
+
+### hosp 
+
+
+
+#poli = 1
+#covsZ = cbind(state.d, df$mulher)
 #covsZ = df$tenure
 
 
@@ -353,11 +384,11 @@ hosp <- rdplot(df$Y_hosp , df$X,
                covs = covsZ,
                p = poli,
                x.lim = c(-0.10, 0.10),
-               y.lim = c(100, 550),
+               #y.lim = c(20, 550),
                #shade = TRUE,
                subset = amostra,
                h = r4$bws[1],
-               scale = 3,
+               scale = 5,
                #ci = 95,
                binselect = "qsmv",
                kernel = 'triangular',
@@ -373,11 +404,11 @@ death <- rdplot(df$Y_deaths_sivep , df$X,
                 covs = covsZ,
                 p = poli,
                 x.lim = c(-0.10, 0.10),
-                y.lim = c(00, 100),
+                y.lim = c(00, 300),
                 #shade = TRUE,
                 subset = amostra,
                 h = r5$bws[1],
-                scale = 6,
+                scale = 5,
                 #ci = 90,
                 binselect = "qsmv",
                 kernel = 'triangular',
@@ -405,31 +436,14 @@ hosp <- hosp +
   theme(axis.title = element_text(size = 10, face = "plain"),
         title = element_text(size = 12))
 
+
+
 plots <- hosp / death
 
 plots
 
-ggsave(paste0(output_dir, "/figures/bigsample_plots_outcomes.png", plots,
+ggsave(paste0(output_dir, "/figures/bigsample_plots_outcomes.png", plot = plots,
        width = 5.5,
        height = 5,
        units = "in"))
-
-
-### NFI
-
-rdplot(df$total_nfi , df$X,
-       covs = covsZ,
-       p = poli,
-       x.lim = c(-0.0776, 0.0776),
-       #y.lim = c(100, 700),
-       #shade = TRUE,
-       subset = amostra,
-       h = 0.0776,
-       scale = 4,
-       #ci = 90,
-       binselect = "qsmv",
-       kernel = 'uniform',
-       x.label = "STEM candidate winning margin",
-       y.label = "Nº of NFI",
-       title = "STEM candidate elected in 2016 and NFI in 2020")
 

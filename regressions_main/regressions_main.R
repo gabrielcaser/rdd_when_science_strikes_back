@@ -188,7 +188,7 @@ r3 = rdrobust(df$Y_deaths_sivep, df$X, p = poli, kernel = k,  h = janela,  bwsel
 covsZ = cbind(state.d, df$mulher)
 poli = 1
 janela = cbind()
-
+k = "triangular"
 
 r4 = rdrobust(df$Y_hosp,  df$X, p = poli, kernel = k,  h = janela,  subset = amostra, covs = covsZ)
 r5 = rdrobust(df$Y_deaths_sivep, df$X, kernel = k, h = janela,    p = poli,  subset = amostra, covs = covsZ)
