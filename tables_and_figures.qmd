@@ -1,32 +1,35 @@
 ---
-title: "When Science Strikes Back - Tables and Figures"
-author: "Gabriel Caser dos Passos and Nelson Ricardo Laverde Cubillos"
-format: pdf
-editor: visual
+title:    "When Science Strikes Back"
+subtitle: "Tables and Figures"
+author:   "Gabriel Caser dos Passos and Nelson Ricardo Laverde Cubillos"
+format:   pdf
+editor:   visual
 ---
 
-| **Data Source**                                                                  | **Description**                                                           |
-|----------------------------------------------------------------------------------|---------------------------------------------------------------------------|
-| Base dos Dados (Dahis et al., 2022) and Tribunal Superior Eleitoral (TSE)        | Information on mayors and elections                                       |
-| RAIS (Brazilian Ministry of Labor database)                                      | Occupation data                                                           |
-| SIVEPGripe                                                                       | Epidemiological outcomes data (hospitalizations, deaths)                  |
-| 2010 Brazilian National Census                                                   | Demographic data                                                          |
-| IEPS Data Index                                                                  | Public health data                                                        |
-| Power and Rodrigues-Silveira (2019)                                              | Ideological measures                                                      |
-| de Souza Santos et al. (2021) and National Confederation of Municipalities (CNI) | Data on Non-Pharmaceutical Interventions (NPIs) between May and July 2020 |
+| **Data Source**                                                                  | **Description**                                                            |
+|-------------------------------------|-----------------------------------|
+| Base dos Dados (Dahis et al., 2022) and Tribunal Superior Eleitoral (TSE)        | Information on mayors and elections.                                       |
+| RAIS (Brazilian Ministry of Labor database)                                      | Occupation data.                                                           |
+| SIVEPGripe                                                                       | Epidemiological outcomes data (hospitalizations, deaths).                  |
+| 2010 Brazilian National Census                                                   | Demographic data.                                                          |
+| IEPS Data Index                                                                  | Public health data.                                                        |
+| Power and Rodrigues-Silveira (2019)                                              | Ideological measures.                                                      |
+| De Souza Santos et al. (2021) and National Confederation of Municipalities (CNI) | Data on Non-Pharmaceutical Interventions (NPIs) between May and July 2020. |
 
 : Summary of Data Sources
 
-| **Variable**                          | **Description**                                                                                   |
-|---------------------------------------|---------------------------------------------------------------------------------------------------|
-| Cases per 100k inhabitants            | Number of COVID-19 cases per 100,000 inhabitants, based on municipal data                         |
-| Hospitalizations per 100k inhabitants | Number of hospitalizations due to COVID-19 per 100,000 inhabitants                                |
-| Deaths per 100k inhabitants           | Number of deaths from COVID-19 per 100,000 inhabitants                                            |
-| STEM candidate                        | Indicator for whether a candidate has worked in STEM for at least 6 months or holds a STEM degree |
-| STEM occupation                       | Defined as per CBO classification list by Machado et al. (2021)                                   |
-| STEM education                        | Based on data from Escavador, social media, and machine learning classification                   |
-| STEM winning margin                   | Vote margin between the first and second most-voted candidates, positive if a STEM candidate won  |
-| Cohort                                | List of candidates registered in the 2016 local executive elections                               |
-| Tenure                                | Employment time in a STEM occupation, calculated using RAIS data                                  |
+\
+
+| **Variable**                          | **Description**                                                                                    |
+|-----------------------|-------------------------------------------------|
+| Cases per 100k inhabitants            | Number of COVID-19 cases per 100,000 inhabitants, based on municipal data.                         |
+| Hospitalizations per 100k inhabitants | Number of hospitalizations due to COVID-19 per 100,000 inhabitants.                                |
+| Deaths per 100k inhabitants           | Number of deaths from COVID-19 per 100,000 inhabitants.                                            |
+| STEM candidate                        | Indicator for whether a candidate has worked in STEM for at least 6 months or holds a STEM degree. |
+| STEM occupation                       | Defined as per CBO classification list by Machado et al. (2021).                                   |
+| STEM education                        | Based on data from Escavador, social media, and machine learning classification.                   |
+| STEM winning margin                   | Vote margin between the first and second most-voted candidates, positive if a STEM candidate won.  |
+| Cohort                                | List of candidates registered in the 2016 local executive elections.                               |
+| Tenure                                | Employment time in a STEM occupation, calculated using RAIS data.                                  |
 
 : Main Variables in the Study

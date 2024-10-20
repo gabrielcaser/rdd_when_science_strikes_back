@@ -4,7 +4,7 @@
 
 # Oppening ----------------------------------------------------------------
 
-df <- readRDS(paste(create_dataset_for_regressions,"/data/rdd_data_main.rds", sep = ""))
+df <- readRDS(paste(data_dir,"/data/rdd_data_main.rds", sep = ""))
 
 # Sum stats ---------------------------------------------------------------
 
