@@ -6,7 +6,7 @@ editor: visual
 ---
 
 | **Data Source**                                                                  | **Description**                                                           |
-|-----------------------------------------|-------------------------------|
+|----------------------------------------------------------------------------------|---------------------------------------------------------------------------|
 | Base dos Dados (Dahis et al., 2022) and Tribunal Superior Eleitoral (TSE)        | Information on mayors and elections                                       |
 | RAIS (Brazilian Ministry of Labor database)                                      | Occupation data                                                           |
 | SIVEPGripe                                                                       | Epidemiological outcomes data (hospitalizations, deaths)                  |
@@ -18,7 +18,7 @@ editor: visual
 : Summary of Data Sources
 
 | **Variable**                          | **Description**                                                                                   |
-|-----------------------|-------------------------------------------------|
+|---------------------------------------|---------------------------------------------------------------------------------------------------|
 | Cases per 100k inhabitants            | Number of COVID-19 cases per 100,000 inhabitants, based on municipal data                         |
 | Hospitalizations per 100k inhabitants | Number of hospitalizations due to COVID-19 per 100,000 inhabitants                                |
 | Deaths per 100k inhabitants           | Number of deaths from COVID-19 per 100,000 inhabitants                                            |
