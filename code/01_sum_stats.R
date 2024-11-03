@@ -1,0 +1,421 @@
+
+# This program creates sum stats
+
+
+# Oppening ----------------------------------------------------------------
+
+df <- readRDS(paste(data_dir,"/data/rdd_data_main.rds", sep = ""))
+
+# Sum stats ---------------------------------------------------------------
+
+
+
+dat <- df[ c("stem_background", # keeping only relevant variables
+             "tenure",
+             "X",
+             "mulher",
+             "idade",
+             "instrucao",
+             "reeleito",
+             "ideology_party",
+             "populacao",
+             "densidade",
+             #"taxa_analfabetismo_18_mais",
+             #"indice_gini",
+             "idhm",
+             "renda_pc",
+             "per_populacao_urbana",
+             "per_populacao_homens",
+             "tx_med",
+             "pct_desp_recp_saude_mun",
+             "cob_esf",
+             "tx_leito_sus",
+             "ideology_municipality",
+             "Y_deaths_sivep",
+             "Y_hosp",
+             #"Y_cases",
+             "barreiras_sanitarias",
+             "mascaras",
+             "restricao_atv_nao_essenciais",
+             "restricao_circulacao",
+             "restricao_transporte_publico",
+             "total_nfi")]
+
+dat <- dat %>% 
+  summarise(tenure_stem_job = tenure,
+            #physician = as.numeric(medico),
+            female = as.numeric(mulher),
+            age = idade,
+            education = instrucao,
+            incumbent_when_elected = as.numeric(reeleito),
+            party_ideology = ideology_party,
+            stem_win_margin = X,
+            deaths_per_100k = Y_deaths_sivep,
+            hospitalizations_per_100k = Y_hosp,
+            #cases_per_100k = Y_cases,
+            cordon_sanitaire = barreiras_sanitarias,
+            face_covering_required = mascaras,
+            closure_of_non_essential = restricao_atv_nao_essenciais,
+            gathering_prohibition = restricao_circulacao,
+            public_transport_restriction = restricao_transporte_publico,
+            number_of_npi = total_nfi,
+            population_2010 = populacao,
+            #illiteracy_rate = taxa_analfabetismo_18_mais,
+            #gini = indice_gini,
+            hdi = idhm,
+            pc_income = renda_pc,
+            density = densidade,
+            urban_pop_rate = per_populacao_urbana,
+            men_pop_rate = per_populacao_homens,
+            physician_per_1k = tx_med,
+            health_municipal_spending_rate = pct_desp_recp_saude_mun,
+            community_health_agency_rate = cob_esf,
+            hosp_beds_per_100k_pop = tx_leito_sus,
+            stem_background)
+
+## creating table without groups
+
+tab <- datasummary(All(data.frame(dat)) ~ N  + Min + Mean + Max + SD, data = dat, fmt = 2) 
+tab
+
+datasummary(All(data.frame(dat)) ~ N  + Min + Mean + Max + SD, data = dat, fmt = 2, output = paste0(output_dir, "/figures/table_sum_stats.tex"))
+
+## creating table with groups
+
+datasummary_balance( ~ stem_background, dinm_statistic = "p.value", data = dat, fmt = 2)
+datasummary_balance( ~ stem_background, dinm_statistic = "p.value", data = dat, fmt = 2, output = paste0(output_dir, "/figures/table_sum_stats_groups.tex"))
+
+
+## Figures for STEM candidates ---------------------------------------------------------
+
+### Number of STEM candidates
+
+profi2 <- df %>%
+  group_by(coorte) %>% 
+  dplyr::summarise(per_stem_candidates_elected = (sum(stem_background == 1)), #/ sum(stem_job != 99)) * 100,
+                   total_stem_candidates = (sum(stem_background == 1)))
+
+
+q <- ggplot(profi2, aes(x = as.character(coorte), y = per_stem_candidates_elected)) +
+  geom_bar(stat = "identity") +
+  # theme_minimal() + 
+  #ggtitle("Number of elected STEM candidates") +
+  xlab("cohort") +
+  ylab("")
+
+q
+
+ggsave(paste0(output_dir, "/figures/barplot_stem_candidates.png"), q,
+       width = 5.50,
+       height = 5.00,
+       units = "in")
+
+
+### Main occupations
+
+profi <- df %>% 
+  filter(stem_background == 1) %>%
+  group_by(coorte, cbo_agregado_nome) %>%
+  dplyr::summarise(number = n()) %>%
+  ungroup() %>% 
+  group_by(coorte) %>%
+  slice_max(order_by = number, n = 10) %>%
+  arrange(desc(number))
+
+
+p <- ggplot(profi, aes(x = as.character(coorte), y = number, fill = as.character(cbo_agregado_nome))) +
+  geom_bar(pattern = "occupation", color = "black", stat = "identity") +
+  theme_minimal(base_size = 16) +
+  #theme_bw() +
+  #ggtitle("STEM mayors' occupations") +
+  xlab("cohort") +
+  ylab("number of STEM mayors") 
+
+p <- p + scale_fill_discrete(name = "occuppation")
+p
+
+ggsave(
+  filename = paste0(output_dir, "/figures/barplot_stem_cbos.png"),
+  plot = p,  # Replace with the actual ggplot object
+  height = 5.0,
+  width = 5.5
+)
+
+
+### tenure
+
+box <- ggplot(subset(df, stem_background == 1)) + 
+  geom_boxplot(aes(y=tenure, fill = as.factor(coorte))) +
+  xlab("") +
+  scale_x_discrete() +
+  scale_fill_discrete(name = "cohort")
+
+box 
+
+ggsave(
+  filename = paste0(output_dir, "/figures/boxplot_tenure.png"),
+  plot = box,  # Replace with the actual ggplot object
+  height = 5.0,
+  width = 5.5
+)
+
+## removing datasets
+
+rm(p, profi, profi2, q, dat, box)
+
+## % of STEM candidates per state
+
+
+
+### getting all Brazilian municipalities
+
+df_cities <- read.csv(paste0(work_dir,"/input/cities_and_states.csv", sep = ""))
+df_cities$id_municipio <- as.character(df_cities$id_municipio)
+df_cities$coorte <- as.factor(2016) 
+
+df_boxplots <- merge(df_cities, df, by = c("id_municipio", "sigla_uf", "coorte"), all = TRUE) # creating a dataset with all municipalities
+
+
+### ploting
+
+states <- df_boxplots %>%
+  filter(coorte == 2016) %>% 
+  group_by(sigla_uf, coorte) %>% 
+  dplyr::summarise(perc_stem = sum(stem_background == 1, na.rm = TRUE) / length(unique(id_municipio))) %>% 
+  arrange(desc(perc_stem))
+
+box2 <- ggplot(states, aes(y = perc_stem * 100, group = coorte, x = as.character(coorte))) + 
+  geom_boxplot() + 
+  #theme_minimal() + 
+  xlab("cohort") +
+  ylab("% of STEM mayors")
+
+box2 
+
+ggsave(
+  filename = paste0(output_dir, "/figures/sumstats_boxplot.png"),
+  plot = box2,  # Replace with the actual ggplot object
+  height = 5.0,
+  width = 5.5
+)
+
+
+
+# Creating map  ---------------------------------------------------------
+
+## states
+#utils::remove.packages('geobr')
+#devtools::install_github("ipeaGIT/geobr", subdir = "r-package")
+
+dados_mapa <- read_state(year=2015, showProgress = FALSE, simplified = FALSE)
+
+#dados_mapa <- readRDS("Dados/input/220811_geo_dados_estados_2019.rds")
+
+sf2 <- states %>% 
+  filter(coorte == 2016)
+
+#sf2 <- sf2 %>% 
+ # rename(sigla_uf = state)
+
+dados_mapa <- dados_mapa %>% 
+  rename(sigla_uf = abbrev_state)
+
+
+sf2 <- left_join(dados_mapa, sf2, by = c("sigla_uf"))
+dim(df)
+
+sf2$perc_stem = sf2$perc_stem * 100
+
+
+sf2 %>%
+  filter(sigla_uf != "AC") %>% 
+  ggplot() +
+  geom_sf(aes(fill = perc_stem), alpha = 0.9, color = NA) +
+  labs(#title="Percentage of STEM mayors per state (2016)",
+    caption='Source: Author', size = 8) +
+  viridis::scale_fill_viridis(
+    direction = 1,
+    name="% of STEM mayors",
+    na.value = "white"
+  ) +
+  theme_minimal(base_size = 16) + 
+  theme(axis.title = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid = element_blank())
+
+ggsave(
+  filename = paste0(output_dir, "/figures/mapa_stem_estados_2016.png"),
+ # plot = box2,  # Replace with the actual ggplot object
+  height = 5.0,
+  width = 10
+)
+
+
+
+## municipios
+
+mun <- read_municipality(year=2015, showProgress = FALSE, simplified = FALSE)
+
+#mun <- readRDS("Dados/input/220811_geo_dados_municipios_2019.rds")
+
+mun <- mun %>% 
+  rename(id_municipio = code_muni)
+
+mun$id_municipio = substr(mun$id_municipio,1,6)
+
+sf3 <- df %>% 
+  filter(coorte == 2016)
+
+sf3 <- left_join(mun, sf3, by = c("id_municipio"))
+
+sf3 %>%
+  #filter(code_region == 3) %>%  # para ver o mapa inteiro é só tirar o code_region
+  # filter(sigla_uf != "AC") %>% 
+  ggplot() +
+  geom_sf(data = subset(dados_mapa)) +
+  geom_sf(aes(fill = stem_background), alpha = .7, color = NA) +
+  labs(#title="Municipalities where a STEM canditate was among the top 2 voted (2016)",
+    caption='Source: Author', size = 8) +
+  scale_fill_manual(values = c("red", "blue"),
+                    name = "STEM candidate",
+                    na.value = "grey90",
+                    labels = c("Lost","Won", "Not in top 2")) +
+  theme_minimal(base_size = 16) +
+  theme(axis.title = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid = element_blank())
+
+
+ggsave(
+  filename = paste0(output_dir, "/figures/mapa_stem_municipios_2016.png"),
+  # plot = box2,  # Replace with the actual ggplot object
+  height = 5.0,
+  width = 10
+)
+
+
+sf3 %>%
+  filter(code_state == 35) %>%  # para ver o mapa inteiro é só tirar o code_region
+  ggplot() +
+  geom_sf(data = subset(dados_mapa, code_state == 35)) +
+  geom_sf(aes(fill = stem_background), alpha = .7, color = NA) +
+  labs(#title="Municipalities where a STEM canditate was among the top 2 voted in SP (2016)",
+    caption='Source: Author', size = 8) +
+  scale_fill_manual(values = c("red", "blue"),
+                    name = "STEM candidate",
+                    na.value = "grey90",
+                    labels = c("Lost","Won", "Not in top 2")) +
+  theme_minimal(base_size = 16) + 
+  theme(axis.title = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid = element_blank())
+
+ggsave(
+  filename = paste0(output_dir, "/figures/mapa_stem_SP.png"),
+  # plot = box2,  # Replace with the actual ggplot object
+  height = 5.5,
+  width = 7.5
+)
+
+# Gráficos - Discontinuidade ----------------------------------------------
+
+## outcomes
+
+### running regressions 
+
+amostra <- cbind()
+
+state.f = factor(df$sigla_uf) 
+state.d = model.matrix(~state.f+0) # creating fixed effects
+
+
+
+covsZ = cbind(state.d)
+poli = 1
+janela = cbind()
+k = "triangular"
+
+r4 = rdrobust(df$Y_hosp,  df$X, p = poli, kernel = k,  h = janela,  subset = amostra, covs = covsZ)
+r5 = rdrobust(df$Y_deaths_sivep, df$X, kernel = k, h = janela,    p = poli,  subset = amostra, covs = covsZ)
+
+
+
+### hosp 
+
+
+
+#poli = 1
+#covsZ = cbind(state.d, df$mulher)
+#covsZ = df$tenure
+
+
+hosp <- rdplot(df$Y_hosp , df$X,
+               covs = covsZ,
+               p = poli,
+               x.lim = c(-0.10, 0.10),
+               #y.lim = c(20, 550),
+               #shade = TRUE,
+               subset = amostra,
+               h = r4$bws[1],
+               scale = 5,
+               #ci = 95,
+               binselect = "qsmv",
+               kernel = 'triangular',
+               x.label = "STEM candidate's margin of victory",
+               y.label = "",
+               title = "(a) COVID-19 hospitalizations")
+
+
+### deaths
+
+
+death <- rdplot(df$Y_deaths_sivep , df$X,
+                covs = covsZ,
+                p = poli,
+                x.lim = c(-0.10, 0.10),
+                y.lim = c(00, 300),
+                #shade = TRUE,
+                subset = amostra,
+                h = r5$bws[1],
+                scale = 5,
+                #ci = 90,
+                binselect = "qsmv",
+                kernel = 'triangular',
+                x.label = "STEM candidate's margin of victory",
+                y.label = "",
+                title = "(b) COVID-19 deaths")
+
+death <- death$rdplot
+
+
+
+death <- death + 
+  theme_minimal(base_size = 15) +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(axis.title = element_text(size = 10, face = "plain"),
+        title = element_text(size = 12)) 
+
+death
+
+hosp <- hosp$rdplot  
+
+hosp <- hosp +
+  theme_minimal(base_size = 15) +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(axis.title = element_text(size = 10, face = "plain"),
+        title = element_text(size = 12))
+
+
+
+plots <- hosp / death
+
+plots
+
+ggsave(paste0(output_dir, "/figures/bigsample_plots_outcomes.png", plot = plots,
+       width = 5.5,
+       height = 5,
+       units = "in"))
+
