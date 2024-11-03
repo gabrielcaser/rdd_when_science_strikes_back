@@ -36,7 +36,7 @@ create_dataset_for_regressions = "C:/Users/gabri/OneDrive/Gabriel/Insper/Tese/En
 
 # Oppening Covid and RDD Data ----------------------------------------------------
 
-df <- readRDS(paste(create_dataset_for_regressions, "/data/rdd_data_main.rds", sep = ""))
+df <- readRDS(paste(create_dataset_for_regressions, "/data/rdd_data_moderation_broaddefinition.rds", sep = ""))
 
 
 # Creating functions -----------------------------------
@@ -94,19 +94,20 @@ robust_check <- function(outcome, poli, covsZ, k) {
 
 # Creating state dummies for fixed effects --------------------------------
 
+# Defining regressions' parameters
+
+df <- df[df$sch_non_stem_cdt == 1, ]
 
 state.f = factor(df$sigla_uf)
 
 state.d = model.matrix(~state.f+0)
 
 
-#year.f = factor(df$coorte)
+year.f = factor(df$coorte)
 
-#year.d = model.matrix(~year.f+0)
+year.d = model.matrix(~year.f+0)
 
-# Defining regressions' parameters
 
-#amostra <- cbind(df$coorte == 2016, df$sch_non_stem_cdt == 1, df$ens_sup == 1)
 
 
 
@@ -115,37 +116,37 @@ state.d = model.matrix(~state.f+0)
 
 # baseline
 
-amostra = cbind()
-covsZ = cbind(state.d)
+
+covsZ = cbind(state.d, year.d)
 poli = 1
 #janela = 0.05
 janela = cbind()
 k = "triangular"
 
-#rdrobust(df$taxa_analfabetismo_18_mais, df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
+#rdrobust(df$taxa_analfabetismo_18_mais, df$X, p = poli, kernel = k, h = janela, bwselect = "mserd",  covs = covsZ)
 
-#taxa_analfabetismo_18_mais <- rdrobust(df$taxa_analfabetismo_18_mais, df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
-#indice_gini <- rdrobust(df$indice_gini,  df$X, p = poli, kernel = k, h = janela, subset = amostra, covs = covsZ)
-renda_pc <- rdrobust(df$renda_pc,  df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
-populacao <- rdrobust(log(df$populacao),  df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
-idhm <- rdrobust(df$idhm,  df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
-densidade <- rdrobust(log(df$densidade),  df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
-per_populacao_homens <- rdrobust(df$per_populacao_homens,  df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
-pct_desp_recp_saude_mun <- rdrobust(df$pct_desp_recp_saude_mun,  df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
-tx_med_ch <- rdrobust(df$tx_med_ch, df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
-cob_esf <- rdrobust(df$cob_esf,  df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
-tx_leito_sus <- rdrobust(df$tx_leito_sus, df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
-ideology_municipality <- rdrobust(df$ideology_municipality, df$X, p = poli, kernel = k, h = janela, bwselect = "mserd", subset = amostra, covs = covsZ)
+#taxa_analfabetismo_18_mais <- rdrobust(df$taxa_analfabetismo_18_mais, df$X, p = poli, kernel = k, h = janela, bwselect = "mserd",  covs = covsZ)
+#indice_gini <- rdrobust(df$indice_gini,  df$X, p = poli, kernel = k, h = janela,  covs = covsZ)
+renda_pc <- rdrobust(df$renda_pc,  df$X, p = poli, kernel = k, h = janela, bwselect = "mserd",  covs = covsZ)
+populacao <- rdrobust(log(df$populacao),  df$X, p = poli, kernel = k, h = janela, bwselect = "mserd",  covs = covsZ)
+idhm <- rdrobust(df$idhm,  df$X, p = poli, kernel = k, h = janela, bwselect = "mserd",  covs = covsZ)
+densidade <- rdrobust(df$densidade,  df$X, p = poli, kernel = k, h = janela, bwselect = "mserd",  covs = covsZ)
+per_populacao_homens <- rdrobust(df$per_populacao_homens,  df$X, p = poli, kernel = k, h = janela, bwselect = "mserd",  covs = covsZ)
+pct_desp_recp_saude_mun <- rdrobust(df$pct_desp_recp_saude_mun,  df$X, p = poli, kernel = k, h = janela, bwselect = "mserd",  covs = covsZ)
+tx_med_ch <- rdrobust(df$tx_med_ch, df$X, p = poli, kernel = k, h = janela, bwselect = "mserd",  covs = covsZ)
+cob_esf <- rdrobust(df$cob_esf,  df$X, p = poli, kernel = k, h = janela, bwselect = "mserd",  covs = covsZ)
+tx_leito_sus <- rdrobust(df$tx_leito_sus, df$X, p = poli, kernel = k, h = janela, bwselect = "mserd",  covs = covsZ)
+ideology_municipality <- rdrobust(df$ideology_municipality, df$X, p = poli, kernel = k, h = janela, bwselect = "mserd",  covs = covsZ)
 
 
 
 models <- list(
               # "Gini" = indice_gini,
                "PC income" = renda_pc,
-               "Ln Populacao" = populacao,
+               "Log Population" = populacao,
                #"Illiteracy" = taxa_analfabetismo_18_mais,
                "HDI" = idhm,
-               "Ln Density" = densidade,
+               "Density" = densidade,
                "% Masc. Pop" = per_populacao_homens,
                "% Health municipal spending" = pct_desp_recp_saude_mun,
                "Doctors per 1k pop." = tx_med_ch,
@@ -172,41 +173,45 @@ baseline_table <- modelsummary(models,
 
 baseline_table
 
-#gt::gtsave(baseline_table, filename =  "Dados/output/221201_bigsample_baseline.tex")
+gt::gtsave(baseline_table, filename =  "output/240803_bigsample_baseline.tex")
 
 
 # estimates
 
-covsZ = cbind(state.d) 
+covsZ = cbind(state.d, year.d) 
 poli = 1
 janela = cbind()
 
-r2 = rdrobust(df$Y_hosp,  df$X, p = poli, kernel = k, h = janela,   bwselect = "mserd", subset = amostra, covs = covsZ)
-r3 = rdrobust(df$Y_deaths_sivep, df$X, p = poli, kernel = k,  h = janela,  bwselect = "mserd",  subset = amostra, covs = covsZ)
+r2 = rdrobust(df$Y_hosp,  df$X, p = poli, kernel = k, h = janela,   bwselect = "mserd", covs = covsZ)
+r3 = rdrobust(df$Y_deaths_sivep, df$X, p = poli, kernel = k,  h = janela,  bwselect = "mserd", covs = covsZ)
 
+summary(r2)
+summary(r3)
 
-covsZ = cbind(state.d, df$mulher)
+covsZ = cbind(state.d, year.d, df$renda_pc, log(df$populacao), df$idhm, log(df$densidade), df$per_populacao_homens, df$pct_desp_recp_saude_mun, df$tx_med_ch, df$cob_esf, df$tx_leito_sus, df$ideology_municipality, df$mulher, df$reeleito, df$ideology_party, df$idade)
 poli = 1
-janela = cbind()
-k = "triangular"
+janela = NULL
+#k = "triangular"
 
-r4 = rdrobust(df$Y_hosp,  df$X, p = poli, kernel = k,  h = janela,  subset = amostra, covs = covsZ)
-r5 = rdrobust(df$Y_deaths_sivep, df$X, kernel = k, h = janela,    p = poli,  subset = amostra, covs = covsZ)
+r4 = rdrobust(df$Y_hosp,  df$X, p = poli, kernel = k,  h = janela, covs = covsZ)
+r5 = rdrobust(df$Y_deaths_sivep, df$X, kernel = k, h = janela,    p = poli, covs = covsZ)
 
+summary(r4)
+summary(r5)
 
-covsZ = cbind(state.d) 
+covsZ = cbind(state.d, year.d) 
 poli = 1
 janela = 0.05
 
-r6 = rdrobust(df$Y_hosp, df$X, p = poli, kernel = k,  h = janela,  bwselect = "mserd", subset = amostra, covs = covsZ)
-r7 = rdrobust(df$Y_deaths_sivep,  df$X, p = poli, kernel = k, h = janela,   bwselect = "mserd",  subset = amostra, covs = covsZ)
+r6 = rdrobust(df$Y_hosp, df$X, p = poli, kernel = k,  h = janela,  bwselect = "mserd",  covs = covsZ)
+r7 = rdrobust(df$Y_deaths_sivep,  df$X, p = poli, kernel = k, h = janela,   bwselect = "mserd",   covs = covsZ)
 
 
-covsZ = cbind(state.d, df$mulher)
+covsZ = cbind(state.d, year.d, df$renda_pc, log(df$populacao), df$idhm, log(df$densidade), df$per_populacao_homens, df$pct_desp_recp_saude_mun, df$tx_med_ch, df$cob_esf, df$tx_leito_sus, df$ideology_municipality, df$mulher, df$reeleito, df$ideology_party, df$idade)
 poli = 1
 
-r8 = rdrobust(df$Y_hosp ,  df$X, p = poli, kernel = k, h = janela,   bwselect = "mserd", subset = amostra, covs = covsZ)
-r9 = rdrobust(df$Y_deaths_sivep,  df$X, kernel = k, h = janela,   bwselect = "mserd", p = poli,  subset = amostra, covs = covsZ)
+r8 = rdrobust(df$Y_hosp ,  df$X, p = poli, kernel = k, h = janela,   bwselect = "mserd",  covs = covsZ)
+r9 = rdrobust(df$Y_deaths_sivep,  df$X, kernel = k, h = janela,   bwselect = "mserd", p = poli,   covs = covsZ)
 
 
 
@@ -235,22 +240,22 @@ teste <- modelsummary(models,
 
 
 teste
-#gt::gtsave(teste, filename =  "Dados/output/221201_bigsample_estimates.tex")
+gt::gtsave(teste, filename =  "output/240803_bigsample_estimates.tex")
 
 
 
 # Personal charact
 
-covsZ = cbind(state.d)
+covsZ = cbind(state.d, year.d)
 janela = cbind()
 #janela = 0.05
 poli = 1
 
-mulher <- rdrobust(df$mulher, h = janela, df$X, p = poli, kernel = k,  subset = amostra, covs = covsZ)
-reeleito <- rdrobust(df$reeleito, h = janela, df$X, p = poli, kernel = k,  subset = amostra, covs = covsZ)
-idade <- rdrobust(df$idade, h = janela, df$X, p = poli, kernel = k, subset = amostra, covs = covsZ)
-#ens.sup <- rdrobust(df$instrucao, h = janela, df$X, p = poli, kernel = k, subset = amostra, covs = covsZ)
-ideology <- rdrobust(df$ideology_party, h = janela, df$X, p = poli, kernel = k, subset = amostra, covs = covsZ)
+mulher <- rdrobust(df$mulher, h = janela, df$X, p = poli, kernel = k,   covs = covsZ)
+reeleito <- rdrobust(df$reeleito, h = janela, df$X, p = poli, kernel = k,   covs = covsZ)
+idade <- rdrobust(df$idade, h = janela, df$X, p = poli, kernel = k,  covs = covsZ)
+#ens.sup <- rdrobust(df$instrucao, h = janela, df$X, p = poli, kernel = k,  covs = covsZ)
+ideology <- rdrobust(df$ideology_party, h = janela, df$X, p = poli, kernel = k,  covs = covsZ)
 
 
 
@@ -278,7 +283,7 @@ teste_chr <- modelsummary(models,
 
 
 teste_chr
-gt::gtsave(teste_chr, filename =  "Dados/output/221201_personal_char.tex")
+gt::gtsave(teste_chr, filename =  "output/240803_personal_char.tex")
 
 
 
@@ -298,8 +303,12 @@ df %>%
 
 # Mechanism  -----------------------
 
+df2 <- df[df$coorte == 2016, ]
+state.f2 = factor(df2$sigla_uf)
+state.d2 = model.matrix(~state.f2+0)
 
-covsZ = cbind(state.d)
+
+covsZ = cbind(state.d2)
 poli = 1
 k = "triangular"
 #janela = 0.08
@@ -307,22 +316,23 @@ janela = cbind()
 
 
 
-r1 = rdrobust(df$total_nfi,  df$X, p = poli, kernel = k,  subset = amostra, covs = covsZ, h = janela)
-r2 = rdrobust(df$mascaras, df$X,   p = poli, kernel = k,  subset = amostra, covs = covsZ, h = janela)
-r3 = rdrobust(df$restricao_atv_nao_essenciais, df$X,   p = poli, kernel = k,  subset = amostra, covs = covsZ, h = janela)
-r4 = rdrobust(df$restricao_circulacao, df$X,   p = poli, kernel = k,  subset = amostra, covs = covsZ, h = janela)
-r5 = rdrobust(df$restricao_transporte_publico, df$X,   p = poli, kernel = k,  subset = amostra, covs = covsZ, h = janela)
-r6 = rdrobust(df$barreiras_sanitarias, df$X,   p = poli, kernel = k,  subset = amostra, covs = covsZ, h = janela)
+r1 = rdrobust(df2$total_nfi,  df2$X, p = poli, kernel = k,   covs = covsZ, h = janela)
+r2 = rdrobust(df2$mascaras, df2$X,   p = poli, kernel = k,   covs = covsZ, h = janela)
+r3 = rdrobust(df2$restricao_atv_nao_essenciais, df2$X,   p = poli, kernel = k,   covs = covsZ, h = janela)
+r4 = rdrobust(df2$restricao_circulacao, df2$X,   p = poli, kernel = k,   covs = covsZ, h = janela)
+r5 = rdrobust(df2$restricao_transporte_publico, df2$X,   p = poli, kernel = k,   covs = covsZ, h = janela)
+r6 = rdrobust(df2$barreiras_sanitarias, df2$X,   p = poli, kernel = k,   covs = covsZ, h = janela)
 
-covsZ = cbind(state.d, df$mulher)
+covsZ = cbind(state.d2, df2$renda_pc, log(df2$populacao), df2$idhm, df2$densidade, df2$per_populacao_homens, df2$pct_desp_recp_saude_mun, df2$tx_med_ch, df2$cob_esf, df2$tx_leito_sus, df2$ideology_municipality, df2$mulher, df2$reeleito, df2$ideology_party, df2$idade)
+
 poli = 1
 
-r12 = rdrobust(df$total_nfi, df$X, p = poli, kernel = k,  subset = amostra, covs = covsZ, h = janela)
-r22 = rdrobust(df$mascaras, df$X,   p = poli, kernel = k,  subset = amostra, covs = covsZ, h = janela)
-r32 = rdrobust(df$restricao_atv_nao_essenciais, df$X,   p = poli, kernel = k,  subset = amostra, covs = covsZ, h = janela)
-r42 = rdrobust(df$restricao_circulacao, df$X,   p = poli, kernel = k,  subset = amostra, covs = covsZ, h = janela)
-r52 = rdrobust(df$restricao_transporte_publico, df$X,   p = poli, kernel = k,  subset = amostra, covs = covsZ, h = janela)
-r62 = rdrobust(df$barreiras_sanitarias, df$X,   p = poli, kernel = k,  subset = amostra, covs = covsZ, h = janela)
+r12 = rdrobust(df2$total_nfi, df2$X, p = poli, kernel = k,   covs = covsZ, h = janela)
+r22 = rdrobust(df2$mascaras, df2$X,   p = poli, kernel = k,   covs = covsZ, h = janela)
+r32 = rdrobust(df2$restricao_atv_nao_essenciais, df2$X,   p = poli, kernel = k,   covs = covsZ, h = janela)
+r42 = rdrobust(df2$restricao_circulacao, df2$X,   p = poli, kernel = k,   covs = covsZ, h = janela)
+r52 = rdrobust(df2$restricao_transporte_publico, df2$X,   p = poli, kernel = k,   covs = covsZ, h = janela)
+r62 = rdrobust(df2$barreiras_sanitarias, df2$X,   p = poli, kernel = k,   covs = covsZ, h = janela)
 
 
 models <- list("Total NFI" = r1,
@@ -348,26 +358,28 @@ mr3 <- modelsummary(models,
                     coef_omit = "Bias-Corrected|Conventional")
 
 
-mr3 %>%
+mr3 <- mr3 %>%
   tab_spanner(label = "(1)", columns = 2:7) %>% 
   tab_spanner(label = "(2)", columns = 8:13)
+
+gt::gtsave(mr3, filename =  "output/240803_mechanism.tex")
 
 
 ## controlling (testing) mechanism
 
 
-covsZ = cbind(state.d, df$total_nfi)
+covsZ = cbind(state.d2, df2$total_nfi)
 
 poli = 1
 
-r1 = rdrobust(df$Y_hosp, df$X,  p = poli, kernel = k, subset = amostra, covs = covsZ, h = janela)
-r2 = rdrobust(df$Y_deaths_sivep, df$X,  p = poli, kernel = k, subset = amostra, covs = covsZ, h = janela)
+r1 = rdrobust(df2$Y_hosp, df2$X,  p = poli, kernel = k,  covs = covsZ, h = janela)
+r2 = rdrobust(df2$Y_deaths_sivep, df2$X,  p = poli, kernel = k,  covs = covsZ, h = janela)
 
 poli = 2
-covsZ = cbind(state.d, df$total_nfi)
+covsZ = cbind(state.d2, df2$total_nfi)
 
-r3 = rdrobust(df$Y_hosp, df$X,  p = poli, kernel = k, subset = amostra, covs = covsZ, h = janela)
-r4 = rdrobust(df$Y_deaths_sivep, df$X,  p = poli, kernel = k, subset = amostra, covs = covsZ, h = janela)
+r3 = rdrobust(df2$Y_hosp, df2$X,  p = poli, kernel = k,  covs = covsZ, h = janela)
+r4 = rdrobust(df2$Y_deaths_sivep, df2$X,  p = poli, kernel = k,  covs = covsZ, h = janela)
 
 models <- list("Hospitalizations" = r1,
                "Deaths" = r2,
@@ -395,19 +407,21 @@ mr4 %>%
 
 ## Different windows -----------------------------------------------------
 
-CovsZ = cbind(state.d) # mechanisms
+CovsZ = cbind(state.d, year.d, df$mulher) # mechanisms
+
+CovsZ_mechanism = cbind(state.d2, df2$mulher) # mechanisms
 
 k = 'triangular'
 
   
 df_robs_hosp <- robust_check(df$Y_hosp, 1, CovsZ, k)
 df_robs_deaths <- robust_check(df$Y_deaths_sivep, 1, CovsZ, k)
-df_robs_nfi <- robust_check(df$total_nfi, 1, CovsZ, k)
-df_robs_masks <- robust_check(df$mascaras, 1, CovsZ, k)
-df_robs_trans_pub <- robust_check(df$restricao_transporte_publico, 1, CovsZ, k)
-df_robs_circu <- robust_check(df$restricao_circulacao, 1, CovsZ, k)
-df_robs_atv <- robust_check(df$restricao_atv_nao_essenciais, 1, CovsZ, k)
-df_robs_sani <- robust_check(df$barreiras_sanitarias, 1, CovsZ, k)
+df_robs_nfi <- robust_check(df2$total_nfi, 1, CovsZ_mechanism, k)
+df_robs_masks <- robust_check(df2$mascaras, 1, CovsZ_mechanism, k)
+df_robs_trans_pub <- robust_check(df2$restricao_transporte_publico, 1, CovsZ_mechanism, k)
+df_robs_circu <- robust_check(df2$restricao_circulacao, 1, CovsZ_mechanism, k)
+df_robs_atv <- robust_check(df2$restricao_atv_nao_essenciais, 1, CovsZ_mechanism, k)
+df_robs_sani <- robust_check(df2$barreiras_sanitarias, 1, CovsZ_mechanism, k)
 
 
 
@@ -448,11 +462,11 @@ plot_deaths_robs / plot_hosp_robs
 
 graficos_juntos <- plot_deaths_robs / plot_hosp_robs
 
-#ggsave("Dados/output/221201_mechanism_robust_outcomes.png", graficos_juntos,
-#       width = 5.50,
-#       height = 5.00,
-#       units = "in")
-#
+ggsave("output/240803_mechanism_robust_outcomes.png", graficos_juntos,
+       width = 5.50,
+       height = 5.00,
+       units = "in")
+
 
 plot_nfi_robs <-  ggplot(df_robs_nfi, aes(x = bw, y = coef_robs)) +
   geom_point(na.rm = TRUE) +
@@ -537,7 +551,7 @@ graf <- (plot_nfi_robs + plot_nfi_masks) / ( plot_nfi_sani + plot_nfi_trans) / (
 
 graf
 
-ggsave("Dados/output/221202_mechanism_npi_rob.png", graf,
+ggsave("output/240803_mechanism_npi_rob.png", graf,
        width = 10.00,
        height = 8.00,
        units = "in")
@@ -553,18 +567,18 @@ poli = 1
 janela = cbind()
 k = "triangular"
 
-taxa_analfabetismo_18_mais <- rdrobust(df$taxa_analfabetismo_18_mais, df$X, p = poli, kernel = k, bwselect = "mserd", subset = amostra, covs = covsZ)
-indice_gini <- rdrobust(df$indice_gini,  df$X, p = poli, kernel = k, subset = amostra, covs = covsZ)
-renda_pc <- rdrobust(df$renda_pc,  df$X, p = poli, kernel = k, bwselect = "mserd", subset = amostra, covs = covsZ)
-populacao_2010 <- rdrobust(df$populacao_2010,  df$X, p = poli, kernel = k, bwselect = "mserd", subset = amostra, covs = covsZ)
-idhm <- rdrobust(df$idhm,  df$X, p = poli, kernel = k, bwselect = "mserd", subset = amostra, covs = covsZ)
-per_populacao_urbana <- rdrobust(df$per_populacao_urbana,  df$X, p = poli, kernel = k, bwselect = "mserd", subset = amostra, covs = covsZ)
-per_populacao_homens <- rdrobust(df$per_populacao_homens,  df$X, p = poli, kernel = k, bwselect = "mserd", subset = amostra, covs = covsZ)
-pct_desp_recp_saude_mun <- rdrobust(df$pct_desp_recp_saude_mun,  df$X, p = poli, kernel = k, bwselect = "mserd", subset = amostra, covs = covsZ)
-tx_med_ch <- rdrobust(df$tx_med, df$X, p = poli, kernel = k, bwselect = "mserd", subset = amostra, covs = covsZ)
-cob_esf <- rdrobust(df$cob_esf,  df$X, p = poli, kernel = k, bwselect = "mserd", subset = amostra, covs = covsZ)
-tx_leito_sus <- rdrobust(df$tx_leito_sus, df$X, p = poli, kernel = k, bwselect = "mserd", subset = amostra, covs = covsZ)
-ideology_municipality <- rdrobust(df$ideology_municipality, df$X, p = poli, kernel = k, bwselect = "mserd", subset = amostra, covs = covsZ)
+taxa_analfabetismo_18_mais <- rdrobust(df$taxa_analfabetismo_18_mais, df$X, p = poli, kernel = k, bwselect = "mserd",  covs = covsZ)
+indice_gini <- rdrobust(df$indice_gini,  df$X, p = poli, kernel = k,  covs = covsZ)
+renda_pc <- rdrobust(df$renda_pc,  df$X, p = poli, kernel = k, bwselect = "mserd",  covs = covsZ)
+populacao_2010 <- rdrobust(df$populacao_2010,  df$X, p = poli, kernel = k, bwselect = "mserd",  covs = covsZ)
+idhm <- rdrobust(df$idhm,  df$X, p = poli, kernel = k, bwselect = "mserd",  covs = covsZ)
+per_populacao_urbana <- rdrobust(df$per_populacao_urbana,  df$X, p = poli, kernel = k, bwselect = "mserd",  covs = covsZ)
+per_populacao_homens <- rdrobust(df$per_populacao_homens,  df$X, p = poli, kernel = k, bwselect = "mserd",  covs = covsZ)
+pct_desp_recp_saude_mun <- rdrobust(df$pct_desp_recp_saude_mun,  df$X, p = poli, kernel = k, bwselect = "mserd",  covs = covsZ)
+tx_med_ch <- rdrobust(df$tx_med, df$X, p = poli, kernel = k, bwselect = "mserd",  covs = covsZ)
+cob_esf <- rdrobust(df$cob_esf,  df$X, p = poli, kernel = k, bwselect = "mserd",  covs = covsZ)
+tx_leito_sus <- rdrobust(df$tx_leito_sus, df$X, p = poli, kernel = k, bwselect = "mserd",  covs = covsZ)
+ideology_municipality <- rdrobust(df$ideology_municipality, df$X, p = poli, kernel = k, bwselect = "mserd",  covs = covsZ)
 
 
 
@@ -609,18 +623,18 @@ poli = 1
 k = "uniform"
 
 
-taxa_analfabetismo_18_mais <- rdrobust(df$taxa_analfabetismo_18_mais, h = taxa_analfabetismo_18_mais[["bws"]][1] / 2, df$X, p = poli,  kernel = k, subset = amostra, covs = covsZ)
-indice_gini <- rdrobust(df$indice_gini, h = indice_gini[["bws"]][1] / 2, df$X, p = poli,  kernel = k, subset = amostra, covs = covsZ)
-renda_pc <- rdrobust(df$renda_pc, h = renda_pc[["bws"]][1] / 2, df$X, p = poli,  kernel = k, subset = amostra, covs = covsZ)
-populacao_2010 <- rdrobust(df$populacao_2010, h = populacao_2010[["bws"]][1] / 2, df$X, p = poli,  kernel = k, subset = amostra, covs = covsZ)
-idhm <- rdrobust(df$idhm, h = idhm[["bws"]][1] / 2, df$X, p = poli,  kernel = k, subset = amostra, covs = covsZ)
-per_populacao_urbana <- rdrobust(df$per_populacao_urbana, h = per_populacao_urbana[["bws"]][1] / 2, df$X, p = poli,  kernel = k, subset = amostra, covs = covsZ)
-per_populacao_homens <- rdrobust(df$per_populacao_homens, h = per_populacao_homens[["bws"]][1] / 2, df$X, p = poli,  kernel = k, subset = amostra, covs = covsZ)
-pct_desp_recp_saude_mun <- rdrobust(df$pct_desp_recp_saude_mun, h = pct_desp_recp_saude_mun[["bws"]][1] / 2, df$X, p = poli,  kernel = k, subset = amostra, covs = covsZ)
-tx_med_ch <- rdrobust(df$tx_med, h = tx_med_ch[["bws"]][1] / 2, df$X, p = poli,  kernel = k, subset = amostra, covs = covsZ)
-cob_esf <- rdrobust(df$cob_esf, h = cob_esf[["bws"]][1] / 2, df$X, p = poli,  kernel = k, subset = amostra, covs = covsZ)
-tx_leito_sus <- rdrobust(df$tx_leito_sus, h = tx_leito_sus[["bws"]][1] / 2,  df$X, p = poli,  kernel = k, subset = amostra, covs = covsZ)
-ideology_municipality <- rdrobust(df$ideology_municipality, h = ideology_municipality[["bws"]][1] / 2, df$X, p = poli,  kernel = k, subset = amostra, covs = covsZ)
+taxa_analfabetismo_18_mais <- rdrobust(df$taxa_analfabetismo_18_mais, h = taxa_analfabetismo_18_mais[["bws"]][1] / 2, df$X, p = poli,  kernel = k,  covs = covsZ)
+indice_gini <- rdrobust(df$indice_gini, h = indice_gini[["bws"]][1] / 2, df$X, p = poli,  kernel = k,  covs = covsZ)
+renda_pc <- rdrobust(df$renda_pc, h = renda_pc[["bws"]][1] / 2, df$X, p = poli,  kernel = k,  covs = covsZ)
+populacao_2010 <- rdrobust(df$populacao_2010, h = populacao_2010[["bws"]][1] / 2, df$X, p = poli,  kernel = k,  covs = covsZ)
+idhm <- rdrobust(df$idhm, h = idhm[["bws"]][1] / 2, df$X, p = poli,  kernel = k,  covs = covsZ)
+per_populacao_urbana <- rdrobust(df$per_populacao_urbana, h = per_populacao_urbana[["bws"]][1] / 2, df$X, p = poli,  kernel = k,  covs = covsZ)
+per_populacao_homens <- rdrobust(df$per_populacao_homens, h = per_populacao_homens[["bws"]][1] / 2, df$X, p = poli,  kernel = k,  covs = covsZ)
+pct_desp_recp_saude_mun <- rdrobust(df$pct_desp_recp_saude_mun, h = pct_desp_recp_saude_mun[["bws"]][1] / 2, df$X, p = poli,  kernel = k,  covs = covsZ)
+tx_med_ch <- rdrobust(df$tx_med, h = tx_med_ch[["bws"]][1] / 2, df$X, p = poli,  kernel = k,  covs = covsZ)
+cob_esf <- rdrobust(df$cob_esf, h = cob_esf[["bws"]][1] / 2, df$X, p = poli,  kernel = k,  covs = covsZ)
+tx_leito_sus <- rdrobust(df$tx_leito_sus, h = tx_leito_sus[["bws"]][1] / 2,  df$X, p = poli,  kernel = k,  covs = covsZ)
+ideology_municipality <- rdrobust(df$ideology_municipality, h = ideology_municipality[["bws"]][1] / 2, df$X, p = poli,  kernel = k,  covs = covsZ)
 
 
 models <- list("Illiteracy" = taxa_analfabetismo_18_mais,
@@ -653,7 +667,7 @@ baseline_table <- modelsummary(models,
 
 baseline_table
 
-gt::gtsave(baseline_table, filename =  "Dados/output/221201_bigsample_robust_baseline_halfband.tex")
+#gt::gtsave(baseline_table, filename =  "Dados/output/221201_bigsample_robust_baseline_halfband.tex")
 
 
 
@@ -664,18 +678,18 @@ poli = 1
 k = "uniform"
 
 
-taxa_analfabetismo_18_mais <- rdrobust(df$taxa_analfabetismo_18_mais, h = taxa_analfabetismo_18_mais[["bws"]][1] * 4, df$X, p = poli,  kernel = k, subset = amostra, covs = covsZ)
-indice_gini <- rdrobust(df$indice_gini, h = indice_gini[["bws"]][1] * 4, df$X, p = poli,  kernel = k, subset = amostra, covs = covsZ)
-renda_pc <- rdrobust(df$renda_pc, h = renda_pc[["bws"]][1] * 4, df$X, p = poli,  kernel = k, subset = amostra, covs = covsZ)
-populacao_2010 <- rdrobust(df$populacao_2010, h = populacao_2010[["bws"]][1] * 4, df$X, p = poli,  kernel = k, subset = amostra, covs = covsZ)
-idhm <- rdrobust(df$idhm, h = idhm[["bws"]][1] * 4, df$X, p = poli,  kernel = k, subset = amostra, covs = covsZ)
-per_populacao_urbana <- rdrobust(df$per_populacao_urbana, h = per_populacao_urbana[["bws"]][1] * 4, df$X, p = poli,  kernel = k, subset = amostra, covs = covsZ)
-per_populacao_homens <- rdrobust(df$per_populacao_homens, h = per_populacao_homens[["bws"]][1] * 4, df$X, p = poli,  kernel = k, subset = amostra, covs = covsZ)
-pct_desp_recp_saude_mun <- rdrobust(df$pct_desp_recp_saude_mun, h = pct_desp_recp_saude_mun[["bws"]][1] * 4, df$X, p = poli,  kernel = k, subset = amostra, covs = covsZ)
-tx_med_ch <- rdrobust(df$tx_med, h = tx_med[["bws"]][1] * 4, df$X, p = poli,  kernel = k, subset = amostra, covs = covsZ)
-cob_esf <- rdrobust(df$cob_esf, h = cob_esf[["bws"]][1] * 4, df$X, p = poli,  kernel = k, subset = amostra, covs = covsZ)
-tx_leito_sus <- rdrobust(df$tx_leito_sus, h = tx_leito_sus[["bws"]][1] * 4,  df$X, p = poli,  kernel = k, subset = amostra, covs = covsZ)
-ideology_municipality <- rdrobust(df$ideology_municipality, h = ideology_municipality[["bws"]][1] * 4, df$X, p = poli,  kernel = k, subset = amostra, covs = covsZ)
+taxa_analfabetismo_18_mais <- rdrobust(df$taxa_analfabetismo_18_mais, h = taxa_analfabetismo_18_mais[["bws"]][1] * 4, df$X, p = poli,  kernel = k,  covs = covsZ)
+indice_gini <- rdrobust(df$indice_gini, h = indice_gini[["bws"]][1] * 4, df$X, p = poli,  kernel = k,  covs = covsZ)
+renda_pc <- rdrobust(df$renda_pc, h = renda_pc[["bws"]][1] * 4, df$X, p = poli,  kernel = k,  covs = covsZ)
+populacao_2010 <- rdrobust(df$populacao_2010, h = populacao_2010[["bws"]][1] * 4, df$X, p = poli,  kernel = k,  covs = covsZ)
+idhm <- rdrobust(df$idhm, h = idhm[["bws"]][1] * 4, df$X, p = poli,  kernel = k,  covs = covsZ)
+per_populacao_urbana <- rdrobust(df$per_populacao_urbana, h = per_populacao_urbana[["bws"]][1] * 4, df$X, p = poli,  kernel = k,  covs = covsZ)
+per_populacao_homens <- rdrobust(df$per_populacao_homens, h = per_populacao_homens[["bws"]][1] * 4, df$X, p = poli,  kernel = k,  covs = covsZ)
+pct_desp_recp_saude_mun <- rdrobust(df$pct_desp_recp_saude_mun, h = pct_desp_recp_saude_mun[["bws"]][1] * 4, df$X, p = poli,  kernel = k,  covs = covsZ)
+tx_med_ch <- rdrobust(df$tx_med, h = tx_med[["bws"]][1] * 4, df$X, p = poli,  kernel = k,  covs = covsZ)
+cob_esf <- rdrobust(df$cob_esf, h = cob_esf[["bws"]][1] * 4, df$X, p = poli,  kernel = k,  covs = covsZ)
+tx_leito_sus <- rdrobust(df$tx_leito_sus, h = tx_leito_sus[["bws"]][1] * 4,  df$X, p = poli,  kernel = k,  covs = covsZ)
+ideology_municipality <- rdrobust(df$ideology_municipality, h = ideology_municipality[["bws"]][1] * 4, df$X, p = poli,  kernel = k,  covs = covsZ)
 
 
 models <- list("Illiteracy" = taxa_analfabetismo_18_mais,
@@ -708,7 +722,7 @@ baseline_table <- modelsummary(models,
 
 baseline_table
 
-gt::gtsave(baseline_table, filename =  "Dados/output/221201_bigsample_robust_baseline_double.tex")
+#gt::gtsave(baseline_table, filename =  "Dados/output/221201_bigsample_robust_baseline_double.tex")
 
 
 

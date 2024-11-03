@@ -131,3 +131,27 @@ df_densidade <- df_densidade %>%
 ## saving
 
 saveRDS(df_densidade, paste0(output_dir, "/data/density_data.rds"))
+
+
+# Adding STEM classification
+
+df_stem <- read_excel(paste0(work_dir, '/input/stem_classification.xlsx'))
+
+## cleaning
+### create cbo_agregado with leading zeros for values less than 4 digits
+df_stem <- df_stem %>%
+  mutate(cbo_agregado = sprintf("%04d", as.numeric(code_cbo2002)))
+
+df_stem_eleito <- df_stem %>% 
+  reframe(cbo_agregado_eleito = cbo_agregado, cbo_agregado_nome_caser.laverde.rothwell_eleito = stem_classification_caser.laverde.rothwell,
+          )
+
+df_stem_naoeleito <- df_stem %>% 
+  reframe(cbo_agregado_naoeleito = cbo_agregado, cbo_agregado_nome_caser.laverde.rothwell_eleito_naoeleito = stem_classification_caser.laverde.rothwell,
+  )
+
+
+## saving
+
+saveRDS(df_stem_eleito, paste0(output_dir, "/data/stem_classification_eleito.rds"))
+saveRDS(df_stem_naoeleito, paste0(output_dir, "/data/stem_classification_naoeleito.rds"))

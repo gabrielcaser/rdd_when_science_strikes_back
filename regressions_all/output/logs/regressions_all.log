@@ -1,0 +1,127 @@
+------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\Users\gabri\OneDrive\Gabriel\Insper\Tese\Engenheiros\replication_code\rdd_when_science
+> _strikes_back\regressions_all\output\logs\regressions_all.log
+  log type:  text
+ opened on:  16 Mar 2024, 19:20:59
+
+. 
+. //sample .1
+. 
+. **********************************************************************************************
+. * Abrindo a base
+. **********************************************************************************************
+. global i = 0 // contador de modelos
+
+. foreach stem_definition in "strict" "broad" {
+  2.         
+.         foreach var_y in "y_hosp" "y_deaths_sivep" {    
+  3.                 
+.                 * abrindo base
+.                 import delimited "$cria_base_tratada_dir\rdd_data_moderation_`stem_definition'defini
+> tion.csv", clear
+  4.                 
+.                 * regs
+.                 reg `var_y' x t t_x, robust
+  5.                 
+.                 global i = $i + 1
+  6.                 * saving results
+.                 if $i == 1 {
+  7.                         estimates store temp_results
+  8.                         outreg2 using "$output_dir\data\regression_results.xls",  replace
+  9.                 }
+ 10.                 else {
+ 11.                         estimates store temp_results
+ 12.                         outreg2 using "$output_dir\data\regression_results.xls",  append
+ 13.                 }
+ 14.         }
+ 15. }
+(encoding automatically selected: ISO-8859-1)
+(47 vars, 453 obs)
+
+Linear regression                               Number of obs     =        453
+                                                F(3, 449)         =       1.77
+                                                Prob > F          =     0.1516
+                                                R-squared         =     0.0128
+                                                Root MSE          =     306.65
+
+------------------------------------------------------------------------------
+             |               Robust
+      y_hosp | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+           x |   140.9159    106.425     1.32   0.186    -68.23707    350.0688
+           t |  -34.57504   47.45618    -0.73   0.467    -127.8388    58.68876
+         t_x |   60.89052   180.7225     0.34   0.736    -294.2765    416.0575
+       _cons |    428.087   30.33591    14.11   0.000      368.469     487.705
+------------------------------------------------------------------------------
+C:\Users\gabri\OneDrive\Gabriel\Insper\Tese\Engenheiros\replication_code\rdd_when_science_strikes_back
+> \regressions_all\output\data\regression_results.xls
+dir : seeout
+(encoding automatically selected: ISO-8859-1)
+(47 vars, 453 obs)
+
+Linear regression                               Number of obs     =        453
+                                                F(3, 449)         =       3.80
+                                                Prob > F          =     0.0103
+                                                R-squared         =     0.0202
+                                                Root MSE          =     88.154
+
+------------------------------------------------------------------------------
+             |               Robust
+y_deaths_s~p | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+           x |   61.70007   31.37973     1.97   0.050     .0307005    123.3694
+           t |  -23.17841   12.88932    -1.80   0.073    -48.50929     2.15248
+         t_x |   17.34251   43.87951     0.40   0.693    -68.89221    103.5772
+       _cons |   138.7245    9.85958    14.07   0.000     119.3478    158.1011
+------------------------------------------------------------------------------
+C:\Users\gabri\OneDrive\Gabriel\Insper\Tese\Engenheiros\replication_code\rdd_when_science_strikes_back
+> \regressions_all\output\data\regression_results.xls
+dir : seeout
+(encoding automatically selected: ISO-8859-1)
+(47 vars, 899 obs)
+
+Linear regression                               Number of obs     =        899
+                                                F(3, 895)         =       1.04
+                                                Prob > F          =     0.3733
+                                                R-squared         =     0.0039
+                                                Root MSE          =     292.63
+
+------------------------------------------------------------------------------
+             |               Robust
+      y_hosp | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+           x |  -48.80056    61.1528    -0.80   0.425    -168.8202    71.21904
+           t |  -1.090602   31.26719    -0.03   0.972    -62.45615    60.27495
+         t_x |   184.7667   113.7232     1.62   0.105    -38.42863     407.962
+       _cons |    374.132   18.78423    19.92   0.000     337.2658    410.9983
+------------------------------------------------------------------------------
+C:\Users\gabri\OneDrive\Gabriel\Insper\Tese\Engenheiros\replication_code\rdd_when_science_strikes_back
+> \regressions_all\output\data\regression_results.xls
+dir : seeout
+(encoding automatically selected: ISO-8859-1)
+(47 vars, 899 obs)
+
+Linear regression                               Number of obs     =        899
+                                                F(3, 895)         =       2.56
+                                                Prob > F          =     0.0537
+                                                R-squared         =     0.0073
+                                                Root MSE          =     85.328
+
+------------------------------------------------------------------------------
+             |               Robust
+y_deaths_s~p | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+           x |  -11.50095    19.3472    -0.59   0.552    -49.47212    26.47021
+           t |  -7.856745   8.806755    -0.89   0.373    -25.14104    9.427551
+         t_x |     73.684   30.07058     2.45   0.014     14.66695    132.7011
+       _cons |   119.5262   6.116353    19.54   0.000     107.5221    131.5303
+------------------------------------------------------------------------------
+C:\Users\gabri\OneDrive\Gabriel\Insper\Tese\Engenheiros\replication_code\rdd_when_science_strikes_back
+> \regressions_all\output\data\regression_results.xls
+dir : seeout
+
+. 
+end of do-file
+
+. exit, clear

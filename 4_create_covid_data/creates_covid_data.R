@@ -680,6 +680,16 @@ sivep_full <- sivep_full %>%
 length(unique(sivep_full$ID_MN_RESI)) # 200 municipalities missing.
 length(unique(sivep_full$CO_MUN_RES)) 
 
+
+
+### Saving ------------------------------------------------------------------
+
+
+df_covid <- sivep_full %>%
+  filter((CLASSI_FIN == "SRAG COVID-19" | CLASSI_FIN == "SRAG não especificado") & (EVOLUCAO == "Óbito" | HOSPITAL == "Sim")) %>% 
+  reframe(CLASSI_FIN, id_municipio = as.character(CO_MUN_RES), DT_SIN_PRI, EVOLUCAO, HOSPITAL)
+saveRDS(df_covid, paste0(output_dir, "/data/covid_day_data.rds"))
+
 ### Creating Outcome Variables ----------------------------------------------
 
 

@@ -13,6 +13,7 @@ library(dplyr)
 library(plm)
 library(readxl)
 library(stargazer)
+library(skimr)
 
 # Initial commands
 
@@ -28,7 +29,7 @@ create_dataset_for_regressions = "C:/Users/gabri/OneDrive/Gabriel/Insper/Tese/En
 
 # Oppening Covid and RDD Data ----------------------------------------------------
 
-df <- readRDS(paste(create_dataset_for_regressions, "/data/rdd_data_moderation.rds", sep = ""))
+df <- readRDS(paste(create_dataset_for_regressions, "/data/rdd_data_moderation_broaddefinition.rds", sep = ""))
 
 # Merging with Revenue data
 
@@ -47,13 +48,12 @@ rm(data_revenue)
 ## Creating interaction term
 
 df$tenure <- df$tenure / 12
-0
-df_subset <- subset(df, X >= -0.10 & X <= 0.10 & df$sch_non_stem_cdt == 1
-                    )
+
+df_subset <- subset(df, X >= -0.10 & X <= 0.10 & df$sch_non_stem_cdt == 1)
 
 df_subset$inter_receita_stem <- df_subset$receita_2015 * (as.double(df_subset$stem_background) - 1)
-
-df_subset$inter_tenure_stem <- df_subset$tenure * (as.double(df_subset$stem_background))
+df_subset$log_tenure <- log(df_subset$tenure + 1)
+df_subset$inter_tenure_stem <- df_subset$tenure  * (as.double(df_subset$stem_background) - 1)
 
 df_subset$inter_ideo_stem <- df_subset$ideology_party * (as.double(df_subset$stem_background) - 1)
 
@@ -65,17 +65,22 @@ df_subset$inter_X_stem <- df_subset$X * (as.double(df_subset$stem_background) - 
 ## Regression with vote shares
 
 
-
 df_subset$T = ifelse(df_subset$X >= 0, 1, 0)
 
 df_subset$T_X = df_subset$X * df_subset$T
 
+
+teste <- lm(Y_deaths_sivep ~ T + T_X + tenure + inter_tenure_stem, data = df_subset)
+summary(teste)
+
 # OLS
 
 ## most simple regression without revenue
-out = lm(Y_hosp ~ X + T + T_X, data = df_subset)
-summary(out)
-out = lm(Y_deaths_sivep ~ X + T + T_X , data = df_subset)
+out = lm(Y_hosp ~ X + T + T_X + sigla_uf, data = df_subset)
+stargazer(out, type = "text")
+
+
+out = lm(Y_deaths_sivep ~ X + T + T_X + coorte + sigla_uf, data = df_subset)
 summary(out)
 
 ## adding mayors characteristcs without revenue
@@ -182,13 +187,13 @@ table <- stargazer(out1, out2, out3,
 
 
 # Final without plm
-out1 <- lm(log(Y_hosp) ~ X + T + T_X + instrucao + inter_tenure_stem + tenure  + mulher + ideology_party + idade + reeleito + factor(sigla_uf) + coorte , data = df_subset)
+out1 <- lm(Y_hosp ~ X + T + T_X + instrucao + inter_tenure_stem + tenure  + mulher + ideology_party + idade + reeleito + factor(sigla_uf) + coorte , data = df_subset)
 summary(out1)
 
-out2 <- lm(log(Y_deaths_sivep + 1) ~ X + T + T_X + instrucao + inter_tenure_stem + tenure  + mulher + ideology_party + idade + reeleito + factor(sigla_uf) + coorte , data = df_subset)
+out2 <- lm(Y_deaths_sivep ~ X + T + T_X + instrucao + inter_tenure_stem + tenure  + mulher + ideology_party + idade + reeleito + factor(sigla_uf) + coorte , data = df_subset)
 summary(out2)
 
-out3 <- lm(log(total_nfi) ~ X + T + T_X + instrucao + inter_tenure_stem + tenure  + mulher + ideology_party + idade + reeleito + factor(sigla_uf) + coorte , data = df_subset)
+out3 <- lm(total_nfi ~ X + T + T_X + instrucao + inter_tenure_stem + tenure  + mulher + ideology_party + idade + reeleito + factor(sigla_uf) + coorte , data = df_subset)
 summary(out3)
 
 
