@@ -1,9 +1,8 @@
 
-# Description -------------------------------------------------------------
+# Description - This code reproduces all tables and figures from the paper
 
-## This code reproduces all tables and figures from the paper
-
-
+# TO DO
+## Run sum stats
 # Initial Commands --------------------------------------------------------
 
 rm(list = ls(all.names = TRUE)) # clear objects
