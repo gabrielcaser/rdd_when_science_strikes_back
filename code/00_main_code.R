@@ -23,8 +23,8 @@ library('rdrobust')     # to run rdd
 library('patchwork')    # to create figures with plots together
 
 # Setting -----------------------------------------------------------------
-work_dir                       = "C:/Users/wb633398/Documents/GitHub/Personal/rep_package_when_science_strikes_back"
-output_dir                     = paste0(work_dir,"/outputs")
+
+output_dir                     = paste0(getwd(),"/outputs")
 
 data_dir                       = "C:/Users/wb633398/OneDrive/Gabriel/Insper/Tese/Engenheiros/replication_code/rdd_when_science_strikes_back/6_create_rdd_dataset/output"
 mayors_data_dir                = "C:/Users/wb633398/OneDrive/Gabriel/Insper/Tese/Engenheiros/replication_code/rdd_when_science_strikes_back/3_create_education_data/output/data"
