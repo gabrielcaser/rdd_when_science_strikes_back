@@ -21,12 +21,13 @@ library('geobr')        # to create maps
 library('skimr')        # to create sumstats
 library('rdrobust')     # to run rdd
 library('patchwork')    # to create figures with plots together
+library('knitr')
 
 # Setting -----------------------------------------------------------------
 
 output_dir                     = paste0(getwd(),"/outputs")
+data_dir                       = paste0(getwd(),"/data")
 
-data_dir                       = "C:/Users/wb633398/OneDrive/Gabriel/Insper/Tese/Engenheiros/replication_code/rdd_when_science_strikes_back/6_create_rdd_dataset/output"
 mayors_data_dir                = "C:/Users/wb633398/OneDrive/Gabriel/Insper/Tese/Engenheiros/replication_code/rdd_when_science_strikes_back/3_create_education_data/output/data"
 baseline_data_dir              = "C:/Users/wb633398/OneDrive/Gabriel/Insper/Tese/Engenheiros/replication_code/rdd_when_science_strikes_back/5_create_baseline_data/output/data"
 covid_data_dir                 = "C:/Users/wb633398/OneDrive/Gabriel/Insper/Tese/Engenheiros/replication_code/rdd_when_science_strikes_back/4_create_covid_data/output/data"
@@ -35,7 +36,7 @@ tenure_data_dir                = "C:/Users/wb633398/OneDrive/Gabriel/Insper/Tese
 
 # Parameters --------------------------------------------------------------
 
-data = "rdd_data_main_broad_definition" # Machado's STEM classification
+data = "rdd_data_college_mayors_only_broad_definition.Rds" # Machado's STEM classification, both 2016 and 2020 cohorts and only considering municipalities where de NON-STEM mayor had college education
 
 
 # Running scripts ---------------------------------------------------------

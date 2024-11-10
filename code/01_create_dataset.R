@@ -342,13 +342,18 @@ for (definition in c("strict", "broad")) {
   
   df_college_mayors_only_2016 <- df
   
-  df <- df %>% 
+  df_college_mayors_only <- df %>% 
+    dplyr::filter(sch_non_stem_cdt == 1)
+  
+  df_college_mayors_only_2016 <- df %>% 
     dplyr::filter(sch_non_stem_cdt == 1 & coorte == 2016)
   
+
   # Saving ------------------------------------------------------------------
   
-  saveRDS(df, file = paste0("data/final/rdd_data_main_", definition, "_definition.rds", sep = ""))
-  #saveRDS(df_college_mayors_only_2016, file = paste0("data/final/rdd_data_college_mayors_only_2016_", definition, "_definition.rds", sep = ""))
+  saveRDS(df, file = paste0("data/final/rdd_data_all_", definition, "_definition.rds", sep = ""))
+  saveRDS(df_college_mayors_only, file = paste0("data/final/rdd_data_college_mayors_only_", definition, "_definition.rds", sep = ""))
+  saveRDS(df_college_mayors_only_2016, file = paste0("data/final/rdd_data_college_mayors_only_2016_", definition, "_definition.rds", sep = ""))
   #write.csv(df_college_mayors_only_2016, file = paste0("data/final/rdd_data_college_mayors_only_2016_", definition, "_definition.csv"), row.names = FALSE, na = ".")
   
 }

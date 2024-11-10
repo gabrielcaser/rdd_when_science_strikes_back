@@ -1,20 +1,13 @@
 
+
 # This program creates sum stats
 
 
 # Oppening ----------------------------------------------------------------
 
-<<<<<<< Updated upstream
-df <- readRDS(paste(data_dir,"/data/rdd_data_main.rds", sep = ""))
-=======
-df <- readRDS(paste(create_dataset_for_regressions,"/data/rdd_data_moderation_broaddefinition.rds", sep = ""))
+df <- readRDS(paste(data_dir, "/final/", data, sep = ""))
 
-
-# Cleaning
-
-df <- df[df$sch_non_stem_cdt == 1, ] # Only cities where the non-stem mayor had higher education
-
-df <- df %>% # Removing NPI data from municipalities in 2020 coorte (since this data only regards mayors elected in 2016)
+df <- df %>% # Removing NPI data from municipalities in 2020 chort (since this data only regards mayors elected in 2016)
   mutate(
     total_nfi = ifelse(coorte == 2020, NA, total_nfi),
     barreiras_sanitarias = ifelse(coorte == 2020, NA, barreiras_sanitarias),
@@ -23,44 +16,46 @@ df <- df %>% # Removing NPI data from municipalities in 2020 coorte (since this 
     restricao_circulacao = ifelse(coorte == 2020, NA, restricao_circulacao),
     restricao_transporte_publico = ifelse(coorte == 2020, NA, restricao_transporte_publico)
   )
->>>>>>> Stashed changes
 
 # Sum stats ---------------------------------------------------------------
 
 
 
-dat <- df[ c("stem_background", # keeping only relevant variables
-             "tenure",
-             "X",
-             "mulher",
-             "idade",
-             "instrucao",
-             "reeleito",
-             "ideology_party",
-             "populacao",
-             "densidade",
-             #"taxa_analfabetismo_18_mais",
-             #"indice_gini",
-             "idhm",
-             "renda_pc",
-             "per_populacao_urbana",
-             "per_populacao_homens",
-             "tx_med",
-             "pct_desp_recp_saude_mun",
-             "cob_esf",
-             "tx_leito_sus",
-             "ideology_municipality",
-             "Y_deaths_sivep",
-             "Y_hosp",
-             #"Y_cases",
-             "barreiras_sanitarias",
-             "mascaras",
-             "restricao_atv_nao_essenciais",
-             "restricao_circulacao",
-             "restricao_transporte_publico",
-             "total_nfi")]
+dat <- df[c(
+  "stem_background",
+  # keeping only relevant variables
+  "tenure",
+  "X",
+  "mulher",
+  "idade",
+  "instrucao",
+  "reeleito",
+  "ideology_party",
+  "populacao",
+  "densidade",
+  #"taxa_analfabetismo_18_mais",
+  #"indice_gini",
+  "idhm",
+  "renda_pc",
+  "per_populacao_urbana",
+  "per_populacao_homens",
+  "tx_med",
+  "pct_desp_recp_saude_mun",
+  "cob_esf",
+  "tx_leito_sus",
+  "ideology_municipality",
+  "Y_deaths_sivep",
+  "Y_hosp",
+  #"Y_cases",
+  "barreiras_sanitarias",
+  "mascaras",
+  "restricao_atv_nao_essenciais",
+  "restricao_circulacao",
+  "restricao_transporte_publico",
+  "total_nfi"
+)]
 
-dat <- dat %>% 
+dat <- dat %>%
   summarise(
     "Tenure in STEM job" = tenure,
     "Female" = as.numeric(mulher),
@@ -94,10 +89,17 @@ dat <- dat %>%
 
 ## creating table without groups
 
-tab <- datasummary(All(data.frame(dat)) ~ N  + Min + Mean + Max + SD, data = dat, fmt = 2) 
+tab <- datasummary(All(data.frame(dat)) ~ N  + Min + Mean + Max + SD,
+                   data = dat,
+                   fmt = 2)
 tab
 
-datasummary(All(data.frame(dat)) ~ N  + Min + Mean + Max + SD, data = dat, fmt = 2, output = paste0(output_dir, "/figures/240802_table_sum_stats.tex"))
+datasummary(
+  All(data.frame(dat)) ~ N  + Min + Mean + Max + SD,
+  data = dat,
+  fmt = 2,
+  output = paste0(output_dir, "/tables/table_sum_stats.md")
+)
 
 ## creating table with groups
 

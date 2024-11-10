@@ -4,10 +4,28 @@ subtitle: "Tables and Figures"
 author:   "Gabriel Caser dos Passos and Nelson Ricardo Laverde Cubillos"
 format:   pdf
 editor:   visual
+execute:
+  echo: false
+toc: true
 ---
 
+
+
+```{r include = FALSE}
+# TODOS
+
+## Incluir titulo da tabela Sum Stats
+## Melhorar tabela no código em .R colocando sublinhas 
+
+# Running all scripts that generate figures and tables
+source("code/00_main_code.R")
+```
+
+
+## Summary of Data Sources
+
 | **Data Source**                                                                  | **Description**                                                            |
-|----------------------------------------------------------------------------------|----------------------------------------------------------------------------|
+|-------------------------------------|-----------------------------------|
 | Base dos Dados (Dahis et al., 2022) and Tribunal Superior Eleitoral (TSE)        | Information on mayors and elections.                                       |
 | RAIS (Brazilian Ministry of Labor database)                                      | Occupation data.                                                           |
 | SIVEPGripe                                                                       | Epidemiological outcomes data (hospitalizations, deaths).                  |
@@ -20,8 +38,10 @@ editor:   visual
 
 {{< pagebreak >}}
 
+## Main Variables in the Study
+
 | **Variable**                          | **Description**                                                                                    |
-|---------------------------------------|----------------------------------------------------------------------------------------------------|
+|------------------------|------------------------------------------------|
 | Cases per 100k inhabitants            | Number of COVID-19 cases per 100,000 inhabitants, based on municipal data.                         |
 | Hospitalizations per 100k inhabitants | Number of hospitalizations due to COVID-19 per 100,000 inhabitants.                                |
 | Deaths per 100k inhabitants           | Number of deaths from COVID-19 per 100,000 inhabitants.                                            |
@@ -33,3 +53,23 @@ editor:   visual
 | Tenure                                | Employment time in a STEM occupation, calculated using RAIS data.                                  |
 
 : Main Variables in the Study
+
+## Summary Statistics
+
+```{r}
+# Carrega o arquivo da tabela como texto
+texto <- readLines("outputs/tables/table_sum_stats.md")
+# Renderiza o conteúdo como Markdown
+knitr::asis_output(paste(texto, collapse = "\n"), meta = ":Tabela Teste")
+```
+
+: Summary Statistics
+
+```{r}
+dados_sumstats <- readRDS(paste(data_dir, "/final/", data, sep = ""))
+nobs_sumstats  <- nrow(dados_sumstats)
+cohorts_used   <- unique(dados_sumstats$coorte)
+```
+
+
+Notes: This table aggregates the summary statistics of all the observations used in the study (`r nobs_sumstats`). Municipalities chosen were those that held ordinary elections in selected years (`r cohorts_used`) whose mayor was elected in the first round and among the top two most voted was a STEM candidate and a Non-STEM one with college degree. NPI data has null values since not all the mayors responded to the survey.
