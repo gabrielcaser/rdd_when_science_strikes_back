@@ -94,7 +94,7 @@ knitr::asis_output(paste(text, collapse = "\n"))
 
 *Notes*: This plot shows the distribution per state of the percentage of municipalities that had a STEM mayor among top 2 voted. Municipalities chosen were those that held ordinary elections in selected years (`r cohorts_used`) whose mayor was elected in the first round and among the top two most voted was a STEM candidate and a Non-STEM one with college degree.
 
-## Percentage of municipalities with a STEM mayor among top 2 per state
+## Municipalities with a STEM mayor (2016)
 
 ![Municipalities with a STEM mayor (2016)](outputs/figures/mapa_stem_municipios_2016.png)
 
