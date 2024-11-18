@@ -70,7 +70,7 @@ dat <- dat %>%
     "Closure of non-essential activities" = restricao_atv_nao_essenciais,
     "Gathering prohibition" = restricao_circulacao,
     "Public transport restriction" = restricao_transporte_publico,
-    "Number of Non-Pharmaceutical Interventions" = total_nfi,
+    "Number of Non-Pharma. Interventions" = total_nfi,
     "Log of population in 2010" = log(populacao),
     "Human Development Index" = idhm,
     "Per capita income" = renda_pc,
@@ -98,132 +98,82 @@ datasummary(
   All(data.frame(dat)) ~ N  + Min + Mean + Max + SD,
   data = dat,
   fmt = 2,
+  #align = "lrrrrr",
+  title = "Summary Statistics",
   output = paste0(output_dir, "/tables/table_sum_stats.md")
 )
 
+
 ## creating table with groups
 
-dat$stem_background <- ifelse(dat$stem_background == 1, "STEM", "Non-STEM") 
+dat$stem_background <- ifelse(dat$stem_background == 1, "    STEM", "Non-STEM")
 
-datasummary_balance( ~ stem_background, dinm_statistic = "p.value", data = dat, fmt = 2)
-datasummary_balance( ~ stem_background, dinm_statistic = "p.value", data = dat, fmt = 2, output = paste0(output_dir, "/figures/240802_table_sum_stats_groups.png"))
-# Criando a tabela com grupos e salvando como imagem
-table_plot <- datasummary_balance(~ stem_background, dinm_statistic = "p.value", data = dat, fmt = 2, output = "gt")
+datasummary_balance(
+  ~ stem_background,
+  dinm_statistic = "p.value",
+  data = dat,
+  fmt = 2,
+  align = "lrrrrrr",
+  title = "Summary Statistics by Group",
+  output = paste0(output_dir, "/tables/table_sum_stats_groups.md")
+)
 
-# Salvar a tabela como uma imagem de alta qualidade
-gt::gtsave(table_plot, filename =  "output/240803_bigsample_estimates.png")
 ## Figures for STEM candidates ---------------------------------------------------------
-
-### Number of STEM candidates
-
-profi2 <- df %>%
-  group_by(coorte) %>% 
-  dplyr::summarise(per_stem_candidates_elected = (sum(stem_background == 1)), #/ sum(stem_job != 99)) * 100,
-                   total_stem_candidates = (sum(stem_background == 1)))
-
-
-q <- ggplot(profi2, aes(x = as.character(coorte), y = per_stem_candidates_elected)) +
-  geom_bar(stat = "identity") +
-  # theme_minimal() + 
-  #ggtitle("Number of elected STEM candidates") +
-  xlab("cohort") +
-  ylab("")
-
-q
-
-ggsave(paste0(output_dir, "/figures/240805_barplot_stem_candidates.png"), q,
-       width = 5.50,
-       height = 5.00,
-       units = "in")
-
 
 ### Main occupations
 
 profi <- df %>% 
   filter(stem_background == 1) %>%
-  group_by(coorte, cbo_agregado_nome_caser.laverde.rothwell) %>%
-  dplyr::summarise(number = n()) %>%
-  ungroup() %>% 
-  group_by(coorte) %>%
-  slice_max(order_by = number, n = 10) %>%
-  arrange(desc(number))
-  
-profi_nonstem <- df %>% 
-  filter(stem_background == 0) %>%
-  group_by(coorte, cbo_agregado_nome_caser.laverde.rothwell) %>%
-  dplyr::summarise(number = n()) %>%
-  ungroup() %>% 
-  group_by(coorte) %>%
-  slice_max(order_by = number, n = 10) %>%
-  arrange(desc(number))
+  group_by(cbo_agregado_nome_caser.laverde.rothwell) %>%
+  summarise(number = n(), .groups = "drop") %>%
+  mutate(percentage = 100 * number / sum(number)) %>%
+  slice_max(order_by = percentage, n = 10) %>%
+  arrange(desc(percentage))
 
 
-p <- ggplot(profi, aes(y = as.character(cbo_agregado_nome_caser.laverde.rothwell), x = number)) +
+library(forcats)
+
+# Ordering
+profi <- profi %>%
+  mutate(cbo_agregado_nome_caser.laverde.rothwell = fct_reorder(
+    cbo_agregado_nome_caser.laverde.rothwell, percentage, .desc = FALSE
+  ))
+
+# Creating the plot
+p <- ggplot(profi, aes(y = cbo_agregado_nome_caser.laverde.rothwell, x = percentage)) +
   geom_bar(pattern = "occupation", stat = "identity") +
+  geom_text(aes(label = sprintf("%.0f%%", percentage)), 
+            hjust = -0.1, # Posiciona os rótulos fora das barras
+            size = 5) +   # Tamanho do texto
   theme_minimal(base_size = 16) +
-  #theme_bw() +
-  #ggtitle("STEM mayors' occupations") +
-  xlab("STEM mayors") +
-  ylab("Occupations") 
-
-p <- p + scale_fill_discrete(name = "occuppation")
+  xlab("") +  # Remove o rótulo do eixo X
+  ylab("Occupations") +
+  xlim(0, 60) + 
+  #ggtitle("STEM mayors’ most common occupations") +
+  scale_fill_discrete(name = "occupation") +
+  theme(
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.text.x = element_blank(),  # Remove os valores do eixo X
+    axis.ticks.x = element_blank(),  # Remove as marcas do eixo X
+    axis.title = element_blank() 
+  )
 
 p
 
 ggsave(
-  filename = paste0(output_dir, "/figures/240805_barplot_stem_cbos_stem_ocupacao.png"),
-  plot = p,  # Replace with the actual ggplot object
+  filename = paste0(output_dir, "/figures/barplot_stem_cbos_stem_ocupacao.png"),
+  plot = p,  
   height = 4.0,
-  width = 8.0
+  width = 10,
+  dpi = 600 
 )
-
-#p_nonstem <- ggplot(profi_nonstem, aes(x = as.character(coorte), y = number, fill = as.character(ocupacao))) +
-#  geom_bar(pattern = "occupation", color = "black", stat = "identity") +
-#  theme_minimal(base_size = 16) +
-#  #theme_bw() +
-#  #ggtitle("STEM mayors' occupations") +
-#  xlab("cohort") +
-#  ylab("number of non-STEM mayors") 
-#
-#p_nonstem <- p_nonstem + scale_fill_discrete(name = "occuppation")
-#p_nonstem
-
-#ggsave(
-#  filename = paste0(output_dir, "/figures/barplot_stem_cbos_nonstem_ocupacao.png"),
-#  plot = p_nonstem,  # Replace with the actual ggplot object
-#  height = 5.0,
-#  width = 5.5
-#)
-
-
-### tenure
-
-#box <- ggplot(subset(df, stem_background == 1)) + 
-#  geom_boxplot(aes(y=tenure, fill = as.factor(coorte))) +
-#  xlab("") +
-#  scale_x_discrete() +
-#  scale_fill_discrete(name = "cohort")
-#
-#box 
-#
-#ggsave(
-#  filename = paste0(output_dir, "/figures/boxplot_tenure.png"),
-#  plot = box,  # Replace with the actual ggplot object
-#  height = 5.0,
-#  width = 5.5
-#)
-#
-### removing datasets
-#
-#rm(p, profi, profi2, q, dat, box)
-
-## % of STEM candidates per state
 
 
 
 ### getting all Brazilian municipalities
 
-df_cities <- read.csv(paste0(work_dir,"/input/cities_and_states.csv", sep = ""))
+df_cities <- read.csv("data/raw/cities_and_states.csv")
 df_cities$id_municipio <- as.character(df_cities$id_municipio)
 #df_cities$coorte <- as.factor(2016) 
 
@@ -240,17 +190,24 @@ states <- df_boxplots %>%
 
 box2 <- ggplot(states, aes(y = perc_stem * 100)) + 
   geom_boxplot() + 
-  theme_minimal() + 
+  theme_minimal(base_size = 16) + 
   #xlab("cohort") +
-  ylab("% of municipalties with a STEM candidate among top 2 voted ")
+  theme(
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.title.y = element_blank(),
+    axis.text.x =  element_blank()
+    ) #+
+  #ylab("% of cities with a STEM candidate among top 2 voted ")
 
 box2 
 
 ggsave(
-  filename = paste0(output_dir, "/figures/240805_sumstats_boxplot.png"),
+  filename = paste0(output_dir, "/figures/sumstats_boxplot.png"),
   plot = box2,  # Replace with the actual ggplot object
-  height = 5.0,
-  width = 5.5
+  height = 3.0,
+  width = 2.5,
+  dpi = 600
 )
 
 
@@ -300,7 +257,7 @@ sf2 %>%
         panel.grid = element_blank())
 
 ggsave(
-  filename = paste0(output_dir, "/figures/240805_mapa_stem_estados.png"),
+  filename = paste0(output_dir, "/figures/mapa_stem_estados.png"),
  # plot = box2,  # Replace with the actual ggplot object
   height = 5.0,
   width = 10
@@ -344,10 +301,11 @@ sf3 %>%
 
 
 ggsave(
-  filename = paste0(output_dir, "/figures/240805_mapa_stem_municipios_2016.png"),
+  filename = paste0(output_dir, "/figures/mapa_stem_municipios_2016.png"),
   # plot = box2,  # Replace with the actual ggplot object
   height = 5.0,
-  width = 10
+  width = 10,
+  dpi = 600
 )
 
 

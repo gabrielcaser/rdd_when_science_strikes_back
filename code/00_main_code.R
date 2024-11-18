@@ -21,7 +21,8 @@ library('geobr')        # to create maps
 library('skimr')        # to create sumstats
 library('rdrobust')     # to run rdd
 library('patchwork')    # to create figures with plots together
-library('knitr')
+library('knitr')        # render presentations
+library('forcats')      # better figures
 
 # Setting -----------------------------------------------------------------
 

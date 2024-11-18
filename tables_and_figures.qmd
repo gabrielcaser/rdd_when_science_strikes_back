@@ -2,14 +2,14 @@
 title:    "When Science Strikes Back"
 subtitle: "Tables and Figures"
 author:   "Gabriel Caser dos Passos and Nelson Ricardo Laverde Cubillos"
-format:   pdf
+format:
+  pdf:
+    fig-cap-location: top
 editor:   visual
 execute:
   echo: false
 toc: true
 ---
-
-
 
 ```{r include = FALSE}
 # TODOS
@@ -20,7 +20,6 @@ toc: true
 # Running all scripts that generate figures and tables
 source("code/00_main_code.R")
 ```
-
 
 ## Summary of Data Sources
 
@@ -41,7 +40,7 @@ source("code/00_main_code.R")
 ## Main Variables in the Study
 
 | **Variable**                          | **Description**                                                                                    |
-|------------------------|------------------------------------------------|
+|--------------------------|----------------------------------------------|
 | Cases per 100k inhabitants            | Number of COVID-19 cases per 100,000 inhabitants, based on municipal data.                         |
 | Hospitalizations per 100k inhabitants | Number of hospitalizations due to COVID-19 per 100,000 inhabitants.                                |
 | Deaths per 100k inhabitants           | Number of deaths from COVID-19 per 100,000 inhabitants.                                            |
@@ -57,19 +56,48 @@ source("code/00_main_code.R")
 ## Summary Statistics
 
 ```{r}
-# Carrega o arquivo da tabela como texto
-texto <- readLines("outputs/tables/table_sum_stats.md")
-# Renderiza o conteúdo como Markdown
-knitr::asis_output(paste(texto, collapse = "\n"), meta = ":Tabela Teste")
+# Defining notes parameters' values
+dados_sumstats    <- readRDS(paste(data_dir, "/final/", data, sep = ""))
+nobs_sumstats     <- nrow(dados_sumstats)
+nobs_sumstats_stem <- nrow(dados_sumstats[dados_sumstats$stem_background == 1, ])
+cohorts_used      <- unique(dados_sumstats$coorte)
 ```
-
-: Summary Statistics
 
 ```{r}
-dados_sumstats <- readRDS(paste(data_dir, "/final/", data, sep = ""))
-nobs_sumstats  <- nrow(dados_sumstats)
-cohorts_used   <- unique(dados_sumstats$coorte)
+
+text <- readLines("outputs/tables/table_sum_stats.md")
+knitr::asis_output(paste(text, collapse = "\n"))
 ```
 
+*Notes*: This table aggregates the summary statistics of all the observations used in the study (`r nobs_sumstats`). Municipalities chosen were those that held ordinary elections in selected years (`r cohorts_used`) whose mayor was elected in the first round and among the top two most voted was a STEM candidate and a Non-STEM one with college degree. NPI data has null values since not all the mayors responded to the survey.
 
-Notes: This table aggregates the summary statistics of all the observations used in the study (`r nobs_sumstats`). Municipalities chosen were those that held ordinary elections in selected years (`r cohorts_used`) whose mayor was elected in the first round and among the top two most voted was a STEM candidate and a Non-STEM one with college degree. NPI data has null values since not all the mayors responded to the survey.
+## Summary Statistics per Group
+
+```{r}
+
+text <- readLines("outputs/tables/table_sum_stats_groups.md")
+knitr::asis_output(paste(text, collapse = "\n"))
+
+```
+
+*Notes*: This table aggregates the summary statistics per group of all the observations used in the study (`r nobs_sumstats`). Municipalities chosen were those that held ordinary elections in selected years (`r cohorts_used`) whose mayor was elected in the first round and among the top two most voted was a STEM candidate and a Non-STEM one with college degree. NPI data has null values since not all the mayors responded to the survey.
+
+## STEM mayors’ most common occupations
+
+![STEM mayors’ most common occupations](outputs/figures/barplot_stem_cbos_stem_ocupacao.png)
+
+*Notes*: This figure shows the top five occupations among the `r nobs_sumstats_stem` STEM mayors in our sample. Municipalities chosen were those that held ordinary elections in selected years (`r cohorts_used`) whose mayor was elected in the first round and among the top two most voted was a STEM candidate and a Non-STEM one with college degree.
+
+## Percentage of municipalities with a STEM mayor among top 2 per state
+
+![Percentage of municipalities with a STEM mayor among top 2 per state](outputs/figures/sumstats_boxplot.png)
+
+*Notes*: This plot shows the distribution per state of the percentage of municipalities that had a STEM mayor among top 2 voted. Municipalities chosen were those that held ordinary elections in selected years (`r cohorts_used`) whose mayor was elected in the first round and among the top two most voted was a STEM candidate and a Non-STEM one with college degree.
+
+## Percentage of municipalities with a STEM mayor among top 2 per state
+
+![Municipalities with a STEM mayor (2016)](outputs/figures/mapa_stem_municipios_2016.png)
+
+*Notes*: In this figure, we colored all municipalities in our 2016 sample, that is, where a STEM candidate was among the top two most voted. In red are the municipalities where the STEM candidate lost and in blue are the municipalities where the STEM candidate won. In gray are all the municipalities with no STEM candidate among the top two most voted.
+
+
