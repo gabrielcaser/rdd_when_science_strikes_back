@@ -1,38 +1,21 @@
 # Program - This program run main RDD regressions, including robustness, tables and pictures 
 
 
-# TO DO -------------------------------------------------------------------
-
-# Initial commands
-
-rm(list = ls(all.names = TRUE)) # clear objects
-gc() # free up memory
-
-
 # Libraries ***************************************************** ---------------------------------------------------------------
 
-library("stargazer")
-library("gt")
-library("modelsummary")
-library("rdrobust")
-library("rddtools")
-library("readr")
-library("stringr")
-library("tidyverse")
-
-library("plyr")
-library("sf")
-library("rio")
-library('patchwork')
-
-
-theme_set(theme_minimal(base_size = 16))
-
-# Setting -----------------------------------------------------------------
-
-work_dir                       = "C:/Users/gabri/OneDrive/Gabriel/Insper/Tese/Engenheiros/replication_code/rdd_when_science_strikes_back/regressions_main"
-output_dir                     = "C:/Users/gabri/OneDrive/Gabriel/Insper/Tese/Engenheiros/replication_code/rdd_when_science_strikes_back/regressions_main/output"
-create_dataset_for_regressions = "C:/Users/gabri/OneDrive/Gabriel/Insper/Tese/Engenheiros/replication_code/rdd_when_science_strikes_back/6_create_rdd_dataset/output"
+#library("stargazer")
+#library("gt")
+#library("modelsummary")
+#library("rdrobust")
+#library("rddtools")
+#library("readr")
+#library("stringr")
+#library("tidyverse")
+#
+#library("plyr")
+#library("sf")
+#library("rio")
+#library('patchwork')
 
 # Oppening Covid and RDD Data ----------------------------------------------------
 

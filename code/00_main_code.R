@@ -17,6 +17,7 @@ renv::restore()
 library("tidyverse")    # to handle data
 library("estimatr")
 library("modelsummary") # to create tables
+library("gt")           # better tables
 library('geobr')        # to create maps
 library('skimr')        # to create sumstats
 library('rdrobust')     # to run rdd
@@ -36,10 +37,18 @@ tenure_data_dir                = "C:/Users/wb633398/OneDrive/Gabriel/Insper/Tese
 
 
 # Parameters --------------------------------------------------------------
+stem_definition  = "broad" 
+non_stem_college = "yes"   # only consider municipalities whose non-STEM candidates had college degree?
+cohorts          = "2016 and 2020"
 
-data = "rdd_data_college_mayors_only_broad_definition.Rds" # Machado's STEM classification, both 2016 and 2020 cohorts and only considering municipalities where de NON-STEM mayor had college education
+data   = "rdd_data_college_mayors_only_broad_definition.Rds" # Machado's STEM classification, both 2016 and 2020 cohorts and only considering municipalities where de NON-STEM mayor had college education
 
+poli   = 1                      # Functional form
+janela = 5                      # Defining margin of victory for robustness tests
+k = "triangular"                # Kernel  
 
 # Running scripts ---------------------------------------------------------
 
-source("code/01_create_dataset.R")
+#source("code/01_create_dataset.R")
+source("code/02_sum_stats.R")
+source("code/03_regressions_main.R")

@@ -100,7 +100,7 @@ datasummary(
   fmt = 2,
   #align = "lrrrrr",
   title = "Summary Statistics",
-  output = paste0(output_dir, "/tables/table_sum_stats.md")
+  output = paste0(output_dir, "/tables/table_sum_stats.tex")
 )
 
 
@@ -115,7 +115,7 @@ datasummary_balance(
   fmt = 2,
   align = "lrrrrrr",
   title = "Summary Statistics by Group",
-  output = paste0(output_dir, "/tables/table_sum_stats_groups.md")
+  output = paste0(output_dir, "/tables/table_sum_stats_groups.tex")
 )
 
 ## Figures for STEM candidates ---------------------------------------------------------
@@ -333,7 +333,7 @@ ggsave(
 #  width = 7.5
 #)
 
-# Gráficos - Discontinuidade ----------------------------------------------
+# Plots - Discontinuity  ----------------------------------------------
 
 ## outcomes
 
@@ -341,21 +341,32 @@ ggsave(
 
 amostra <- cbind()
 
-
-state.f = factor(df$sigla_uf) 
-state.d = model.matrix(~state.f+0) # creating fixed effects
+state.f = factor(df$sigla_uf)
+state.d = model.matrix( ~ state.f + 0) # creating fixed effects
 
 year.f = factor(df$coorte) # creating dummies
-year.d = model.matrix(~year.f+0)
+year.d = model.matrix( ~ year.f + 0)
 
+covsZ  = cbind(state.d, year.d) # Controls
 
-covsZ = cbind(state.d, year.d, df$mulher, df$idade, df$reeleito, df$ideology_party, df$renda_pc, log(df$populacao), df$idhm, log(df$densidade), df$per_populacao_homens, df$pct_desp_recp_saude_mun, df$tx_med_ch, df$cob_esf, df$tx_leito_sus, df$ideology_municipality)
-poli = 1
-janela = cbind()
-k = "triangular"
-
-r4 = rdrobust(df$Y_deaths_sivep,  df$X, p = poli, kernel = k,  h = janela,  subset = amostra, covs = covsZ)
-r5 = rdrobust(df$Y_deaths_sivep, df$X, kernel = k, h = janela,    p = poli,  subset = amostra, covs = covsZ)
+r4 = rdrobust(
+  df$Y_deaths_sivep,
+  df$X,
+  p      = poli,
+  kernel = k,
+  h      = janela,
+  subset = amostra,
+  #covs   = covsZ
+)
+r5 = rdrobust(
+  df$Y_hosp,
+  df$X,
+  kernel = k,
+  h      = janela,
+  p      = poli,
+  subset = amostra,
+  #covs   = covsZ
+)
 
 summary(r4)
 summary(r5)
@@ -364,12 +375,12 @@ summary(r5)
 
 df_plots <- df[abs(df$X) < r4$bws[1], ]
 
-poli = 1
+#poli = 1
 #covsZ = cbind(state.d, df$mulher)
 #covsZ = df$tenure
 
 
-hosp <- rdplot(df_plots$Y_deaths_sivep , df_plots$X,
+hosp <- rdplot(df_plots$Y_hosp, df_plots$X,
                #covs = covsZ,
                p = poli,
                #x.lim = c(r4$bws[1] * -1, r4$bws[1]),
@@ -383,7 +394,7 @@ hosp <- rdplot(df_plots$Y_deaths_sivep , df_plots$X,
                kernel = k,
                x.label = "STEM candidate's margin of victory",
                y.label = "",
-               title = "(A) Impact of Treatment on Deaths - Linear"
+               title = "(A) Impact of Treatment on Hospitalizations"
                )
 
 
@@ -392,7 +403,7 @@ hosp <- rdplot(df_plots$Y_deaths_sivep , df_plots$X,
 
 death <- rdplot(df_plots$Y_deaths_sivep , df_plots$X,
                 #covs = covsZ,
-                #p = poli,
+                p = poli,
                 #x.lim = c(r5$bws[1] * -1, r5$bws[1]),
                 y.lim = c(75, 175),
                 #shade = TRUE,
@@ -403,27 +414,34 @@ death <- rdplot(df_plots$Y_deaths_sivep , df_plots$X,
                 kernel = k,
                 x.label = "STEM candidate's margin of victory",
                 y.label = "",
-                title = "(A) Impact of Treatment on Deaths - Non-parametric"#,
+                title = "(B) Impact of Treatment on Deaths"#,
                # col.lines = "white"
                )
 
 death <- death$rdplot
 
-death <- death + 
+death <- death +
   theme_minimal(base_size = 15) +
-  theme(plot.title = element_text(hjust = 0.5)) +
-  theme(axis.title = element_text(size = 10, face = "plain"),
-        title = element_text(size = 12)) 
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    axis.title = element_text(size = 10, face = "plain"),
+    title = element_text(size = 12),
+    panel.grid = element_blank()
+  )
 
 death
 
-hosp <- hosp$rdplot  
+
+hosp <- hosp$rdplot
 
 hosp <- hosp +
   theme_minimal(base_size = 15) +
   theme(plot.title = element_text(hjust = 0.5)) +
-  theme(axis.title = element_text(size = 10, face = "plain"),
-        title = element_text(size = 12))
+  theme(
+    axis.title = element_text(size = 10, face = "plain"),
+    title = element_text(size = 12),
+    panel.grid = element_blank()
+  )
 
 hosp
 
@@ -431,7 +449,7 @@ plots <- hosp / death
 
 plots
 
-ggsave(paste0(output_dir, "/figures/240810_bigsample_plots_outcomes.png"), plot = plots,
+ggsave(paste0(output_dir, "/figures/bigsample_plots_outcomes.png"), plot = plots,
        width = 8.0,
        height = 5,
        units = "in")

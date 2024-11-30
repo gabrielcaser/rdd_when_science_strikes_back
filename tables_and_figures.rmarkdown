@@ -21,6 +21,8 @@ toc: true
 source("code/00_main_code.R")
 ```
 
+
+
 ## Summary of Data Sources
 
 | **Data Source**                                                                  | **Description**                                                            |
@@ -35,7 +37,12 @@ source("code/00_main_code.R")
 
 : Summary of Data Sources
 
+
+
 {{< pagebreak >}}
+
+
+
 
 ## Main Variables in the Study
 
@@ -55,6 +62,8 @@ source("code/00_main_code.R")
 
 ## Summary Statistics
 
+
+
 ```{r}
 # Defining notes parameters' values
 dados_sumstats      <- readRDS(paste(data_dir, "/final/", data, sep = ""))
@@ -70,9 +79,13 @@ text <- readLines("outputs/tables/table_sum_stats.md")
 knitr::asis_output(paste(text, collapse = "\n"))
 ```
 
+
+
 *Notes*: This table aggregates the summary statistics of all the observations used in the study (`r nobs_sumstats`). Municipalities chosen were those that held ordinary elections in selected years (`r cohorts_used`) whose mayor was elected in the first round and among the top two most voted was a STEM candidate and a Non-STEM one`r college_description`. NPI data has null values since not all the mayors responded to the survey.
 
 ## Summary Statistics per Group
+
+
 
 ```{r}
 
@@ -80,6 +93,8 @@ text <- readLines("outputs/tables/table_sum_stats_groups.md")
 knitr::asis_output(paste(text, collapse = "\n"))
 
 ```
+
+
 
 *Notes*: This table aggregates the summary statistics per group of all the observations used in the study (`r nobs_sumstats`). Municipalities chosen were those that held ordinary elections in selected years (`r cohorts_used`) whose mayor was elected in the first round and among the top two most voted was a STEM candidate and a Non-STEM one`r college_description`. NPI data has null values since not all the mayors responded to the survey.
 
@@ -109,6 +124,8 @@ knitr::asis_output(paste(text, collapse = "\n"))
 
 ## Baseline Characteristics - RD Estimates (Demographics)
 
+
+
 ```{r}
 # Test reading the first file
 text_1 <- readLines("outputs/tables/baseline_table_panel1.tex")
@@ -117,7 +134,11 @@ knitr::asis_output(paste(text_1, collapse = "\n"))
 
 ```
 
+
+
 ## Baseline Characteristics - RD Estimates (Health and Ideology)
+
+
 ```{r}
 # Test reading the second file
 text_2 <- readLines("outputs/tables/baseline_table_panel2.tex")
@@ -126,7 +147,11 @@ knitr::asis_output(paste(text_2, collapse = "\n"))
 
 ```
 
+
+
 ## Impact of STEM Leadership on Epidemiological Outcomes — RD estimates
+
+
 ```{r}
 # Test reading the second file
 text <- readLines("outputs/tables/estimates.tex")
@@ -135,7 +160,11 @@ knitr::asis_output(paste(text, collapse = "\n"))
 
 ```
 
+
+
 ## STEM candidates' personal characteristics — RD estimates
+
+
 ```{r}
 # Test reading the second file
 text <- readLines("outputs/tables/personal_char.tex")
@@ -144,7 +173,11 @@ knitr::asis_output(paste(text, collapse = "\n"))
 
 ```
 
+
+
 ## Impact of STEM Candidate Elected in 2016 on COVID-19 Epidemiological Outcomes per 100k inhabitants in 2021
+
+
 ```{r}
 # Test reading the second file
 text <- readLines("outputs/tables/mechanism.tex")
@@ -152,5 +185,4 @@ text <- readLines("outputs/tables/mechanism.tex")
 knitr::asis_output(paste(text, collapse = "\n"))
 
 ```
-
 
