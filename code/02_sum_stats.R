@@ -98,15 +98,15 @@ datasummary(
   All(data.frame(dat)) ~ N  + Min + Mean + Max + SD,
   data = dat,
   fmt = 2,
-  #align = "lrrrrr",
+  align = "lrrrrr",
   title = "Summary Statistics",
-  output = paste0(output_dir, "/tables/table_sum_stats.tex")
+  output = paste0(output_dir, "/tables/table_sum_stats.md")
 )
 
 
 ## creating table with groups
 
-dat$stem_background <- ifelse(dat$stem_background == 1, "    STEM", "Non-STEM")
+dat$stem_background <- ifelse(dat$stem_background == 1, "STEM", "Non-STEM")
 
 datasummary_balance(
   ~ stem_background,
@@ -115,7 +115,7 @@ datasummary_balance(
   fmt = 2,
   align = "lrrrrrr",
   title = "Summary Statistics by Group",
-  output = paste0(output_dir, "/tables/table_sum_stats_groups.tex")
+  output = paste0(output_dir, "/tables/table_sum_stats_groups.md")
 )
 
 ## Figures for STEM candidates ---------------------------------------------------------
@@ -384,7 +384,7 @@ hosp <- rdplot(df_plots$Y_hosp, df_plots$X,
                #covs = covsZ,
                p = poli,
                #x.lim = c(r4$bws[1] * -1, r4$bws[1]),
-               y.lim = c(75, 175),
+               #y.lim = c(75, 175),
                #shade = TRUE,
                #subset = amostra,
                #h = r4$bws[1],

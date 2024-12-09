@@ -49,11 +49,11 @@ tidy.rdrobust <- function(model, ...) {
 
 glance.rdrobust <- function(model, ...) {
   ret <- data.frame(
-    "Eff number obs." = as.character(model$N_h[1] + model$N_h[2]),
-    "Bandwidth" = as.character(round(model$bws[1,1] * 100, 2)),
-    "State FE" = "PREENCHER",
-    "Election FE" = "PREENCHER",
-    "Gender" = "PREENCHER"
+    "Eff N obs." = as.character(model$N_h[1] + model$N_h[2]),
+    "Bandwidth" = as.character(round(model$bws[1,1] * 100, 2))#,
+    #"State FE" = "X",
+    #"Election FE" = "X",
+    #"Gender" = ifelse("mulher" %in% colnames(as.data.frame(covsZ)),"X"," ")
   )
   ret
 }
@@ -151,9 +151,10 @@ baseline_table_1 <- modelsummary(
   coef_rename = c("Robust" = "RD estimator"),
   stars = c('*' = .1, '**' = .05, '***' = .01),
   fmt = 2,
-  output = "outputs/tables/baseline_table_panel1.tex",
+  output = "outputs/tables/baseline_table_panel1.md",
   title = "Baseline Characteristics - RD Estimates (Demography)",
-  coef_omit = "Corrected|Conventional"
+  coef_omit = "Corrected|Conventional"#,
+  #align = paste(rep("c", length(models_1) + 1), collapse = "")
 )
 
 # Create the second table (Health and Ideology)
@@ -164,9 +165,10 @@ baseline_table_2 <- modelsummary(
   coef_rename = c("Robust" = "RD estimator"),
   stars = c('*' = .1, '**' = .05, '***' = .01),
   fmt = 2,
-  output = "outputs/tables/baseline_table_panel2.tex",
+  output = "outputs/tables/baseline_table_panel2.md",
   title = "Baseline Characteristics - RD Estimates (Health and Ideology)",
-  coef_omit = "Corrected|Conventional"
+  coef_omit = "Corrected|Conventional"#,
+  #align = paste(rep("c", length(models_2) + 1), collapse = "")
 )
 
 baseline_table_1
@@ -182,7 +184,7 @@ r3 = rdrobust(df$Y_deaths_sivep, df$X, p = poli, kernel = k, bwselect = "mserd",
 summary(r2)
 summary(r3)
 
-covsZ = cbind(state.d, year.d, as.factor(df$mulher))
+covsZ = cbind(state.d, year.d, df$mulher, df$instrucao, df$ideology_party)
 
 r4 = rdrobust(df$Y_hosp,  df$X, p = poli, kernel = k,  covs = covsZ)
 r5 = rdrobust(df$Y_deaths_sivep, df$X, kernel = k, p = poli, covs = covsZ)
@@ -196,7 +198,7 @@ r6 = rdrobust(df$Y_hosp, df$X, p = poli, kernel = k,  h = janela,  bwselect = "m
 r7 = rdrobust(df$Y_deaths_sivep,  df$X, p = poli, kernel = k, h = janela,   bwselect = "mserd",   covs = covsZ)
 
 
-covsZ = cbind(state.d, year.d, df$mulher)
+covsZ = cbind(state.d, year.d, df$mulher, df$instrucao, df$ideology_party)
 
 r8 = rdrobust(df$Y_hosp ,  df$X, p = poli, kernel = k, h = janela,   bwselect = "mserd",  covs = covsZ)
 r9 = rdrobust(df$Y_deaths_sivep,  df$X, kernel = k, h = janela,   bwselect = "mserd", p = poli,   covs = covsZ)
@@ -212,23 +214,23 @@ models <- list("Panel A: Deaths" = list(r7,
                                                   r2,
                                                   r4)
                )
-  
-teste <- modelsummary(models,
-                      shape = "rbind",
-                      estimate = "{estimate}",
-                      statistic = c("[{std.error}]","{p.value}{stars}"
-                      ),
-                      coef_rename = c("Robust" = "RD estimator"),
-                      stars = c('*'=.1, '**'=.05, '***'=.01),
-                      fmt = 2, # decimal places
-                      #output = paste(output_dir, "/bigsample_estimates.tex", sep = ""),
-                      output = "gt",
-                      title = "Impact of STEM Leadership on Epidemiological Outcomes — RD estimates",
-                      coef_omit = "Corrected|Conventional") 
 
+modelsummary(
+  models,
+  shape = "rbind",
+  estimate = "{estimate}",
+  statistic = c("[{std.error}]", "{p.value}{stars}"),
+  coef_rename = c("Robust" = "RD estimator"),
+  stars = c('*' = .1, '**' = .05, '***' = .01),
+  fmt = 2,
+  # decimal places
+  #output = paste(output_dir, "/bigsample_estimates.tex", sep = ""),
+  output = "outputs/tables/estimates.md",
+  title = "Impact of STEM Leadership on Epidemiological Outcomes — RD estimates",
+  coef_omit = "Corrected|Conventional"#,
+  #align = paste(rep("c", length(models) + 1), collapse = "")
+)
 
-teste
-gt::gtsave(teste, filename =  "outputs/tables/estimates.tex")
 
 
 # Personal charact
@@ -262,12 +264,13 @@ teste_chr <- modelsummary(models,
              stars = c('*'=.1, '**'=.05, '***'=.01),
              fmt = 2, # decimal places
              #output = "Dados/output/221103_bigsample_personal_charac.tex",
-             output = "gt",
+             output = "outputs/tables/personal_char.md",
              title = "STEM candidates' personal characteristics — RD estimates",
-             coef_omit = "Corrected|Conventional")
+             coef_omit = "Corrected|Conventional")#,
+            # align = paste(rep("c", length(models) + 1), collapse = ""))
 
-teste_chr
-gt::gtsave(teste_chr, filename =  "outputs/tables/personal_char.tex")
+#teste_chr
+#gt::gtsave(teste_chr, filename =  "outputs/tables/personal_char.tex")
 
 
 
@@ -301,7 +304,7 @@ r4 = rdrobust(df2$restricao_circulacao, df2$X,   p = poli, kernel = k,   covs = 
 r5 = rdrobust(df2$restricao_transporte_publico, df2$X,   p = poli, kernel = k,   covs = covsZ, h = janela)
 r6 = rdrobust(df2$barreiras_sanitarias, df2$X,   p = poli, kernel = k,   covs = covsZ, h = janela)
 
-covsZ = cbind(state.d2, df2$mulher)
+covsZ = cbind(state.d2, df2$mulher, df2$instrucao, df2$ideology_party)
 
 r12 = rdrobust(df2$total_nfi, df2$X, p = poli, kernel = k,   covs = covsZ, h = janela)
 r22 = rdrobust(df2$mascaras, df2$X,   p = poli, kernel = k,   covs = covsZ, h = janela)
@@ -311,12 +314,12 @@ r52 = rdrobust(df2$restricao_transporte_publico, df2$X,   p = poli, kernel = k, 
 r62 = rdrobust(df2$barreiras_sanitarias, df2$X,   p = poli, kernel = k,   covs = covsZ, h = janela)
 
 
-models <- list("Total NFI" = r1,
-               "Masks" = r2,
-               "Restrictions atv." = r3,
-               "Restrictions circu." = r4,
-               "Restrictions transp." = r5,
-               "Sani barriers" = r6,
+models <- list(#"Total NFI" = r1,
+               #"Masks" = r2,
+               #"Restrictions atv." = r3,
+               #"Restrictions circu." = r4,
+               #"Restrictions transp." = r5,
+               #"Sani barriers" = r6,
                "Total NFI" = r12,
                "Masks" = r22,
                "Restrictions atv." = r32,
@@ -324,28 +327,39 @@ models <- list("Total NFI" = r1,
                "Restrictions transp." = r52,
                "Sani barriers" = r62)
 
-mr3 <- modelsummary(models,
-                    estimate = "{estimate}",
-                    statistic = c("[{std.error}]","{p.value}{stars}"),
-                    stars = c('*'=.1, '**'=.05, '***'=.01),
-                    fmt = 2, # decimal places,
-                    output = "gt",
-                    title = "Impact of STEM Candidate Elected in 2016 on COVID-19 Epidemiological Outcomes per 100k inhabitants in 2021",
-                    coef_omit = "Bias-Corrected|Conventional")
+
+# Create a gt object
+mr3 <- modelsummary(
+  models,
+  estimate = "{estimate}",
+  statistic = c("[{std.error}]", "{p.value}{stars}"),
+  stars = c('*' = .1, '**' = .05, '***' = .01),
+  fmt = 2, # decimal places
+  output = "outputs/tables/mechanism.md", # Output as gt table
+  title = "Impact of STEM Candidate Elected in 2016 on Non-Pharmaceutical Interventions in 2020",
+  coef_omit = "Bias-Corrected|Conventional",
+  align = paste(rep("r", length(models) + 1), collapse = "") # Create alignment string
+)
+
+# Add tab spanners
+#mr3 <- mr3 %>%
+#  tab_spanner(label = "(1)", columns = 2:7) %>% 
+#  tab_spanner(label = "(2)", columns = 8:13)
+#
+## Convert gt table to raw HTML and then to Markdown
+#markdown_output <- gt::as_raw_html(mr3)
+#
+## Save Markdown content to a file
+#writeLines(markdown_output, con = "outputs/tables/mechanism.md")
 
 
-mr3 <- mr3 %>%
-  tab_spanner(label = "(1)", columns = 2:7) %>% 
-  tab_spanner(label = "(2)", columns = 8:13)
-
-gt::gtsave(mr3, filename =  "outputs/tables/mechanism.tex")
 
 # Robustness --------------------------------------------------------------
 
 
 ## Different windows -----------------------------------------------------
 
-CovsZ = cbind(state.d, year.d, df$mulher) # mechanisms
+CovsZ = cbind(state.d, year.d, df$mulher, df$instrucao, df$ideology_party) # mechanisms
 CovsZ_mechanism = cbind(state.d2) # mechanisms
 
   
