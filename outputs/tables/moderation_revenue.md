@@ -1,6 +1,6 @@
 
 % Table created by stargazer v.5.2.3 by Marek Hlavac, Social Policy Institute. E-mail: marek.hlavac at gmail.com
-% Date and time: dom., dic. 15, 2024 - 20:06:29
+% Date and time: dom., dic. 15, 2024 - 20:12:05
 \begin{table}[!htbp] \centering 
   \caption{Moderating effects of cities’ development on the impact of STEM background} 
   \label{} 
