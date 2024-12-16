@@ -1,31 +1,6 @@
 # Program - This program run main RDD regressions, including robustness, tables and pictures 
 
 
-# Libraries ***************************************************** ---------------------------------------------------------------
-
-#library("stargazer")
-#library("gt")
-#library("modelsummary")
-#library("rdrobust")
-#library("rddtools")
-#library("readr")
-#library("stringr")
-#library("tidyverse")
-#
-#library("plyr")
-#library("sf")
-#library("rio")
-#library('patchwork')
-
-
-#theme_set(theme_minimal(base_size = 16))
-
-# Setting -----------------------------------------------------------------
-
-#work_dir                       = "C:/Users/gabri/OneDrive/Gabriel/Insper/Tese/Engenheiros/replication_code/rdd_when_science_strikes_back/regressions_main"
-#output_dir                     = "C:/Users/gabri/OneDrive/Gabriel/Insper/Tese/Engenheiros/replication_code/rdd_when_science_strikes_back/regressions_main/output"
-#create_dataset_for_regressions = "C:/Users/gabri/OneDrive/Gabriel/Insper/Tese/Engenheiros/replication_code/rdd_when_science_strikes_back/6_create_rdd_dataset/output"
-
 # Oppening ----------------------------------------------------------------
 
 df <- readRDS(paste(data_dir, "/final/", data, sep = ""))
@@ -94,7 +69,13 @@ state.d = model.matrix(~state.f+0)
 
 year.f = factor(df$coorte)
 
-year.d = model.matrix(~year.f+0)
+if (cohort_filter == "") {
+  year.d = model.matrix(~year.f+0)
+}
+if (cohort_filter == "2016_") {
+  year.d = 1
+}
+
 
 
 # Main Results -------------------------------------------------------------
@@ -104,11 +85,6 @@ year.d = model.matrix(~year.f+0)
 
 
 covsZ = cbind(state.d, year.d)
-#poli = 1
-#janela = 0.05
-#janela = cbind()
-#k = "triangular"
-
 #rdrobust(df$taxa_analfabetismo_18_mais, df$X, p = poli, kernel = k, h = janela, bwselect = "mserd",  covs = covsZ)
 
 #taxa_analfabetismo_18_mais <- rdrobust(df$taxa_analfabetismo_18_mais, df$X, p = poli, kernel = k, h = janela, bwselect = "mserd",  covs = covsZ)
@@ -236,8 +212,6 @@ modelsummary(
 # Personal charact
 
 covsZ = cbind(state.d, year.d)
-janela = cbind()
-#janela = 0.05
 poli = 1
 
 mulher <- rdrobust(df$mulher,  df$X, p = poli, kernel = k,   covs = covsZ)

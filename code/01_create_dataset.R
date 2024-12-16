@@ -340,7 +340,8 @@ for (definition in c("strict", "broad")) {
   
   # Defining the sample --------------------------------------------------------------
   
-  df_college_mayors_only_2016 <- df
+  df_2016 <- df %>% 
+    dplyr::filter(coorte == 2016)
   
   df_college_mayors_only <- df %>% 
     dplyr::filter(sch_non_stem_cdt == 1)
@@ -352,6 +353,7 @@ for (definition in c("strict", "broad")) {
   # Saving ------------------------------------------------------------------
   
   saveRDS(df, file = paste0("data/final/rdd_data_all_", definition, "_definition.rds", sep = ""))
+  saveRDS(df_2016, file = paste0("data/final/rdd_data_all_2016_", definition, "_definition.rds", sep = ""))
   saveRDS(df_college_mayors_only, file = paste0("data/final/rdd_data_college_mayors_only_", definition, "_definition.rds", sep = ""))
   saveRDS(df_college_mayors_only_2016, file = paste0("data/final/rdd_data_college_mayors_only_2016_", definition, "_definition.rds", sep = ""))
   #write.csv(df_college_mayors_only_2016, file = paste0("data/final/rdd_data_college_mayors_only_2016_", definition, "_definition.csv"), row.names = FALSE, na = ".")

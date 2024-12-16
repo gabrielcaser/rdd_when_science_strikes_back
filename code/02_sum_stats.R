@@ -148,7 +148,7 @@ p <- ggplot(profi, aes(y = cbo_agregado_nome_caser.laverde.rothwell, x = percent
   theme_minimal(base_size = 16) +
   xlab("") +  # Remove o rótulo do eixo X
   ylab("Occupations") +
-  xlim(0, 60) + 
+  xlim(0, 70) + 
   #ggtitle("STEM mayors’ most common occupations") +
   scale_fill_discrete(name = "occupation") +
   theme(
@@ -345,27 +345,32 @@ state.f = factor(df$sigla_uf)
 state.d = model.matrix( ~ state.f + 0) # creating fixed effects
 
 year.f = factor(df$coorte) # creating dummies
-year.d = model.matrix( ~ year.f + 0)
+if (cohort_filter == "") {
+  year.d = model.matrix(~year.f+0)
+}
+if (cohort_filter == "2016_") {
+  year.d = 1
+}
 
-covsZ  = cbind(state.d, year.d) # Controls
+covsZ  = cbind(state.d, year.d, df$mulher) # Controls
 
 r4 = rdrobust(
   df$Y_deaths_sivep,
   df$X,
   p      = poli,
   kernel = k,
-  h      = janela,
+  #h      = janela,
   subset = amostra,
-  #covs   = covsZ
+  covs   = covsZ
 )
 r5 = rdrobust(
   df$Y_hosp,
   df$X,
   kernel = k,
-  h      = janela,
+  #h      = janela,
   p      = poli,
   subset = amostra,
-  #covs   = covsZ
+  covs   = covsZ
 )
 
 summary(r4)
@@ -375,13 +380,26 @@ summary(r5)
 
 df_plots <- df[abs(df$X) < r4$bws[1], ]
 
+state.f = factor(df_plots$sigla_uf)
+state.d = model.matrix( ~ state.f + 0) # creating fixed effects
+
+year.f = factor(df_plots$coorte) # creating dummies
+if (cohort_filter == "") {
+  year.d = model.matrix(~year.f+0)
+}
+if (cohort_filter == "2016_") {
+  year.d = 1
+}
+
+covsZ  = cbind(state.d, year.d, df_plots$mulher) # Controls
+
 #poli = 1
 #covsZ = cbind(state.d, df$mulher)
 #covsZ = df$tenure
 
 
 hosp <- rdplot(df_plots$Y_hosp, df_plots$X,
-               #covs = covsZ,
+               covs = covsZ,
                p = poli,
                #x.lim = c(r4$bws[1] * -1, r4$bws[1]),
                #y.lim = c(75, 175),
@@ -402,10 +420,10 @@ hosp <- rdplot(df_plots$Y_hosp, df_plots$X,
 
 
 death <- rdplot(df_plots$Y_deaths_sivep , df_plots$X,
-                #covs = covsZ,
+                covs = covsZ,
                 p = poli,
                 #x.lim = c(r5$bws[1] * -1, r5$bws[1]),
-                y.lim = c(75, 175),
+                #y.lim = c(75, 175),
                 #shade = TRUE,
                 #h = r5$bws[1],
                 #scale = 5,
