@@ -1,8 +1,12 @@
-
 # Description - This code reproduces all tables and figures from the paper
 
 # TO DO
-## Run sum stats
+## Moderation - Add cohort fixed effects
+## Versions - Create a pdf for each data
+
+
+
+
 # Initial Commands --------------------------------------------------------
 
 rm(list = ls(all.names = TRUE)) # clear objects
@@ -40,13 +44,14 @@ tenure_data_dir                = "C:/Users/wb633398/OneDrive/Gabriel/Insper/Tese
 # Parameters --------------------------------------------------------------
 stem_definition        = "broad" # "broad" or "strict"
 non_stem_college       = "all"   # "college_mayors_only" OR "all"
-cohort_filter          = "2016_" # "only_2016_" or ""
+cohort_filter          = "" # "only_2016_" or ""
 
 data   = paste0("rdd_data_", non_stem_college,"_", cohort_filter, stem_definition, "_definition.Rds") # Machado's STEM classification, both 2016 and 2020 cohorts and only considering municipalities where de NON-STEM mayor had college education
 
-poli   = 1                      # Functional form
-janela = 0.10                   # Defining margin of victory for robustness tests
-k      = "triangular"           # Kernel  
+poli                   = 1                      # Functional form
+janela                 = 0.05                   # Defining margin of victory for robustness tests
+k                      = "triangular"           # Kernel  
+deaths_and_hosp_in_log = "yes"                  # Hospita. and Deaths as log(outcome + 1)
 
 #covariates = # definir
 # Running scripts ---------------------------------------------------------

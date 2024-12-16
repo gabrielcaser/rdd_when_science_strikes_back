@@ -268,12 +268,13 @@ for (definition in c("strict", "broad")) {
   
   df$T_X = df$X * df$T
   
+  if (deaths_and_hosp_in_log == "yes") {
+    df$Y_hosp = log(df$Y_hosp + 1)
+    df$Y_deaths_sivep = log(df$Y_deaths_sivep + 1)
+  }
   
   # Cleaning the data -------------------------------------------------------
-  
-  #df<- df %>% 
-  #  filter(coorte == 2016 & sch_non_stem_cdt == 1)
-  
+
   df <- df %>% 
     dplyr::summarise(coorte,
                      sigla_uf,

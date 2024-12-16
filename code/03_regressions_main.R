@@ -41,7 +41,7 @@ robust_check <- function(outcome, poli, covsZ, k, x_value) {
   df_robs <- data.frame()
   
   
-  for (i in seq(0.02, 0.2, by = 0.01)) {
+  for (i in seq(0.02, 0.24, by = 0.01)) {
     
     prov = rdrobust(y = outcome, x_value, p = poli, level = 90, kernel = k, h = i, covs = covsZ) #rodando rdd
 
@@ -89,16 +89,16 @@ covsZ = cbind(state.d, year.d)
 
 #taxa_analfabetismo_18_mais <- rdrobust(df$taxa_analfabetismo_18_mais, df$X, p = poli, kernel = k, h = janela, bwselect = "mserd",  covs = covsZ)
 #indice_gini <- rdrobust(df$indice_gini,  df$X, p = poli, kernel = k, h = janela,  covs = covsZ)
-renda_pc <- rdrobust(df$renda_pc,  df$X, p = poli, kernel = k,  bwselect = "mserd",  covs = covsZ)
-populacao <- rdrobust(log(df$populacao),  df$X, p = poli, kernel = k,  bwselect = "mserd",  covs = covsZ)
-idhm <- rdrobust(df$idhm,  df$X, p = poli, kernel = k,  bwselect = "mserd",  covs = covsZ)
-densidade <- rdrobust(df$densidade,  df$X, p = poli, kernel = k,  bwselect = "mserd",  covs = covsZ)
-per_populacao_homens <- rdrobust(df$per_populacao_homens,  df$X, p = poli, kernel = k,  bwselect = "mserd",  covs = covsZ)
+renda_pc                <- rdrobust(df$renda_pc,  df$X, p = poli, kernel = k,  bwselect = "mserd",  covs = covsZ)
+populacao               <- rdrobust(log(df$populacao),  df$X, p = poli, kernel = k,  bwselect = "mserd",  covs = covsZ)
+idhm                    <- rdrobust(df$idhm,  df$X, p = poli, kernel = k,  bwselect = "mserd",  covs = covsZ)
+densidade               <- rdrobust(df$densidade,  df$X, p = poli, kernel = k,  bwselect = "mserd",  covs = covsZ)
+per_populacao_homens    <- rdrobust(df$per_populacao_homens,  df$X, p = poli, kernel = k,  bwselect = "mserd",  covs = covsZ)
 pct_desp_recp_saude_mun <- rdrobust(df$pct_desp_recp_saude_mun,  df$X, p = poli, kernel = k,  bwselect = "mserd",  covs = covsZ)
-tx_med_ch <- rdrobust(df$tx_med_ch, df$X, p = poli, kernel = k,  bwselect = "mserd",  covs = covsZ)
-cob_esf <- rdrobust(df$cob_esf,  df$X, p = poli, kernel = k,  bwselect = "mserd",  covs = covsZ)
-tx_leito_sus <- rdrobust(df$tx_leito_sus, df$X, p = poli, kernel = k,  bwselect = "mserd",  covs = covsZ)
-ideology_municipality <- rdrobust(df$ideology_municipality, df$X, p = poli, kernel = k,  bwselect = "mserd",  covs = covsZ)
+tx_med_ch               <- rdrobust(df$tx_med_ch, df$X, p = poli, kernel = k,  bwselect = "mserd",  covs = covsZ)
+cob_esf                 <- rdrobust(df$cob_esf,  df$X, p = poli, kernel = k,  bwselect = "mserd",  covs = covsZ)
+tx_leito_sus            <- rdrobust(df$tx_leito_sus, df$X, p = poli, kernel = k,  bwselect = "mserd",  covs = covsZ)
+ideology_municipality   <- rdrobust(df$ideology_municipality, df$X, p = poli, kernel = k,  bwselect = "mserd",  covs = covsZ)
 
 
 # Models for Panel 1 (Demography)
@@ -160,7 +160,7 @@ r3 = rdrobust(df$Y_deaths_sivep, df$X, p = poli, kernel = k, bwselect = "mserd",
 summary(r2)
 summary(r3)
 
-covsZ = cbind(state.d, year.d, df$mulher, df$instrucao, df$ideology_party)
+covsZ = cbind(state.d, year.d, df$mulher, df$ideology_party, df$instrucao, df$reeleito)
 
 r4 = rdrobust(df$Y_hosp,  df$X, p = poli, kernel = k,  covs = covsZ)
 r5 = rdrobust(df$Y_deaths_sivep, df$X, kernel = k, p = poli, covs = covsZ)
@@ -174,7 +174,7 @@ r6 = rdrobust(df$Y_hosp, df$X, p = poli, kernel = k,  h = janela,  bwselect = "m
 r7 = rdrobust(df$Y_deaths_sivep,  df$X, p = poli, kernel = k, h = janela,   bwselect = "mserd",   covs = covsZ)
 
 
-covsZ = cbind(state.d, year.d, df$mulher, df$instrucao, df$ideology_party)
+covsZ = cbind(state.d, year.d, df$mulher, df$instrucao, df$ideology_party, df$reeleito)
 
 r8 = rdrobust(df$Y_hosp ,  df$X, p = poli, kernel = k, h = janela,   bwselect = "mserd",  covs = covsZ)
 r9 = rdrobust(df$Y_deaths_sivep,  df$X, kernel = k, h = janela,   bwselect = "mserd", p = poli,   covs = covsZ)
@@ -271,21 +271,21 @@ state.d2 = model.matrix(~state.f2+0)
 
 covsZ = cbind(state.d2)
 
-r1 = rdrobust(df2$total_nfi,  df2$X, p = poli, kernel = k,   covs = covsZ, h = janela)
-r2 = rdrobust(df2$mascaras, df2$X,   p = poli, kernel = k,   covs = covsZ, h = janela)
-r3 = rdrobust(df2$restricao_atv_nao_essenciais, df2$X,   p = poli, kernel = k,   covs = covsZ, h = janela)
-r4 = rdrobust(df2$restricao_circulacao, df2$X,   p = poli, kernel = k,   covs = covsZ, h = janela)
-r5 = rdrobust(df2$restricao_transporte_publico, df2$X,   p = poli, kernel = k,   covs = covsZ, h = janela)
-r6 = rdrobust(df2$barreiras_sanitarias, df2$X,   p = poli, kernel = k,   covs = covsZ, h = janela)
+r1 = rdrobust(df2$total_nfi,  df2$X, p = poli, kernel = k,   covs = covsZ)
+r2 = rdrobust(df2$mascaras, df2$X,   p = poli, kernel = k,   covs = covsZ)
+r3 = rdrobust(df2$restricao_atv_nao_essenciais, df2$X,   p = poli, kernel = k,   covs = covsZ)
+r4 = rdrobust(df2$restricao_circulacao, df2$X,   p = poli, kernel = k,   covs = covsZ)
+r5 = rdrobust(df2$restricao_transporte_publico, df2$X,   p = poli, kernel = k,   covs = covsZ)
+r6 = rdrobust(df2$barreiras_sanitarias, df2$X,   p = poli, kernel = k,   covs = covsZ)
 
-covsZ = cbind(state.d2, df2$mulher, df2$instrucao, df2$ideology_party)
+covsZ = cbind(state.d2, df2$mulher, df2$ideology_party)
 
-r12 = rdrobust(df2$total_nfi, df2$X, p = poli, kernel = k,   covs = covsZ, h = janela)
-r22 = rdrobust(df2$mascaras, df2$X,   p = poli, kernel = k,   covs = covsZ, h = janela)
-r32 = rdrobust(df2$restricao_atv_nao_essenciais, df2$X,   p = poli, kernel = k,   covs = covsZ, h = janela)
-r42 = rdrobust(df2$restricao_circulacao, df2$X,   p = poli, kernel = k,   covs = covsZ, h = janela)
-r52 = rdrobust(df2$restricao_transporte_publico, df2$X,   p = poli, kernel = k,   covs = covsZ, h = janela)
-r62 = rdrobust(df2$barreiras_sanitarias, df2$X,   p = poli, kernel = k,   covs = covsZ, h = janela)
+r12 = rdrobust(df2$total_nfi, df2$X, p = poli, kernel = k,   covs = covsZ)
+r22 = rdrobust(df2$mascaras, df2$X,   p = poli, kernel = k,   covs = covsZ)
+r32 = rdrobust(df2$restricao_atv_nao_essenciais, df2$X,   p = poli, kernel = k,   covs = covsZ)
+r42 = rdrobust(df2$restricao_circulacao, df2$X,   p = poli, kernel = k,   covs = covsZ)
+r52 = rdrobust(df2$restricao_transporte_publico, df2$X,   p = poli, kernel = k,   covs = covsZ)
+r62 = rdrobust(df2$barreiras_sanitarias, df2$X,   p = poli, kernel = k,   covs = covsZ)
 
 
 models <- list(#"Total NFI" = r1,
@@ -333,8 +333,8 @@ mr3 <- modelsummary(
 
 ## Different windows -----------------------------------------------------
 
-CovsZ = cbind(state.d, year.d, df$mulher, df$instrucao, df$ideology_party) # mechanisms
-CovsZ_mechanism = cbind(state.d2) # mechanisms
+CovsZ = cbind(state.d, year.d, df$mulher, df$reeleito, df$instrucao, df$ideology_party) # mechanisms
+CovsZ_mechanism = cbind(state.d2, df2$mulher, df2$ideology_party) # mechanisms
 
   
 df_robs_hosp      <- robust_check(df$Y_hosp, 1, CovsZ, k, df$X)
@@ -346,10 +346,16 @@ df_robs_circu     <- robust_check(df2$restricao_circulacao, 1, CovsZ_mechanism, 
 df_robs_atv       <- robust_check(df2$restricao_atv_nao_essenciais, 1, CovsZ_mechanism, k, df2$X)
 df_robs_sani      <- robust_check(df2$barreiras_sanitarias, 1, CovsZ_mechanism, k, df2$X)
 
+theme_clean <- theme(
+  panel.grid.major = element_blank(), 
+  panel.grid.minor = element_blank(),
+  panel.background = element_blank(),
+  axis.line = element_line(color = "black")
+)
 
 plot_hosp_robs <-  ggplot(df_robs_hosp, aes(x = bw, y = coef_robs)) +
   geom_point(na.rm = TRUE) +
-  xlim(0.00, 0.2) +
+  xlim(0.00, 0.24) +
   #ylim(-750, 200) +
   ylab("") +
   xlab("bandwidth") +
@@ -358,14 +364,14 @@ plot_hosp_robs <-  ggplot(df_robs_hosp, aes(x = bw, y = coef_robs)) +
   ggtitle("(b) COVID-19 hospitalizations") +
   theme(plot.title = element_text(hjust = 0.5)) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "red") + 
-  geom_ribbon(aes(ymin = ci_lower_rob, ymax = ci_higher_rob), alpha = 0.2)
+  geom_ribbon(aes(ymin = ci_lower_rob, ymax = ci_higher_rob), alpha = 0.2) + theme_clean
 
 plot_hosp_robs 
 
 
 plot_deaths_robs <-  ggplot(df_robs_deaths, aes(x = bw, y = coef_robs)) +
   geom_point(na.rm = TRUE) +
-  xlim(0.00, 0.2) +
+  xlim(0.00, 0.24) +
   ylab("") +
   xlab("bandwidth") +
   theme(axis.title = element_text(size = 12),
@@ -373,7 +379,7 @@ plot_deaths_robs <-  ggplot(df_robs_deaths, aes(x = bw, y = coef_robs)) +
   ggtitle("(a) COVID-19 deaths") +
   theme(plot.title = element_text(hjust = 0.5)) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "red") + 
-  geom_ribbon(aes(ymin = ci_lower_rob, ymax = ci_higher_rob), alpha = 0.2)
+  geom_ribbon(aes(ymin = ci_lower_rob, ymax = ci_higher_rob), alpha = 0.2) + theme_clean
 
 plot_deaths_robs
 
@@ -390,14 +396,14 @@ ggsave("outputs/figures/robust_outcomes.png", graficos_juntos,
 
 plot_nfi_robs <-  ggplot(df_robs_nfi, aes(x = bw, y = coef_robs)) +
   geom_point(na.rm = TRUE) +
-  xlim(0.02, 0.2) +
+  xlim(0.02, 0.24) +
  # ylim(-5,10) +
   ylab("") +
   xlab("bandwidth") +
   theme(axis.title = element_text(size = 10)) +
   ggtitle("(a) Total number of NPIs") +
   geom_hline(yintercept = 0, linetype = "dashed", color = "red") + 
-  geom_ribbon(aes(ymin = ci_lower_rob, ymax = ci_higher_rob), alpha = 0.2)
+  geom_ribbon(aes(ymin = ci_lower_rob, ymax = ci_higher_rob), alpha = 0.2) + theme_clean
 
 plot_nfi_robs
 
@@ -405,64 +411,64 @@ plot_nfi_robs
 
 plot_nfi_masks <-  ggplot(df_robs_masks, aes(x = bw, y = coef_robs)) +
   geom_point(na.rm = TRUE) +
-  xlim(0.02, 0.2) +
+  xlim(0.02, 0.24) +
   # ylim(-5,10) +
   ylab("") +
   xlab("bandwidth") +
   theme(axis.title = element_text(size = 10)) +
   ggtitle("(b) Face covering restrictions") +
   geom_hline(yintercept = 0, linetype = "dashed", color = "red") + 
-  geom_ribbon(aes(ymin = ci_lower_rob, ymax = ci_higher_rob), alpha = 0.2)
+  geom_ribbon(aes(ymin = ci_lower_rob, ymax = ci_higher_rob), alpha = 0.2) + theme_clean
 
 plot_nfi_masks
 
 
 plot_nfi_trans <-  ggplot(df_robs_trans_pub, aes(x = bw, y = coef_robs)) +
   geom_point(na.rm = TRUE) +
-  xlim(0.02, 0.2) +
+  xlim(0.02, 0.24) +
   # ylim(-5,10) +
   ylab("") +
   xlab("bandwidth") +
   theme(axis.title = element_text(size = 10)) +
   ggtitle("(c) Transportation restrictions") +
   geom_hline(yintercept = 0, linetype = "dashed", color = "red") + 
-  geom_ribbon(aes(ymin = ci_lower_rob, ymax = ci_higher_rob), alpha = 0.2)
+  geom_ribbon(aes(ymin = ci_lower_rob, ymax = ci_higher_rob), alpha = 0.2) + theme_clean
 
 plot_nfi_trans
 
 
 plot_nfi_sani <-  ggplot(df_robs_sani, aes(x = bw, y = coef_robs)) +
   geom_point(na.rm = TRUE) +
-  xlim(0.02, 0.2) +
+  xlim(0.02, 0.24) +
   # ylim(-5,10) +
   ylab("") +
   xlab("bandwidth") +
   theme(axis.title = element_text(size = 10)) +
   ggtitle("(d) Cordon sanitaire restrictions") +
   geom_hline(yintercept = 0, linetype = "dashed", color = "red") + 
-  geom_ribbon(aes(ymin = ci_lower_rob, ymax = ci_higher_rob), alpha = 0.2)
+  geom_ribbon(aes(ymin = ci_lower_rob, ymax = ci_higher_rob), alpha = 0.2) + theme_clean
 
 plot_nfi_atv <-  ggplot(df_robs_atv, aes(x = bw, y = coef_robs)) +
   geom_point(na.rm = TRUE) +
-  xlim(0.02, 0.2) +
+  xlim(0.02, 0.24) +
   # ylim(-5,10) +
   ylab("") +
   xlab("bandwidth") +
   theme(axis.title = element_text(size = 10)) +
   ggtitle("(e) Non-essential activ. restrictions") +
   geom_hline(yintercept = 0, linetype = "dashed", color = "red") + 
-  geom_ribbon(aes(ymin = ci_lower_rob, ymax = ci_higher_rob), alpha = 0.2)
+  geom_ribbon(aes(ymin = ci_lower_rob, ymax = ci_higher_rob), alpha = 0.2) + theme_clean
 
 plot_nfi_circu <-  ggplot(df_robs_circu, aes(x = bw, y = coef_robs)) +
   geom_point(na.rm = TRUE) +
-  xlim(0.02, 0.2) +
+  xlim(0.02, 0.24) +
   # ylim(-5,10) +
   ylab("") +
   xlab("bandwidth") +
   theme(axis.title = element_text(size = 10)) +
   ggtitle("(f) Public gathering restrictions") +
   geom_hline(yintercept = 0, linetype = "dashed", color = "red") + 
-  geom_ribbon(aes(ymin = ci_lower_rob, ymax = ci_higher_rob), alpha = 0.2)
+  geom_ribbon(aes(ymin = ci_lower_rob, ymax = ci_higher_rob), alpha = 0.2) + theme_clean
 
 
 
