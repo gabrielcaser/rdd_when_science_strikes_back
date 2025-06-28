@@ -1,0 +1,1057 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+%
+\documentclass[
+  letterpaper,
+  DIV=11,
+  numbers=noendperiod]{scrartcl}
+
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else  
+    % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+% Make \paragraph and \subparagraph free-standing
+\makeatletter
+\ifx\paragraph\undefined\else
+  \let\oldparagraph\paragraph
+  \renewcommand{\paragraph}{
+    \@ifstar
+      \xxxParagraphStar
+      \xxxParagraphNoStar
+  }
+  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
+  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+  \let\oldsubparagraph\subparagraph
+  \renewcommand{\subparagraph}{
+    \@ifstar
+      \xxxSubParagraphStar
+      \xxxSubParagraphNoStar
+  }
+  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
+  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+\makeatother
+
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+
+\usepackage{float}
+\usepackage{tabularray}
+\usepackage[normalem]{ulem}
+\usepackage{graphicx}
+\UseTblrLibrary{booktabs}
+\UseTblrLibrary{rotating}
+\UseTblrLibrary{siunitx}
+\NewTableCommand{\tinytableDefineColor}[3]{\definecolor{#1}{#2}{#3}}
+\newcommand{\tinytableTabularrayUnderline}[1]{\underline{#1}}
+\newcommand{\tinytableTabularrayStrikeout}[1]{\sout{#1}}
+\KOMAoption{captions}{tableheading,figureheading}
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\AtBeginDocument{%
+\ifdefined\contentsname
+  \renewcommand*\contentsname{Table of contents}
+\else
+  \newcommand\contentsname{Table of contents}
+\fi
+\ifdefined\listfigurename
+  \renewcommand*\listfigurename{List of Figures}
+\else
+  \newcommand\listfigurename{List of Figures}
+\fi
+\ifdefined\listtablename
+  \renewcommand*\listtablename{List of Tables}
+\else
+  \newcommand\listtablename{List of Tables}
+\fi
+\ifdefined\figurename
+  \renewcommand*\figurename{Figure}
+\else
+  \newcommand\figurename{Figure}
+\fi
+\ifdefined\tablename
+  \renewcommand*\tablename{Table}
+\else
+  \newcommand\tablename{Table}
+\fi
+}
+\@ifpackageloaded{float}{}{\usepackage{float}}
+\floatstyle{ruled}
+\@ifundefined{c@chapter}{\newfloat{codelisting}{h}{lop}}{\newfloat{codelisting}{h}{lop}[chapter]}
+\floatname{codelisting}{Listing}
+\newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
+\makeatother
+\makeatletter
+\makeatother
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
+\makeatother
+
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\usepackage{bookmark}
+
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  pdftitle={When Science Strikes Back},
+  pdfauthor={Gabriel Caser dos Passos and Nelson Ricardo Laverde Cubillos},
+  colorlinks=true,
+  linkcolor={blue},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={Blue},
+  pdfcreator={LaTeX via pandoc}}
+
+
+\title{When Science Strikes Back}
+\usepackage{etoolbox}
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+}
+\makeatother
+\subtitle{Tables and Figures}
+\author{Gabriel Caser dos Passos and Nelson Ricardo Laverde Cubillos}
+\date{}
+
+\begin{document}
+\maketitle
+
+\renewcommand*\contentsname{Table of contents}
+{
+\hypersetup{linkcolor=}
+\setcounter{tocdepth}{3}
+\tableofcontents
+}
+
+\subsection{Summary of Data Sources}\label{summary-of-data-sources}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.5190}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.4810}}@{}}
+\caption{Summary of Data Sources}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Data Source}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Description}
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Data Source}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Description}
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Base dos Dados (Dahis et al., 2022) and Tribunal Superior Eleitoral
+(TSE) & Information on mayors and elections. \\
+RAIS (Brazilian Ministry of Labor database) & Occupation data. \\
+SIVEPGripe & Epidemiological outcomes data (hospitalizations,
+deaths). \\
+2010 Brazilian National Census & Demographic data. \\
+IEPS Data Index & Public health data. \\
+Power and Rodrigues-Silveira (2019) & Ideological measures. \\
+De Souza Santos et al.~(2021) and National Confederation of
+Municipalities (CNI) & Data on Non-Pharmaceutical Interventions (NPIs)
+between May and July 2020. \\
+\end{longtable}
+
+\newpage{}
+
+\subsection{Main Variables in the
+Study}\label{main-variables-in-the-study}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.2806}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.7194}}@{}}
+\caption{Main Variables in the Study}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Variable}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Description}
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Variable}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Description}
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Cases per 100k inhabitants & Number of COVID-19 cases per 100,000
+inhabitants, based on municipal data. \\
+Hospitalizations per 100k inhabitants & Number of hospitalizations due
+to COVID-19 per 100,000 inhabitants. \\
+Deaths per 100k inhabitants & Number of deaths from COVID-19 per 100,000
+inhabitants. \\
+STEM candidate & Indicator for whether a candidate has worked in STEM
+for at least 6 months or holds a STEM degree. \\
+STEM occupation & Defined as per CBO classification list by Machado et
+al.~(2021). \\
+STEM education & Based on data from Escavador, social media, and machine
+learning classification. \\
+STEM winning margin & Vote margin between the first and second
+most-voted candidates, positive if a STEM candidate won. \\
+Cohort & List of candidates registered in the 2016 local executive
+elections. \\
+Tenure & Employment time in a STEM occupation, calculated using RAIS
+data. \\
+\end{longtable}
+
+\subsection{Summary Statistics}\label{summary-statistics}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.4598}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.0690}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1034}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1034}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1149}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1034}}@{}}
+\caption{Summary Statistics}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+N
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Min
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mean
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Max
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+SD
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+N
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Min
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mean
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Max
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+SD
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Tenure.in.STEM.job & 465 & 0.00 & 19.44 & 168.10 & 38.80 \\
+Female & 465 & 0.00 & 0.09 & 1.00 & 0.29 \\
+Age & 465 & 26.00 & 49.82 & 86.00 & 11.37 \\
+Education & 465 & 2.00 & 6.90 & 7.00 & 0.49 \\
+Incumbent.when.elected & 465 & 0.00 & 0.23 & 1.00 & 0.42 \\
+Party.ideology & 465 & -0.69 & 0.29 & 0.76 & 0.37 \\
+Deaths.per.100k.inhabitants & 465 & 0.00 & 129.99 & 681.88 & 89.01 \\
+Hospitalizations.per.100k.inhabitants & 465 & 13.48 & 421.09 & 1582.03 &
+295.86 \\
+Cordon.sanitaire & 138 & 0.00 & 0.48 & 1.00 & 0.50 \\
+Face.covering.required & 135 & 0.00 & 0.95 & 1.00 & 0.22 \\
+Closure.of.non.essential.activities & 136 & 0.00 & 0.76 & 1.00 & 0.43 \\
+Gathering.prohibition & 136 & 0.00 & 0.99 & 1.00 & 0.12 \\
+Public.transport.restriction & 134 & 0.00 & 0.51 & 1.00 & 0.50 \\
+Number.of.Non.Pharma..Interventions & 133 & 1.00 & 3.69 & 5.00 & 0.90 \\
+Log.of.population.in.2010 & 465 & 7.28 & 9.98 & 14.49 & 1.22 \\
+Human.Development.Index & 465 & 0.47 & 0.68 & 0.84 & 0.07 \\
+Per.capita.income & 465 & 5.23 & 24.58 & 203.12 & 20.31 \\
+Population.density & 465 & 0.68 & 139.99 & 6182.96 & 492.14 \\
+Urban.population.rate & 465 & -80.55 & -27.09 & 1.00 & 20.53 \\
+Men.population.rate & 465 & 46.37 & 50.00 & 61.78 & 1.58 \\
+Physicians.per.1k.inhabitants & 465 & 0.00 & 0.92 & 6.18 & 0.76 \\
+Health.municipal.spending.rate & 465 & 7.92 & 22.83 & 37.08 & 5.06 \\
+Community.health.agency.coverage.rate & 465 & 0.00 & 84.94 & 100.00 &
+22.74 \\
+Hospital.beds.per.100k.population & 465 & 0.00 & 143.12 & 816.50 &
+131.26 \\
+\end{longtable}
+
+\emph{Notes}: This table aggregates the summary statistics of all the
+observations used in the study (465). Municipalities chosen were those
+that held ordinary elections in selected years (2016, 2020) whose mayor
+was elected in the first round and among the top two most voted was a
+STEM candidate and a Non-STEM one. NPI data has null values since not
+all the mayors responded to the survey.
+
+\subsection{Summary Statistics per
+Group}\label{summary-statistics-per-group}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.3571}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.0804}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1071}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.0804}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1071}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1518}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.0714}}@{}}
+\caption{Summary Statistics by Group}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\end{minipage} &
+\multicolumn{2}{>{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1875} + 2\tabcolsep}}{%
+\begin{minipage}[b]{\linewidth}\raggedright
+Non-STEM (N=275)
+\end{minipage}} &
+\multicolumn{2}{>{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1875} + 2\tabcolsep}}{%
+\begin{minipage}[b]{\linewidth}\raggedright
+STEM (N=190)
+\end{minipage}} &
+\multicolumn{2}{>{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.2232} + 2\tabcolsep}@{}}{%
+\begin{minipage}[b]{\linewidth}\raggedright
+\end{minipage}} \\
+\begin{minipage}[b]{\linewidth}\raggedright
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mean
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Std. Dev.
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mean
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Std. Dev.
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Diff. in Means
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+p
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\end{minipage} &
+\multicolumn{2}{>{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1875} + 2\tabcolsep}}{%
+\begin{minipage}[b]{\linewidth}\raggedright
+Non-STEM (N=275)
+\end{minipage}} &
+\multicolumn{2}{>{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1875} + 2\tabcolsep}}{%
+\begin{minipage}[b]{\linewidth}\raggedright
+STEM (N=190)
+\end{minipage}} &
+\multicolumn{2}{>{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.2232} + 2\tabcolsep}@{}}{%
+\begin{minipage}[b]{\linewidth}\raggedright
+\end{minipage}} \\
+\begin{minipage}[b]{\linewidth}\raggedright
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mean
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Std. Dev.
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mean
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Std. Dev.
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Diff. in Means
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+p
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Tenure in STEM job & 0.00 & 0.00 & 47.59 & 48.48 & 47.59 &
+\textless0.01 \\
+Female & 0.12 & 0.32 & 0.06 & 0.23 & -0.06 & 0.02 \\
+Age & 49.44 & 11.85 & 50.37 & 10.65 & 0.93 & 0.38 \\
+Education & 7.00 & 0.00 & 6.76 & 0.75 & -0.24 & \textless0.01 \\
+Incumbent when elected & 0.24 & 0.43 & 0.22 & 0.41 & -0.02 & 0.54 \\
+Party ideology & 0.28 & 0.36 & 0.29 & 0.40 & 0.01 & 0.74 \\
+Deaths per 100k inhabitants & 127.76 & 84.59 & 133.23 & 95.19 & 5.48 &
+0.52 \\
+Hospitalizations per 100k inhabitants & 416.06 & 275.02 & 428.36 &
+324.28 & 12.30 & 0.67 \\
+Cordon sanitaire & 0.49 & 0.50 & 0.46 & 0.50 & -0.04 & 0.67 \\
+Face covering required & 0.92 & 0.27 & 0.98 & 0.13 & 0.06 & 0.09 \\
+Closure of non-essential activities & 0.76 & 0.43 & 0.77 & 0.42 & 0.01 &
+0.87 \\
+Gathering prohibition & 0.99 & 0.11 & 0.98 & 0.13 & 0.00 & 0.82 \\
+Public transport restriction & 0.56 & 0.50 & 0.45 & 0.50 & -0.10 &
+0.25 \\
+Number of Non-Pharma. Interventions & 3.73 & 0.85 & 3.64 & 0.97 & -0.09
+& 0.56 \\
+Log of population in 2010 & 10.06 & 1.24 & 9.86 & 1.20 & -0.20 & 0.08 \\
+Human Development Index & 0.68 & 0.07 & 0.67 & 0.07 & 0.00 & 0.50 \\
+Per capita income & 25.40 & 22.91 & 23.40 & 15.80 & -2.00 & 0.27 \\
+Population density & 151.66 & 501.08 & 123.10 & 479.71 & -28.56 &
+0.54 \\
+Urban population rate & -25.96 & 20.13 & -28.73 & 21.05 & -2.77 &
+0.16 \\
+Men population rate & 49.90 & 1.75 & 50.14 & 1.28 & 0.25 & 0.08 \\
+Physicians per 1k inhabitants & 0.90 & 0.72 & 0.93 & 0.81 & 0.03 &
+0.67 \\
+Health municipal spending rate & 22.65 & 5.20 & 23.10 & 4.85 & 0.45 &
+0.34 \\
+Community health agency coverage rate & 84.72 & 22.38 & 85.26 & 23.32 &
+0.54 & 0.80 \\
+Hospital beds per 100k population & 145.48 & 137.13 & 139.69 & 122.56 &
+-5.79 & 0.63 \\
+\end{longtable}
+
+\emph{Notes}: This table aggregates the summary statistics per group of
+all the observations used in the study (465). Municipalities chosen were
+those that held ordinary elections in selected years (2016, 2020) whose
+mayor was elected in the first round and among the top two most voted
+was a STEM candidate and a Non-STEM one. NPI data has null values since
+not all the mayors responded to the survey.
+
+\subsection{STEM mayors' most common
+occupations}\label{stem-mayors-most-common-occupations}
+
+\begin{figure}[H]
+
+\caption{STEM mayors' most common occupations}
+
+{\centering \includegraphics{outputs/figures/barplot_stem_cbos_stem_ocupacao.png}
+
+}
+
+\end{figure}%
+
+\emph{Notes}: This figure shows the top five occupations among the 190
+STEM mayors in our sample. Municipalities chosen were those that held
+ordinary elections in selected years (2016, 2020) whose mayor was
+elected in the first round and among the top two most voted was a STEM
+candidate and a Non-STEM one.
+
+\subsection{Percentage of municipalities with a STEM mayor among top 2
+per
+state}\label{percentage-of-municipalities-with-a-stem-mayor-among-top-2-per-state}
+
+\begin{figure}[H]
+
+\caption{Percentage of municipalities with a STEM mayor among top 2 per
+state}
+
+{\centering \includegraphics{outputs/figures/sumstats_boxplot.png}
+
+}
+
+\end{figure}%
+
+\emph{Notes}: This plot shows the distribution per state of the
+percentage of municipalities that had a STEM mayor among top 2 voted.
+Municipalities chosen were those that held ordinary elections in
+selected years (2016, 2020) whose mayor was elected in the first round
+and among the top two most voted was a STEM candidate and a Non-STEM
+one.
+
+\subsection{Municipalities with a STEM candidate
+(2016)}\label{municipalities-with-a-stem-candidate-2016}
+
+\begin{figure}[H]
+
+\caption{Municipalities with a STEM candidate (2016)}
+
+{\centering \includegraphics{outputs/figures/mapa_stem_municipios_2016.png}
+
+}
+
+\end{figure}%
+
+\emph{Notes}: In this figure, we colored all municipalities in our 2016
+sample, that is, where a STEM candidate was among the top two most
+voted. In red are the municipalities where the STEM candidate lost and
+in blue are the municipalities where the STEM candidate won. In gray are
+all the municipalities with no STEM candidate among the top two most
+voted.
+
+\subsection{Impact of STEM mayor election on epidemiological
+outcomes}\label{impact-of-stem-mayor-election-on-epidemiological-outcomes}
+
+\begin{figure}[H]
+
+\caption{Impact of STEM mayor election on epidemiological outcomes}
+
+{\centering \includegraphics{outputs/figures/bigsample_plots_outcomes.png}
+
+}
+
+\end{figure}%
+
+\emph{Notes}: This figure reports the RD estimated impact of mayors with
+scientific background on deaths and hospitalizations by COVID-19 per
+hundred thousand inhabitants. Municipalities chosen were those that held
+ordinary elections in selected years (2016, 2020) whose mayor was
+elected in the first round and among the top two most voted was a STEM
+candidate and a Non-STEM one.
+
+\subsection{Baseline Characteristics - RD Estimates
+(Demographics)}\label{baseline-characteristics---rd-estimates-demographics}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1852}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1481}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.2099}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1235}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1728}}@{}}
+\caption{Baseline Characteristics - RD Estimates
+(Demography)}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+PC income
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Log Population
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+HDI
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Density
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\% Masc. Pop
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+PC income
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Log Population
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+HDI
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Density
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\% Masc. Pop
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+RD estimator & 0.34 & -0.09 & 0.00 & 40.22 & 0.32 \\
+& {[}4.58{]} & {[}0.34{]} & {[}0.01{]} & {[}56.27{]} & {[}0.47{]} \\
+& 0.94 & 0.79 & 0.66 & 0.47 & 0.50 \\
+Eff.N.obs. & 265 & 259 & 265 & 241 & 248 \\
+Bandwidth & 19.46 & 18.66 & 19.58 & 17.24 & 17.78 \\
+\end{longtable}
+
+\emph{Notes}: This table reports the RD estimated impact of mayors with
+scientific background on demographic baseline characteristics.
+Municipalities chosen were those that held ordinary elections in
+selected years (2016, 2020) whose mayor was elected in the first round
+and among the top two most voted was a STEM candidate and a Non-STEM
+one. All specifications use state fixed-effects, triangular kernel and
+optimal bandwidths calculated following Calonico et al.~(2014). We
+report robust-bias corrected p-values, conventional (non-robust)
+estimates and standard errors.
+
+\subsection{Baseline Characteristics - RD Estimates (Health and
+Ideology)}\label{baseline-characteristics---rd-estimates-health-and-ideology}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.0974}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1948}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1429}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.2208}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1753}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1429}}@{}}
+\caption{Baseline Characteristics - RD Estimates (Health and
+Ideology)}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\% Health municipal spending
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Doctors per 1k pop.
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Community health agents program
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Hosp. beds per 100k pop.
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mun. ideology index
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\% Health municipal spending
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Doctors per 1k pop.
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Community health agents program
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Hosp. beds per 100k pop.
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mun. ideology index
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+RD estimator & 2.61 & 0.07 & -2.25 & -61.10 & 0.03 \\
+& {[}1.27{]} & {[}0.13{]} & {[}7.01{]} & {[}44.76{]} & {[}0.03{]} \\
+& 0.04** & 0.60 & 0.75 & 0.17 & 0.35 \\
+Eff.N.obs. & 263 & 189 & 283 & 213 & 216 \\
+Bandwidth & 19.15 & 13.47 & 22.13 & 14.97 & 15.13 \\
+\end{longtable}
+
+\emph{Notes}: This table reports the RD estimated impact of mayors with
+scientific background on health and ideology baseline characteristics.
+Municipalities chosen were those that held ordinary elections in
+selected years (2016, 2020) whose mayor was elected in the first round
+and among the top two most voted was a STEM candidate and a Non-STEM
+one. All specifications use state fixed-effects, triangular kernel and
+optimal bandwidths calculated following Calonico et al.~(2014). The
+ideology column regards mayors' party ideology, whereas negative numbers
+represent left-wing parties and positive right-wing (Power \&
+Rodrigues-Silveira, 2019).We report robust-bias corrected p-values,
+estimates and standard errors.
+
+\subsection{Impact of STEM Leadership on Epidemiological Outcomes --- RD
+estimates}\label{impact-of-stem-leadership-on-epidemiological-outcomes-rd-estimates}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.2083}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1528}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1528}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1389}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1389}}@{}}
+\caption{Impact of STEM Leadership on Epidemiological Outcomes --- RD
+estimates}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\begin{enumerate}
+\def\labelenumi{(\arabic{enumi})}
+\tightlist
+\item
+\end{enumerate}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\begin{enumerate}
+\def\labelenumi{(\arabic{enumi})}
+\setcounter{enumi}{1}
+\tightlist
+\item
+\end{enumerate}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\begin{enumerate}
+\def\labelenumi{(\arabic{enumi})}
+\setcounter{enumi}{2}
+\tightlist
+\item
+\end{enumerate}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\begin{enumerate}
+\def\labelenumi{(\arabic{enumi})}
+\setcounter{enumi}{3}
+\tightlist
+\item
+\end{enumerate}
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\begin{enumerate}
+\def\labelenumi{(\arabic{enumi})}
+\tightlist
+\item
+\end{enumerate}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\begin{enumerate}
+\def\labelenumi{(\arabic{enumi})}
+\setcounter{enumi}{1}
+\tightlist
+\item
+\end{enumerate}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\begin{enumerate}
+\def\labelenumi{(\arabic{enumi})}
+\setcounter{enumi}{2}
+\tightlist
+\item
+\end{enumerate}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\begin{enumerate}
+\def\labelenumi{(\arabic{enumi})}
+\setcounter{enumi}{3}
+\tightlist
+\item
+\end{enumerate}
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\multicolumn{5}{@{}>{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.7917} + 8\tabcolsep}@{}}{%
+Panel A: Deaths} \\
+RD estimator & 7.14 & 5.68 & -14.22 & -23.64 \\
+& {[}34.09{]} & {[}34.30{]} & {[}23.21{]} & {[}18.15{]} \\
+& 0.83 & 0.87 & 0.54 & 0.19 \\
+Eff.N.obs. & 145 & 145 & 195 & 208 \\
+Bandwidth & 10 & 10 & 14.06 & 14.63 \\
+\multicolumn{5}{@{}>{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.7917} + 8\tabcolsep}@{}}{%
+Panel B: Hospitalizations} \\
+RD estimator & -58.38 & -46.54 & -64.09 & -88.85 \\
+& {[}131.94{]} & {[}130.10{]} & {[}89.55{]} & {[}73.79{]} \\
+& 0.66 & 0.72 & 0.47 & 0.23 \\
+Eff.N.obs. & 145 & 145 & 171 & 174 \\
+Bandwidth & 10 & 10 & 11.85 & 12 \\
+\end{longtable}
+
+\emph{Notes}: This table reports the RD estimated impact of mayors with
+scientific background on deaths and hospitalizations by COVID-19 per
+hundred thousand inhabitants. Municipalities chosen were those that held
+ordinary elections in selected years (2016, 2020) whose mayor was
+elected in the first round and among the top two most voted was a STEM
+candidate and a Non-STEM one. All specifications use state
+fixed-effects, triangular kernel. Estimations (3) and (4) use optimal
+bandwidths calculated following Calonico et al.~(2014), while
+estimations (1) and (2) use a 0.1\% vote margin difference between the
+two most voted candidates, in order to best understand the inclusion of
+covariates. Estimations (2) and (4) control for mayors' personal
+characteristics. We report robust-bias-corrected p-values, coefficients
+and standard errors.
+
+\subsection{STEM candidates' personal characteristics --- RD
+estimates}\label{stem-candidates-personal-characteristics-rd-estimates}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.2055}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1233}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1644}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1233}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.3425}}@{}}
+\caption{STEM candidates' personal characteristics --- RD
+estimates}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Women
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Incumbent
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Age
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mayors' party ideology
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Women
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Incumbent
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Age
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mayors' party ideology
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+RD estimator & -0.18 & 0.10 & 1.26 & 0.16 \\
+& {[}0.09{]} & {[}0.11{]} & {[}3.67{]} & {[}0.10{]} \\
+& 0.04** & 0.37 & 0.73 & 0.12 \\
+Eff.N.obs. & 271 & 267 & 194 & 193 \\
+Bandwidth & 20.77 & 19.86 & 14.02 & 13.76 \\
+\end{longtable}
+
+\emph{Notes}: This table reports our RD estimates of the association
+between STEM mayors and four outcomes. In the first column, we see the
+effect on mayors' personal characteristics. In the second column, the
+measure of mayors were incumbents. The third column measures the effect
+of mayors' age. The fourth column regards mayors' party ideology,
+whereas negative numbers represent left-wing parties and positive
+right-wing (Power \& Rodrigues-Silveira, 2019). All specifications use
+state fixed-effects, triangular kernels. Optimal bandwidths were
+calculated following Calonico et al.~(2014). We report robust-bias
+corrected p-values, estimates and standard errors.
+
+\subsection{Impact of STEM Candidate Elected in 2016 on
+Non-Pharmaceutical
+Interventions}\label{impact-of-stem-candidate-elected-in-2016-on-non-pharmaceutical-interventions}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1083}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.0750}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1667}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1833}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1917}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1333}}@{}}
+\caption{Impact of STEM Candidate Elected in 2016 on Non-Pharmaceutical
+Interventions in 2020}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Total NFI
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Masks
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Restrictions atv.
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Restrictions circu.
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Restrictions transp.
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Sani barriers
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Total NFI
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Masks
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Restrictions atv.
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Restrictions circu.
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Restrictions transp.
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Sani barriers
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Robust & 1.91 & 0.30 & 0.35 & 0.35 & 2.09 & -0.64 \\
+& {[}0.44{]} & {[}0.16{]} & {[}0.22{]} & {[}0.21{]} & {[}0.42{]} &
+{[}0.33{]} \\
+& \textless0.01*** & 0.07* & 0.10 & 0.10* & \textless0.01*** & 0.05* \\
+Eff.N.obs. & 22 & 40 & 36 & 60 & 18 & 42 \\
+Bandwidth & 5.07 & 8.76 & 8.14 & 11.75 & 3.92 & 9.09 \\
+\end{longtable}
+
+\emph{Notes}: This figure reports the RD estimated impact of mayors with
+scientific background on the adoption of non-pharmaceutical
+interventions (NPIs) in 2020. Municipalities chosen were those that held
+ordinary elections in 2016 whose mayor was elected in the first round
+and among the top two most voted was a STEM candidate and a Non-STEM
+one. All specifications use state fixed-effects, triangular kernel and
+optimal bandwidths calculated following Calonico et al.~(2014).
+Following the order of the columns, the interventions are: total number
+of NPIs, face-covering restrictions, non-essential activities
+restrictions, public gathering restrictions, public transport
+restrictions and cordon sanitaire restrictions (the control of people
+entering and leaving the city), as published by de Souza Santos et
+al.~(2021). All specifications use state fixed-effects and triangular
+kernels and control for mayors' age. We report robust-bias corrected
+p-values, estimates and standard errors.
+
+\subsection{Impact of STEM mayor on epidemiological outcomes using
+different
+bandwidths}\label{impact-of-stem-mayor-on-epidemiological-outcomes-using-different-bandwidths}
+
+\includegraphics{outputs/figures/robust_outcomes.png} \emph{Notes}: This
+figure reports the RD estimated impact of mayors with scientific
+background on deaths and hospitalizations by COVID-19 per hundred
+thousand inhabitants. Municipalities chosen were those that held
+ordinary elections in selected years (2016, 2020) whose mayor was
+elected in the first round and among the top two most voted was a STEM
+candidate and a Non-STEM one. In the horizontal axis, we test different
+winning margins (bandwidth) between the elected mayor and the second
+most voted. These results represent the impact of our main estimation
+(2) that uses first-degree polynomial, state fixed-effects, triangular
+kernel, and control for mayors' personal characteristics.
+
+\subsection{Impact of STEM mayor on non-pharmaceutical interventions
+(NPIs) using different
+bandwidths}\label{impact-of-stem-mayor-on-non-pharmaceutical-interventions-npis-using-different-bandwidths}
+
+\begin{figure}[H]
+
+\caption{Impact of STEM mayor on non-pharmaceutical interventions (NPIs)
+using different bandwidths}
+
+{\centering \includegraphics{outputs/figures/npi_rob.png}
+
+}
+
+\end{figure}%
+
+\emph{Notes}: This figure reports the RD estimated impact of mayors with
+scientific background on non-pharmaceutical interventions.
+Municipalities chosen were those that held ordinary elections in
+selected years (2016, 2020) whose mayor was elected in the first round
+and among the top two most voted was a STEM candidate and a Non-STEM
+one. In the horizontal axis, we test different winning margins
+(bandwidth) between the elected mayor and the second most voted. These
+results represent the impact of our main estimation (2) that uses
+first-degree polynomial, state fixed-effects, triangular kernel, and
+control for mayors' personal characteristics.
+
+\subsection{Moderating effects of scientific intensity on the impact of
+STEM
+background}\label{moderating-effects-of-scientific-intensity-on-the-impact-of-stem-background}
+
+\% Table created by stargazer v.5.2.3 by Marek Hlavac, Social Policy
+Institute. E-mail: marek.hlavac at gmail.com \% Date and time: jue.,
+ene. 16, 2025 - 08:37:48
+
+\begin{table}[!htbp] \centering 
+  \caption{Moderating effects of scientific intensity on the impact of STEM background} 
+  \label{} 
+\begin{tabular}{@{\extracolsep{5pt}}lccc} 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+ & \multicolumn{3}{c}{\textit{Dependent variable:}} \\ 
+\cline{2-4} 
+\\[-1.8ex] & Hospitalizations & Deaths & NFI \\ 
+\\[-1.8ex] & (1) & (2) & (3)\\ 
+\hline \\[-1.8ex] 
+ STEM Background & $-$7.239 & 5.441 & $-$0.174 \\ 
+  & (30.011) & (87.494) & (0.365) \\ 
+  & & & \\ 
+ Tenure Moderation Effect & $-$0.822 & $-$5.230 & 0.111$^{***}$ \\ 
+  & (2.631) & (7.671) & (0.034) \\ 
+  & & & \\ 
+ Woman & 78.989$^{***}$ & 47.844 & 0.182 \\ 
+  & (22.614) & (65.928) & (0.281) \\ 
+  & & & \\ 
+\hline \\[-1.8ex] 
+Observations & 145 & 145 & 99 \\ 
+R$^{2}$ & 0.125 & 0.043 & 0.148 \\ 
+Adjusted R$^{2}$ & $-$0.115 & $-$0.220 & $-$0.128 \\ 
+F Statistic & 2.013$^{*}$ (df = 8; 113) & 0.629 (df = 8; 113) & 1.606 (df = 8; 74) \\ 
+\hline 
+\hline \\[-1.8ex] 
+\textit{Note:}  & \multicolumn{3}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
+\end{tabular} 
+\end{table}
+
+\emph{Notes}: This table presents the estimated impact of mayors with
+scientific background on COVID-19 deaths and hospitalizations per
+hundred thousand inhabitants. Municipalities chosen were those that held
+ordinary elections in selected years (2016, 2020) whose mayor was
+elected in the first round, winning by a maximum difference of 10\%, and
+among the top two most voted was a STEM candidate and a Non-STEM one.
+The analysis incorporates moderation effects of scientific intensity,
+measured by tenure. The model controls for mayors' personal
+characteristics, and includes state fixed-effects.
+
+\subsection{Moderating effects of city's development on the impact of
+STEM
+background}\label{moderating-effects-of-citys-development-on-the-impact-of-stem-background}
+
+\% Table created by stargazer v.5.2.3 by Marek Hlavac, Social Policy
+Institute. E-mail: marek.hlavac at gmail.com \% Date and time: jue.,
+ene. 16, 2025 - 08:37:50
+
+\begin{table}[!htbp] \centering 
+  \caption{Moderating effects of cities’ development on the impact of STEM background} 
+  \label{} 
+\begin{tabular}{@{\extracolsep{5pt}}lccc} 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+ & \multicolumn{3}{c}{\textit{Dependent variable:}} \\ 
+\cline{2-4} 
+\\[-1.8ex] & Hospitalizations & Deaths & NFI \\ 
+\\[-1.8ex] & (1) & (2) & (3)\\ 
+\hline \\[-1.8ex] 
+ STEM Background & $-$16.605 & 22.872 & 0.048 \\ 
+  & (31.615) & (90.182) & (0.406) \\ 
+  & & & \\ 
+ 2015 Revenue & $-$0.556 & 3.173 & 0.0001 \\ 
+  & (0.823) & (2.347) & (0.012) \\ 
+  & & & \\ 
+ Revenue Modereration Effect & 0.821 & $-$2.581 & 0.007 \\ 
+  & (0.977) & (2.787) & (0.013) \\ 
+  & & & \\ 
+ Woman & 75.670$^{***}$ & 52.189 & 0.082 \\ 
+  & (23.377) & (66.681) & (0.298) \\ 
+  & & & \\ 
+\hline \\[-1.8ex] 
+Observations & 145 & 145 & 99 \\ 
+R$^{2}$ & 0.131 & 0.063 & 0.038 \\ 
+Adjusted R$^{2}$ & $-$0.108 & $-$0.194 & $-$0.275 \\ 
+F Statistic & 1.888$^{*}$ (df = 9; 113) & 0.846 (df = 9; 113) & 0.321 (df = 9; 74) \\ 
+\hline 
+\hline \\[-1.8ex] 
+\textit{Note:}  & \multicolumn{3}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
+\end{tabular} 
+\end{table}
+
+\emph{Notes}: This table presents the estimated impact of mayors with
+scientific background on COVID-19 deaths and hospitalizations per
+hundred thousand inhabitants. Municipalities chosen were those that held
+ordinary elections in selected years (2016, 2020) whose mayor was
+elected in the first round, winning by a maximum difference of 10\%, and
+among the top two most voted was a STEM candidate and a Non-STEM one.
+The analysis incorporates moderation effects of cities' level of
+development, indicated by revenue. The model controls for mayors'
+personal characteristics, and includes state and cohort fixed-effects.
+
+
+
+
+\end{document}

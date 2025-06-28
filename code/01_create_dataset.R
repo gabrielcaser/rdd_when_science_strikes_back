@@ -268,9 +268,17 @@ for (definition in c("strict", "broad")) {
   
   df$T_X = df$X * df$T
   
+  # Winsorizing helper function
+  winsorize <- function(x, probs = c(0.01, 0.99)) {
+    quantiles <- quantile(x, probs = probs, na.rm = TRUE)
+    pmin(pmax(x, quantiles[1]), quantiles[2])
+  }
+  
   if (deaths_and_hosp_in_log == "yes") {
-    df$Y_hosp = log(df$Y_hosp + 1)
-    df$Y_deaths_sivep = log(df$Y_deaths_sivep + 1)
+    #df$Y_hosp         <- winsorize(df$Y_hosp)
+    #df$Y_deaths_sivep <- winsorize(df$Y_deaths_sivep)
+    df$Y_hosp         = log(df$Y_hosp + (df$Y_hosp^2 + 1)^0.5)
+    df$Y_deaths_sivep = log(df$Y_deaths_sivep + (df$Y_deaths_sivep^2 + 1)^0.5)
   }
   
   # Cleaning the data -------------------------------------------------------

@@ -191,14 +191,14 @@ states <- df_boxplots %>%
 box2 <- ggplot(states, aes(y = perc_stem * 100)) + 
   geom_boxplot() + 
   theme_minimal(base_size = 16) + 
-  #xlab("cohort") +
+  scale_y_continuous(labels = function(x) paste0(x, "%")) + # Adiciona o símbolo de %
   theme(
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     axis.title.y = element_blank(),
-    axis.text.x =  element_blank()
-    ) #+
-  #ylab("% of cities with a STEM candidate among top 2 voted ")
+    axis.text.x = element_blank()
+  )
+
 
 box2 
 
@@ -352,7 +352,12 @@ if (cohort_filter == "2016_") {
   year.d = 1
 }
 
-covsZ  = cbind(state.d, year.d, df$mulher) # Controls
+covsZ  = cbind(state.d,
+               year.d,
+               df$mulher,
+               df$ideology_party,
+               df$instrucao,
+               df$reeleito) # Controls
 
 r4 = rdrobust(
   df$Y_deaths_sivep,
@@ -391,7 +396,12 @@ if (cohort_filter == "2016_") {
   year.d = 1
 }
 
-covsZ  = cbind(state.d, year.d, df_plots$mulher) # Controls
+covsZ  = cbind(state.d,
+               year.d,
+               df_plots$mulher,
+               df_plots$ideology_party,
+               df_plots$instrucao,
+               df_plots$reeleito) # Controls
 
 #poli = 1
 #covsZ = cbind(state.d, df$mulher)

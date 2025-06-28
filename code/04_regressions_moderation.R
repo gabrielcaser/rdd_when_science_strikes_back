@@ -26,35 +26,41 @@ df$tenure <- df$tenure / 12
 df_subset <- subset(df, X >= -1 * janela & X <= janela)
 
 df_subset$inter_receita_stem <- df_subset$receita_2015 * (as.double(df_subset$stem_background) - 1)
-df_subset$log_tenure <- log(df_subset$tenure + 1)
-df_subset$inter_tenure_stem <- df_subset$tenure  * (as.double(df_subset$stem_background) - 1)
-df_subset$inter_ideo_stem <- df_subset$ideology_party * (as.double(df_subset$stem_background) - 1)
-df_subset$inter_X_stem <- df_subset$X * (as.double(df_subset$stem_background) - 1)
-#df_subset$T = ifelse(df_subset$X >= 0, 1, 0)
-#df_subset$T_X = df_subset$X * df_subset$T
+df_subset$log_tenure         <- log(df_subset$tenure + 1)
+df_subset$inter_tenure_stem  <- df_subset$tenure  * (as.double(df_subset$stem_background) - 1)
+df_subset$inter_ideo_stem    <- df_subset$ideology_party * (as.double(df_subset$stem_background) - 1)
+df_subset$inter_X_stem       <- df_subset$X * (as.double(df_subset$stem_background) - 1)
+
 
 # FE
-pdata <- pdata.frame(df_subset, c("sigla_uf"))
+pdata <- pdata.frame(df_subset, c("sigla_uf","coorte"))
+
+# Controles
+
+covsZ = cbind(pdata$mulher,
+              pdata$ideology_party,
+              pdata$instrucao,
+              pdata$reeleito)
 
 # Final table
 out1 <- plm(
-  Y_hosp ~ X + T + T_X + inter_tenure_stem + tenure + mulher,
+  Y_hosp ~ X + T + T_X + inter_tenure_stem + tenure + covsZ,
   data = pdata,
-  index = c("sigla_uf"),
+  index = c("sigla_uf","coorte"),
   model = "within" ,
   effect = "twoways"
 )
 out2 <- plm(
-  Y_deaths_sivep ~ X + T + T_X + inter_tenure_stem + tenure + mulher,
+  Y_deaths_sivep ~ X + T + T_X + inter_tenure_stem + tenure + covsZ,
   data = pdata,
-  index = c("sigla_uf"),
+  index = c("sigla_uf","coorte"),
   model = "within"  ,
   effect = "twoways"
 )
 out3 <- plm(
-  total_nfi ~ X + T + T_X + instrucao + inter_tenure_stem + tenure + mulher,
+  total_nfi ~ X + T + T_X + inter_tenure_stem + tenure + covsZ,
   data = pdata,
-  index = c("sigla_uf"),
+  index = c("sigla_uf","coorte"),
   model = "within" ,
   effect = "twoways"
 )
@@ -69,28 +75,28 @@ moderation_tenure <- stargazer::stargazer(
   dep.var.labels = c("Hospitalizations", "Deaths", "NFI"),
   out = paste(output_dir, "/tables/moderation_tenure.tex", sep = ""),
   title = "Moderating effects of scientific intensity on the impact of STEM background",
-  omit = c("X", "T_X"),
+  omit = c("X", "T_X", "covsZ2", "covsZ3", "covsZ4"),
   notes = NULL
 )
 
 writeLines(moderation_tenure, con = "outputs/tables/moderation_tenure.md")
 
 out4 <- plm(
-  Y_hosp ~ X + T + T_X + receita_2015 + inter_receita_stem  + mulher ,
+  Y_hosp ~ X + T + T_X + receita_2015 + inter_receita_stem + covsZ ,
   data = pdata,
-  index = c("sigla_uf"),
+  index = c("sigla_uf","coorte"),
   model = "within"
 )
 out5 <- plm(
-  Y_deaths_sivep ~ X + T + T_X + receita_2015  + inter_receita_stem + mulher,
+  Y_deaths_sivep ~ X + T + T_X + receita_2015  + inter_receita_stem + covsZ,
   data = pdata,
-  index = c("sigla_uf"),
+  index = c("sigla_uf","coorte"),
   model = "within"
 )
 out6 <- plm(
-  total_nfi ~ X + T + T_X + receita_2015 + inter_receita_stem + mulher,
+  total_nfi ~ X + T + T_X + receita_2015 + inter_receita_stem + covsZ,
   data = pdata,
-  index = c("sigla_uf"),
+  index = c("sigla_uf","coorte"),
   model = "within"
 )
 
@@ -108,7 +114,7 @@ moderation_revenue <- stargazer::stargazer(
   dep.var.labels = c("Hospitalizations", "Deaths", "NFI"),
   title = "Moderating effects of cities’ development on the impact of STEM background",
   out = paste(output_dir, "/tables/moderation_revenue.tex", sep = ""),
-  omit = c("X", "T_X"),
+  omit = c("X", "T_X", "covsZ2", "covsZ3", "covsZ4"),
   notes = NULL
 )
 

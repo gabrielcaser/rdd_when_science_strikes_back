@@ -12,9 +12,9 @@ df <- readRDS(paste(data_dir, "/final/", data, sep = ""))
 tidy.rdrobust <- function(model, ...) {
   ret <- data.frame(
     term = row.names(model$coef),
-    estimate = model$coef[1, 1],
+    estimate = model$coef[3, 1],
     std.error = model$se[3, 1],
-    p.value = model$pv[, 1],
+    p.value = model$pv[3, 1],
     conf.low = model$ci[3,1],
     conf.high = model$ci[3,2])
   
@@ -36,14 +36,14 @@ glance.rdrobust <- function(model, ...) {
 ## table of robustness
 
 
-robust_check <- function(outcome, poli, covsZ, k, x_value) {
+robust_check <- function(outcome, poli, covs, k, x_value) {
   
   df_robs <- data.frame()
   
   
-  for (i in seq(0.02, 0.24, by = 0.01)) {
+  for (i in seq(0.03, 0.24, by = 0.01)) {
     
-    prov = rdrobust(y = outcome, x_value, p = poli, level = 90, kernel = k, h = i, covs = covsZ) #rodando rdd
+    prov = rdrobust(y = outcome, x_value, p = poli, level = 90, kernel = k, h = i, covs = covs) #rodando rdd
 
     df_robs = rbind(df_robs, c(i, prov[["coef"]][1], prov[["coef"]][3], prov[["ci"]][3,1], prov[["ci"]][3,2], prov[["ci"]][1,1], prov[["ci"]][1,2], prov[["z"]][3], prov[["N_h"]][1] + prov[["N_h"]][2])) #salvando colunas
     
@@ -160,7 +160,24 @@ r3 = rdrobust(df$Y_deaths_sivep, df$X, p = poli, kernel = k, bwselect = "mserd",
 summary(r2)
 summary(r3)
 
-covsZ = cbind(state.d, year.d, df$mulher, df$ideology_party, df$instrucao, df$reeleito)
+covsZ <- cbind(
+  state.d,
+  year.d,
+  df$mulher,
+  df$ideology_party,
+  df$instrucao,
+  df$reeleito,
+  df$renda_pc, 
+  log(df$populacao),
+  df$idhm, 
+  df$densidade, 
+  df$per_populacao_homens,
+  df$pct_desp_recp_saude_mun,
+  df$tx_med_ch, 
+  df$cob_esf, 
+  df$tx_leito_sus, 
+  df$ideology_municipality
+)
 
 r4 = rdrobust(df$Y_hosp,  df$X, p = poli, kernel = k,  covs = covsZ)
 r5 = rdrobust(df$Y_deaths_sivep, df$X, kernel = k, p = poli, covs = covsZ)
@@ -173,8 +190,14 @@ covsZ = cbind(state.d, year.d)
 r6 = rdrobust(df$Y_hosp, df$X, p = poli, kernel = k,  h = janela,  bwselect = "mserd",  covs = covsZ)
 r7 = rdrobust(df$Y_deaths_sivep,  df$X, p = poli, kernel = k, h = janela,   bwselect = "mserd",   covs = covsZ)
 
-
-covsZ = cbind(state.d, year.d, df$mulher, df$instrucao, df$ideology_party, df$reeleito)
+covsZ <- cbind(
+  state.d,
+  year.d,
+  df$mulher,
+  df$ideology_party,
+  df$instrucao,
+  df$reeleito
+)
 
 r8 = rdrobust(df$Y_hosp ,  df$X, p = poli, kernel = k, h = janela,   bwselect = "mserd",  covs = covsZ)
 r9 = rdrobust(df$Y_deaths_sivep,  df$X, kernel = k, h = janela,   bwselect = "mserd", p = poli,   covs = covsZ)
@@ -278,7 +301,13 @@ r4 = rdrobust(df2$restricao_circulacao, df2$X,   p = poli, kernel = k,   covs = 
 r5 = rdrobust(df2$restricao_transporte_publico, df2$X,   p = poli, kernel = k,   covs = covsZ)
 r6 = rdrobust(df2$barreiras_sanitarias, df2$X,   p = poli, kernel = k,   covs = covsZ)
 
-covsZ = cbind(state.d2, df2$mulher, df2$ideology_party)
+covsZ <- cbind(
+  state.d2,
+  df2$mulher,
+  df2$ideology_party,
+  df2$instrucao,
+  df2$reeleito
+)
 
 r12 = rdrobust(df2$total_nfi, df2$X, p = poli, kernel = k,   covs = covsZ)
 r22 = rdrobust(df2$mascaras, df2$X,   p = poli, kernel = k,   covs = covsZ)
@@ -333,8 +362,21 @@ mr3 <- modelsummary(
 
 ## Different windows -----------------------------------------------------
 
-CovsZ = cbind(state.d, year.d, df$mulher, df$reeleito, df$instrucao, df$ideology_party) # mechanisms
-CovsZ_mechanism = cbind(state.d2, df2$mulher, df2$ideology_party) # mechanisms
+CovsZ <- cbind(
+  state.d,
+  year.d,
+  df$mulher,
+  df$ideology_party,
+  df$instrucao,
+  df$reeleito
+) # mechanisms
+CovsZ_mechanism <- cbind(
+  state.d2,
+  df2$mulher,
+  df2$ideology_party,
+  df2$instrucao,
+  df2$reeleito
+)
 
   
 df_robs_hosp      <- robust_check(df$Y_hosp, 1, CovsZ, k, df$X)

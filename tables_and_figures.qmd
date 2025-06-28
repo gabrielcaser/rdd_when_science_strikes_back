@@ -5,6 +5,7 @@ author:   "Gabriel Caser dos Passos and Nelson Ricardo Laverde Cubillos"
 format:
   pdf:
     fig-cap-location: top
+    keep-tex: true
 editor:   visual
 execute:
   echo: false
@@ -62,6 +63,8 @@ nobs_sumstats       <- nrow(dados_sumstats)
 nobs_sumstats_stem  <- nrow(dados_sumstats[dados_sumstats$stem_background == 1, ])
 cohorts_used        <- unique(dados_sumstats$coorte)
 college_description <- ifelse(non_stem_college == "yes", " with college degree", "")
+cohort_fe           <- ifelse(cohort_filter == "", "and cohort ", "")
+log_outcomes        <- ifelse(deaths_and_hosp_in_log == "yes", " in the form of log(outcome + 1)","")
 ```
 
 ```{r}
@@ -105,7 +108,7 @@ knitr::asis_output(paste(text, collapse = "\n"))
 
 ![Impact of STEM mayor election on epidemiological outcomes](outputs/figures/bigsample_plots_outcomes.png)
 
-*Notes*: This figure reports the RD estimated impact of mayors with scientific background on deaths and hospitalizations by COVID-19 per hundred thousand inhabitants. Municipalities chosen were those that held ordinary elections in selected years (`r cohorts_used`) whose mayor was elected in the first round and among the top two most voted was a STEM candidate and a Non-STEM one`r college_description`.
+*Notes*: This figure reports the RD estimated impact of mayors with scientific background on deaths and hospitalizations by COVID-19 per hundred thousand inhabitants`r log_outcomes`. Municipalities chosen were those that held ordinary elections in selected years (`r cohorts_used`) whose mayor was elected in the first round and among the top two most voted was a STEM candidate and a Non-STEM one`r college_description`.
 
 ## Baseline Characteristics - RD Estimates (Demographics)
 
@@ -129,7 +132,7 @@ knitr::asis_output(paste(text_2, collapse = "\n"))
 
 ```
 
-*Notes*: This table reports the RD estimated impact of mayors with scientific background on health and ideology baseline characteristics. Municipalities chosen were those that held ordinary elections in selected years (`r cohorts_used`) whose mayor was elected in the first round and among the top two most voted was a STEM candidate and a Non-STEM one`r college_description`. All specifications use state fixed-effects, `r k` kernel and optimal bandwidths calculated following Calonico et al. (2014). The ideology column regards mayors’ party ideology, whereas negative numbers represent left-wing parties and positive right-wing (Power & Rodrigues-Silveira, 2019).We report robust-bias corrected p-values, conventional (non-robust) estimates and standard errors.
+*Notes*: This table reports the RD estimated impact of mayors with scientific background on health and ideology baseline characteristics. Municipalities chosen were those that held ordinary elections in selected years (`r cohorts_used`) whose mayor was elected in the first round and among the top two most voted was a STEM candidate and a Non-STEM one`r college_description`. All specifications use state fixed-effects, `r k` kernel and optimal bandwidths calculated following Calonico et al. (2014). The ideology column regards mayors’ party ideology, whereas negative numbers represent left-wing parties and positive right-wing (Power & Rodrigues-Silveira, 2019).We report robust-bias corrected p-values, estimates and standard errors.
 
 ## Impact of STEM Leadership on Epidemiological Outcomes — RD estimates
 
@@ -141,7 +144,7 @@ knitr::asis_output(paste(text, collapse = "\n"))
 
 ```
 
-*Notes*: This table reports the RD estimated impact of mayors with scientific background on deaths and hospitalizations by COVID-19 per hundred thousand inhabitants. Municipalities chosen were those that held ordinary elections in selected years (`r cohorts_used`) whose mayor was elected in the first round and among the top two most voted was a STEM candidate and a Non-STEM one`r college_description`. All specifications use state fixed-effects, `r k` kernel. Estimations (1) and (2) use optimal bandwidths calculated following Calonico et al. (2014), while estimations (3) and (4) use a `r janela`% vote margin difference between the two most voted candidates, in order to best understand the inclusion of covariates. Estimations (2) and (4) control for mayors’ gender. We report robust-bias-corrected p-values, coefficients and standard errors.
+*Notes*: This table reports the RD estimated impact of mayors with scientific background on deaths and hospitalizations by COVID-19 per hundred thousand inhabitants`r log_outcomes`. Municipalities chosen were those that held ordinary elections in selected years (`r cohorts_used`) whose mayor was elected in the first round and among the top two most voted was a STEM candidate and a Non-STEM one`r college_description`. All specifications use state fixed-effects, `r k` kernel. Estimations (3) and (4) use optimal bandwidths calculated following Calonico et al. (2014), while estimations (1) and (2) use a `r janela`% vote margin difference between the two most voted candidates, in order to best understand the inclusion of covariates. Estimations (2) and (4) control for mayors’ personal characteristics. We report robust-bias-corrected p-values, coefficients and standard errors.
 
 ## STEM candidates' personal characteristics — RD estimates
 
@@ -153,7 +156,7 @@ knitr::asis_output(paste(text, collapse = "\n"))
 
 ```
 
-*Notes*: This table reports our RD estimates of the association between STEM mayors and four outcomes. In the first column, we see the effect on mayors’ gender. In the second column, the measure of mayors were incumbents. The third column measures the effect of mayors’ age. The fourth column regards mayors’ party ideology, whereas negative numbers represent left-wing parties and positive right-wing (Power & Rodrigues-Silveira, 2019). All specifications use state fixed-effects, `r k` kernels. Optimal bandwidths were calculated following Calonico et al. (2014). We report robust-bias corrected p-values and conventional (non-robust) estimates and standard errors.
+*Notes*: This table reports our RD estimates of the association between STEM mayors and four outcomes. In the first column, we see the effect on mayors’ personal characteristics. In the second column, the measure of mayors were incumbents. The third column measures the effect of mayors’ age. The fourth column regards mayors’ party ideology, whereas negative numbers represent left-wing parties and positive right-wing (Power & Rodrigues-Silveira, 2019). All specifications use state fixed-effects, `r k` kernels. Optimal bandwidths were calculated following Calonico et al. (2014). We report robust-bias corrected p-values, estimates and standard errors.
 
 ## Impact of STEM Candidate Elected in 2016 on Non-Pharmaceutical Interventions
 
@@ -165,17 +168,17 @@ knitr::asis_output(paste(text, collapse = "\n"))
 
 ```
 
-*Notes*: This figure reports the RD estimated impact of mayors with scientific background on the adoption of non-pharmaceutical interventions (NPIs) in 2020. Municipalities chosen were those that held ordinary elections in 2016 whose mayor was elected in the first round and among the top two most voted was a STEM candidate and a Non-STEM one`r college_description`. All specifications use state fixed-effects, `r k` kernel and optimal bandwidths calculated following Calonico et al. (2014). Following the order of the columns, the interventions are: total number of NPIs, face-covering restrictions, non-essential activities restrictions, public gathering restrictions, public transport restrictions and cordon sanitaire restrictions (the control of people entering and leaving the city), as published by de Souza Santos et al. (2021). All specifications use state fixed-effects and triangular kernels and control for mayors’ age. We report robust-bias corrected p-values, conventional (non-robust) estimates and standard errors.
+*Notes*: This figure reports the RD estimated impact of mayors with scientific background on the adoption of non-pharmaceutical interventions (NPIs) in 2020. Municipalities chosen were those that held ordinary elections in 2016 whose mayor was elected in the first round and among the top two most voted was a STEM candidate and a Non-STEM one`r college_description`. All specifications use state fixed-effects, `r k` kernel and optimal bandwidths calculated following Calonico et al. (2014). Following the order of the columns, the interventions are: total number of NPIs, face-covering restrictions, non-essential activities restrictions, public gathering restrictions, public transport restrictions and cordon sanitaire restrictions (the control of people entering and leaving the city), as published by de Souza Santos et al. (2021). All specifications use state fixed-effects and triangular kernels and control for mayors’ age. We report robust-bias corrected p-values, estimates and standard errors.
 
 ## Impact of STEM mayor on epidemiological outcomes using different bandwidths
 
-![Impact of STEM mayor on epidemiological outcomes using different bandwidths](outputs/figures/robust_outcomes.png) *Notes*: This figure reports the RD estimated impact of mayors with scientific background on deaths and hospitalizations by COVID-19 per hundred thousand inhabitants. Municipalities chosen were those that held ordinary elections in selected years (`r cohorts_used`) whose mayor was elected in the first round and among the top two most voted was a STEM candidate and a Non-STEM one`r college_description`. In the horizontal axis, we test different winning margins (bandwidth) between the elected mayor and the second most voted. These results represent the impact of our main estimation (2) that uses first-degree polynomial, state fixed-effects, `r k` kernel, and control for mayors’ gender.
+![Impact of STEM mayor on epidemiological outcomes using different bandwidths](outputs/figures/robust_outcomes.png) *Notes*: This figure reports the RD estimated impact of mayors with scientific background on deaths and hospitalizations by COVID-19 per hundred thousand inhabitants`r log_outcomes`. Municipalities chosen were those that held ordinary elections in selected years (`r cohorts_used`) whose mayor was elected in the first round and among the top two most voted was a STEM candidate and a Non-STEM one`r college_description`. In the horizontal axis, we test different winning margins (bandwidth) between the elected mayor and the second most voted. These results represent the impact of our main estimation (2) that uses first-degree polynomial, state fixed-effects, `r k` kernel, and control for mayors’ personal characteristics.
 
 ## Impact of STEM mayor on non-pharmaceutical interventions (NPIs) using different bandwidths
 
 ![Impact of STEM mayor on non-pharmaceutical interventions (NPIs) using different bandwidths](outputs/figures/npi_rob.png)
 
-*Notes*: This figure reports the RD estimated impact of mayors with scientific background on non-pharmaceutical interventions. Municipalities chosen were those that held ordinary elections in selected years (`r cohorts_used`) whose mayor was elected in the first round and among the top two most voted was a STEM candidate and a Non-STEM one`r college_description`. In the horizontal axis, we test different winning margins (bandwidth) between the elected mayor and the second most voted. These results represent the impact of our main estimation (2) that uses first-degree polynomial, state fixed-effects, `r k` kernel, and control for mayors’ gender.
+*Notes*: This figure reports the RD estimated impact of mayors with scientific background on non-pharmaceutical interventions. Municipalities chosen were those that held ordinary elections in selected years (`r cohorts_used`) whose mayor was elected in the first round and among the top two most voted was a STEM candidate and a Non-STEM one`r college_description`. In the horizontal axis, we test different winning margins (bandwidth) between the elected mayor and the second most voted. These results represent the impact of our main estimation (2) that uses first-degree polynomial, state fixed-effects, `r k` kernel, and control for mayors’ personal characteristics.
 
 ## Moderating effects of scientific intensity on the impact of STEM background
 
@@ -187,7 +190,7 @@ knitr::asis_output(paste(text, collapse = "\n"))
 
 ```
 
-*Notes*: This table presents the estimated impact of mayors with scientific background on COVID-19 deaths and hospitalizations per hundred thousand inhabitants. Municipalities chosen were those that held ordinary elections in selected years (`r cohorts_used`) whose mayor was elected in the first round and among the top two most voted was a STEM candidate and a Non-STEM one`r college_description`. The analysis incorporates moderation effects of scientific intensity, measured by tenure. The model controls for mayors’ gender, and includes state fixed-effects.
+*Notes*: This table presents the estimated impact of mayors with scientific background on COVID-19 deaths and hospitalizations per hundred thousand inhabitants`r log_outcomes`. Municipalities chosen were those that held ordinary elections in selected years (`r cohorts_used`) whose mayor was elected in the first round, winning by a maximum difference of `r paste0(janela * 100,"%")`, and among the top two most voted was a STEM candidate and a Non-STEM one`r college_description`. The analysis incorporates moderation effects of scientific intensity, measured by tenure. The model controls for mayors’ personal characteristics, and includes state fixed-effects.
 
 ## Moderating effects of city's development on the impact of STEM background
 
@@ -199,4 +202,4 @@ knitr::asis_output(paste(text, collapse = "\n"))
 
 ```
 
-*Notes*: This table presents the estimated impact of mayors with scientific background on COVID-19 deaths and hospitalizations per hundred thousand inhabitants. Municipalities chosen were those that held ordinary elections in selected years (`r cohorts_used`) whose mayor was elected in the first round and among the top two most voted was a STEM candidate and a Non-STEM one`r college_description`. The analysis incorporates moderation effects of cities’ level of development, indicated by revenue. The model controls for mayors’ gender, and includes state fixed-effects.
+*Notes*: This table presents the estimated impact of mayors with scientific background on COVID-19 deaths and hospitalizations per hundred thousand inhabitants`r log_outcomes`. Municipalities chosen were those that held ordinary elections in selected years (`r cohorts_used`) whose mayor was elected in the first round, winning by a maximum difference of `r paste0(janela * 100,"%")`, and among the top two most voted was a STEM candidate and a Non-STEM one`r college_description`. The analysis incorporates moderation effects of cities’ level of development, indicated by revenue. The model controls for mayors’ personal characteristics, and includes state `r cohort_fe`fixed-effects.
